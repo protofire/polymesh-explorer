@@ -1,5 +1,5 @@
 import { AppBar, Toolbar, Typography, Container } from '@mui/material';
-import { Providers } from '@/context/Providers';
+import { Providers } from '@/components/Providers';
 
 export default function RootLayout({
   children,
