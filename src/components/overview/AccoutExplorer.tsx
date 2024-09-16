@@ -14,7 +14,7 @@ export default function AccountExplorer() {
   // Note: In a real application, you'd lift this state up or use a state management solution
   const toggleTheme = () => {
     // This is a placeholder. In a real app, you'd update the theme state in the Providers component
-    console.log('Toggle theme');
+    console.log('Toggle themee');
   };
 
   return (
