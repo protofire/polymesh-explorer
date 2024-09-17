@@ -1,19 +1,18 @@
-import { Polymesh } from '@polymeshassociation/polymesh-sdk';
 import { IAccountRepository } from '../../domain/services/IAccountRepository';
 import { Account } from '../../domain/entities/Account';
-import { getPolymeshSdk } from '../getPolymeshSdk';
+import { PolymeshSdkService } from '../PolymeshSdkService';
 
 export class AccountRepository implements IAccountRepository {
-  private getPolymeshInstance: () => Promise<Polymesh>;
+  private getPolymeshInstance: () => Promise<PolymeshSdkService>;
 
   constructor(
-    polymeshInstanceGetter: () => Promise<Polymesh> = getPolymeshSdk,
+    polymeshInstanceGetter: () => Promise<PolymeshSdkService> = PolymeshSdkService.getInstance,
   ) {
     this.getPolymeshInstance = polymeshInstanceGetter;
   }
 
   async getAccountByPublicKey(publicKey: string): Promise<Account> {
-    const polymesh = await this.getPolymeshInstance();
+    const { polymeshSdk: polymesh } = await this.getPolymeshInstance();
     const accountInfo = await polymesh.accountManagement.getAccount({
       address: publicKey,
     });

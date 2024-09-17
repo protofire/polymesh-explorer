@@ -9,4 +9,9 @@ export const useAccount = (publicKey: string) => {
     queryFn: () => accountRepository.getAccountByPublicKey(publicKey),
     enabled: !!publicKey,
   });
+  return useQuery({
+    queryKey: ['account', publicKey],
+    queryFn: () => accountRepository.getAccountByPublicKey(publicKey),
+    enabled: !!publicKey,
+  });
 };
