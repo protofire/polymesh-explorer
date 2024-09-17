@@ -8,6 +8,7 @@ import { SearchCriteria } from '@/domain/criteria/SearchCriteria';
 import { Account } from '@/domain/entities/Account';
 import { Identity } from '@/domain/entities/Identity';
 import { GraphIdentityRepo } from '@/services/repositories/GraphIdentityRepo';
+import { delay } from '@/utils/delay';
 
 async function identifyPolymeshEntity(
   sdk: Polymesh,

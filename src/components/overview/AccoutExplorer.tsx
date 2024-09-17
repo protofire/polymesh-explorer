@@ -7,7 +7,12 @@ import { JsonViewer } from '../shared/JsonViewer';
 
 export default function AccountExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
-  const { data, isLoading, error, refetch } = useSearchPolymeshEntity({
+  const {
+    data,
+    isFetching: isLoading,
+    error,
+    refetch,
+  } = useSearchPolymeshEntity({
     searchTerm,
   });
 
