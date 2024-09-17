@@ -5,19 +5,24 @@ import {
   useState,
   useMemo,
 } from 'react';
+import { GraphQLClient } from 'graphql-request';
 import { PolymeshSdkService } from '@/services/PolymeshSdkService';
-import { POLYMESH_NODE_URL } from '@/config/constant';
+import { GRAPHQL_ENDPOINT, POLYMESH_NODE_URL } from '@/config/constant';
 
 interface IPolymeshSdkContext {
   polymeshService: PolymeshSdkService | null;
   isLoading: boolean;
   error: Error | null;
+  graphQlClient: GraphQLClient;
 }
+
+const graphQlClient = new GraphQLClient(GRAPHQL_ENDPOINT);
 
 export const PolymeshSdkContext = createContext<IPolymeshSdkContext>({
   polymeshService: null,
   isLoading: false,
   error: null,
+  graphQlClient,
 });
 
 export function PolymeshSdkProvider({ children }: PropsWithChildren) {
@@ -52,6 +57,7 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
       polymeshService,
       isLoading,
       error,
+      graphQlClient,
     }),
     [polymeshService, isLoading, error],
   );

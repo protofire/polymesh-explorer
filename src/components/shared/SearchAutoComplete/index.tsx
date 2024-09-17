@@ -1,62 +1,28 @@
 import { Autocomplete, CircularProgress, TextField } from '@mui/material';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDebounce } from '@/hooks/common/useDebounce';
 import { PolymeshEntityType } from '@/domain/entities/PolymeshEntity';
-import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
+import { useSearchPolymeshEntity } from '@/hooks/useSearchPolymeshEntity';
 
 interface SearchAutocompleteProps {
-  //   searchRepository: ISearchRepository;
   onSelect: (entity: PolymeshEntityType) => void;
 }
 
-export const usePolymeshSearch = () => {
-  const [options, setOptions] = useState<PolymeshEntityType[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { polymeshSdk } = usePolymeshSdkService();
-
-  const searchEntities = useCallback(async (searchTerm: string) => {
-    if (searchTerm.length < 3) {
-      setOptions([]);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // const results = await searchRepository.searchEntities(searchTerm);
-      setOptions([{ type: 'Account' }]);
-    } catch (error) {
-      console.error('Error searching entities:', error);
-      setOptions([]);
-    }
-    setLoading(false);
-  }, []);
-
-  return { options, loading, searchEntities };
-};
-
-export function SearchAutocomplete({
-  //   searchRepository,
-  onSelect,
-}: SearchAutocompleteProps) {
+export function SearchAutocomplete({ onSelect }: SearchAutocompleteProps) {
   const [input, setInput] = useState('');
   const debouncedInput = useDebounce(input, 300);
-  const { options, loading, searchEntities } = usePolymeshSearch();
-
-  useEffect(() => {
-    searchEntities(debouncedInput);
-  }, [debouncedInput, searchEntities]);
+  const { data, isLoading } = useSearchPolymeshEntity({
+    searchTerm: debouncedInput,
+  });
 
   return (
     <Autocomplete
       freeSolo
-      options={options}
-      loading={loading}
-      getOptionLabel={(option: PolymeshEntityType) =>
-        `${option.type}: ${option.type}`
-      }
+      options={[data.searchCriteria.type || '']}
+      loading={isLoading}
+      getOptionLabel={(option: string) => `${option}: ${option}`}
       renderInput={(params) => (
         <TextField
-          {...params}
           label="Search Account, Identity, or Asset"
           variant="outlined"
           onChange={(e) => setInput(e.target.value)}
@@ -64,7 +30,7 @@ export function SearchAutocomplete({
             ...params.InputProps,
             endAdornment: (
               <>
-                {loading ? (
+                {isLoading ? (
                   <CircularProgress color="inherit" size={20} />
                 ) : null}
                 {params.InputProps.endAdornment}
@@ -74,9 +40,7 @@ export function SearchAutocomplete({
         />
       )}
       renderOption={(props, option) => (
-        <li {...props} key={option.type}>
-          {`${option.type}: ${option.type}`}
-        </li>
+        <li key={option}>{`${option}: ${option}`}</li>
       )}
       onChange={(event, value) => {
         if (value && typeof value !== 'string') {

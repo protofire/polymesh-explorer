@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { useMemo } from 'react';
 import { PolymeshEntityType } from '@/domain/entities/PolymeshEntity';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { isDid } from '@/services/polymesh/isIdentifier';
 import { SearchCriteria } from '@/domain/criteria/SearchCriteria';
 import { Account } from '@/domain/entities/Account';
 import { Identity } from '@/domain/entities/Identity';
+import { GraphIdentityRepo } from '@/services/repositories/GraphIdentityRepo';
 
 async function identifyPolymeshEntity(
   sdk: Polymesh,
@@ -34,7 +36,10 @@ interface UseSearchPolymeshEntityResult {
 }
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
-  const { polymeshService } = usePolymeshSdkService();
+  const { polymeshService, graphQlClient } = usePolymeshSdkService();
+  const { identityService } = useMemo(() => {
+    return { identityService: new GraphIdentityRepo(graphQlClient) };
+  }, [graphQlClient]);
 
   return useQuery<UseSearchPolymeshEntityResult, Error>({
     queryKey: ['useSearchPolymeshEntity', input],
@@ -60,7 +65,9 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           key: searchCriteria.searchTerm,
         };
       } else if (polymeshEntity === 'DID') {
-        data = { did: input.searchTerm };
+        const identityData =
+          await identityService.findByIdentifier(searchCriteria);
+        data = { did: input.searchTerm, ...identityData };
       }
 
       return { searchCriteria, data };
