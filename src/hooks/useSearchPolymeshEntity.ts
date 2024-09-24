@@ -26,7 +26,9 @@ async function identifyPolymeshEntity(
       identity: identifier,
     });
 
-    return isIdentityValid ? PolymeshEntityType.DID : PolymeshEntityType.Unknown;
+    return isIdentityValid
+      ? PolymeshEntityType.DID
+      : PolymeshEntityType.Unknown;
   }
 
   if (Number(identifier)) {
@@ -72,7 +74,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
       const searchCriteria = { ...input, type: polymeshEntity };
 
       switch (polymeshEntity) {
-        case PolymeshEntityType.Account:
+        case PolymeshEntityType.Account: {
           const balance =
             await polymeshService.polymeshSdk.accountManagement.getAccountBalance(
               {
@@ -84,13 +86,17 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
             key: searchCriteria.searchTerm,
           };
           break;
-        case PolymeshEntityType.DID:
+        }
+        case PolymeshEntityType.DID: {
           const identityData =
             await identityService.findByIdentifier(searchCriteria);
           data = { did: input.searchTerm, ...identityData };
           break;
-        case PolymeshEntityType.Venue:
-          const venue = await polymeshService.polymeshSdk.settlements.getVenue({ id: new BigNumber(input.searchTerm) });
+        }
+        case PolymeshEntityType.Venue: {
+          const venue = await polymeshService.polymeshSdk.settlements.getVenue({
+            id: new BigNumber(input.searchTerm),
+          });
           const venueDetails = await venue.details();
           data = {
             id: venue.id,
@@ -100,24 +106,27 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
               owner: venueDetails.owner.did,
               type: venueDetails.type,
             },
-          }
+          };
           break;
-        case PolymeshEntityType.Asset:
-          const asset = await polymeshService.polymeshSdk.assets.getAsset({ ticker: input.searchTerm });
-          console.log(asset);
-          data = { 
+        }
+        case PolymeshEntityType.Asset: {
+          const asset = await polymeshService.polymeshSdk.assets.getAsset({
+            ticker: input.searchTerm,
+          });
+          data = {
             ticker: asset.ticker,
             did: asset.did,
             uuid: asset.uuid,
           };
           break;
+        }
         default:
           break;
-  }
+      }
 
       return { searchCriteria, data };
-},
-  enabled: !!input.searchTerm,
-  initialData: { searchCriteria: input },
+    },
+    enabled: !!input.searchTerm,
+    initialData: { searchCriteria: input },
   });
 };

@@ -4,5 +4,4 @@ export enum PolymeshEntityType {
   Venue = 'Venue',
   Asset = 'Asset',
   Unknown = 'Unknown',
-};
-
+}
