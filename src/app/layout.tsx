@@ -1,13 +1,6 @@
-import { Poppins } from 'next/font/google';
 import { Providers } from '@/context/Providers';
 import { AppLayout } from '@/components/shared/layout/AppLayout';
-
-const poppins = Poppins({
-  weight: ['300', '400', '500', '700'],
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-poppins',
-});
+import TopLoader from '@/components/shared/TopLoader';
 
 export default function RootLayout({
   children,
@@ -16,7 +9,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={poppins.className}>
+      <body>
+        <TopLoader />
         <Providers>
           <AppLayout>{children}</AppLayout>
         </Providers>
