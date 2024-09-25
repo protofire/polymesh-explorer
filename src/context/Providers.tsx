@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import React, { useState } from 'react';
+import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { PolymeshSdkProvider } from './PolymeshSdkProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -17,11 +18,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <AppRouterCacheProvider options={{ enableCssLayer: true }}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <PolymeshSdkProvider>{children}</PolymeshSdkProvider>
+        <QueryClientProvider client={queryClient}>
+          <PolymeshSdkProvider>{children}</PolymeshSdkProvider>
+        </QueryClientProvider>
       </ThemeProvider>
-    </QueryClientProvider>
+    </AppRouterCacheProvider>
   );
 }
