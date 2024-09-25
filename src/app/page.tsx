@@ -1,4 +1,4 @@
-import AccountExplorer from '@/components/overview/AccoutExplorer';
+import AccountExplorer from '@/components/home/AccoutExplorer';
 
 export default function Home() {
   return <AccountExplorer />;

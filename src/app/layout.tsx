@@ -1,5 +1,5 @@
-import { AppBar, Toolbar, Typography, Container } from '@mui/material';
 import { Providers } from '@/context/Providers';
+import { AppLayout } from '@/components/shared/layout/AppLayout';
 
 export default function RootLayout({
   children,
@@ -10,12 +10,7 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <Providers>
-          <AppBar position="static">
-            <Toolbar>
-              <Typography variant="h6">Polymesh Explorer</Typography>
-            </Toolbar>
-          </AppBar>
-          <Container>{children}</Container>
+          <AppLayout>{children}</AppLayout>
         </Providers>
       </body>
     </html>
