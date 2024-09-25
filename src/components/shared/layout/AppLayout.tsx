@@ -1,6 +1,8 @@
 'use client';
 
 import { AppBar, Container, styled, Toolbar, Typography } from '@mui/material';
+import Image from 'next/image';
+import PolymeshLogo from 'public/polymesh-logo.svg';
 
 const MainContainer = styled(Container)(() => ({
   minHeight: '100vh',
@@ -19,7 +21,10 @@ export function AppLayout({ children }: React.PropsWithChildren) {
     <>
       <CustomAppBar position="static">
         <Toolbar>
-          <Typography variant="h6">Polymesh Explorer</Typography>
+          <Image src={PolymeshLogo} height={24} alt="Polymesh logo" />
+          <Typography variant="h6" ml={2}>
+            EXPLORER
+          </Typography>
         </Toolbar>
       </CustomAppBar>
       <MainContainer maxWidth="lg">{children}</MainContainer>
