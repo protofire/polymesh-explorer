@@ -15,6 +15,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     palette: {
       mode,
     },
+    typography: {
+      fontFamily: ['Poppins', 'sans-serif'].join(','),
+    },
   });
 
   return (
