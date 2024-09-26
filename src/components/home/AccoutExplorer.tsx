@@ -22,7 +22,8 @@ const CustomBox = styled(Box)({
 });
 
 const SearchField = styled(TextField)(({ theme }) => ({
-  backgroundColor: '#2a2a2a',
+  backgroundColor: '#0705063d',
+  backdropFilter: 'blur(2px)',
   borderRadius: '4px',
   width: '50vw',
   [theme.breakpoints.down('lg')]: {
@@ -45,7 +46,7 @@ const SearchField = styled(TextField)(({ theme }) => ({
   },
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
-      borderColor: '#555',
+      borderColor: theme.palette.primary.main,
     },
     '&:hover fieldset': {
       borderColor: '#888',
