@@ -17,14 +17,23 @@ const CustomBox = styled(Box)({
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  textAlign: 'center',
   padding: '2rem',
   color: '#fff',
 });
 
-const SearchField = styled(TextField)({
+const SearchField = styled(TextField)(({ theme }) => ({
   backgroundColor: '#2a2a2a',
   borderRadius: '4px',
+  width: '50vw',
+  [theme.breakpoints.down('lg')]: {
+    width: '60vw',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '80vw',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '90vw',
+  },
   input: {
     color: '#fff',
   },
@@ -45,7 +54,7 @@ const SearchField = styled(TextField)({
       borderColor: '#fff',
     },
   },
-});
+}));
 
 export default function AccountExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
