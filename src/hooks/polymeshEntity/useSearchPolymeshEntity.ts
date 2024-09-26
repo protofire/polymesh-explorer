@@ -50,9 +50,9 @@ async function identifyPolymeshEntity(
   return PolymeshEntityType.Unknown;
 }
 
-interface UseSearchPolymeshEntityResult {
+export interface UseSearchPolymeshEntityResult {
   searchCriteria: SearchCriteria;
-  data?: Account | Identity | Venue | Asset;
+  entity?: Account | Identity | Venue | Asset;
 }
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
@@ -124,7 +124,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           break;
       }
 
-      return { searchCriteria, data };
+      return { searchCriteria, entity: data };
     },
     enabled: !!input.searchTerm,
     initialData: { searchCriteria: input },
