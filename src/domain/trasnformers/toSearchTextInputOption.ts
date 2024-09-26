@@ -26,7 +26,7 @@ export function transformToOption(
       return {
         type: PolymeshEntityType.DID,
         value: identity.did,
-        link: `${ROUTES.Identity}?did=${identity.did}`,
+        link: `${ROUTES.Identity}/${identity.did}`,
       };
     }
     case PolymeshEntityType.Venue: {

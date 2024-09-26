@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledAutocomplete, StyledTextField } from './styled';
@@ -24,10 +24,26 @@ export function SearchTextInput({
   onRefetch,
 }: SearchFieldProps) {
   const [open, setOpen] = useState(false);
+  const [selectedOption, setSelectedOption] =
+    useState<SearchTextInputOption | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event);
     setOpen(event.target.value !== '');
+  };
+
+  useEffect(() => {
+    if (options.length > 0) {
+      setSelectedOption(options[0]);
+    } else {
+      setSelectedOption(null);
+    }
+  }, [options]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' && selectedOption) {
+      window.location.href = selectedOption.link;
+    }
   };
 
   return (
@@ -61,6 +77,7 @@ export function SearchTextInput({
           label={label}
           fullWidth
           margin="normal"
+          onKeyDown={handleKeyDown}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
