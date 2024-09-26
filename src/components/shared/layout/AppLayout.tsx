@@ -58,7 +58,7 @@ export function AppLayout({
         width: '100%',
       }}
     >
-      <CustomAppBar position="static">
+      <CustomAppBar elevation={0} position="static">
         <Toolbar>
           <StyledLink href={ROUTES.Home}>
             <Box display="flex" alignItems="center">

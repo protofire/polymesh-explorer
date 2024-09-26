@@ -1,9 +1,20 @@
 import { styled } from '@mui/material/styles';
 import { Autocomplete, TextField } from '@mui/material';
 
-export const StyledTextField = styled(TextField)(() => ({
-  backgroundColor: '#2a2a2a',
+export const StyledTextField = styled(TextField)(({ theme }) => ({
+  backgroundColor: '#0705063d',
+  backdropFilter: 'blur(2px)',
   borderRadius: '4px',
+  width: '50vw',
+  [theme.breakpoints.down('lg')]: {
+    width: '60vw',
+  },
+  [theme.breakpoints.down('md')]: {
+    width: '80vw',
+  },
+  [theme.breakpoints.down('sm')]: {
+    width: '90vw',
+  },
   input: {
     color: '#fff',
   },
@@ -15,7 +26,7 @@ export const StyledTextField = styled(TextField)(() => ({
   },
   '& .MuiOutlinedInput-root': {
     '& fieldset': {
-      borderColor: '#555',
+      borderColor: theme.palette.primary.main,
     },
     '&:hover fieldset': {
       borderColor: '#888',
