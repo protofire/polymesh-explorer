@@ -15,6 +15,7 @@ export function transformToOption(
       const account = data.entity as Account;
 
       return {
+        key: account.key,
         type: PolymeshEntityType.Account,
         value: account.key,
         link: `${ROUTES.Account}?key=${account.key}`,
@@ -24,6 +25,7 @@ export function transformToOption(
       const identity = data.entity as Identity;
 
       return {
+        key: identity.did,
         type: PolymeshEntityType.DID,
         value: identity.did,
         link: `${ROUTES.Identity}/${identity.did}`,
@@ -33,6 +35,7 @@ export function transformToOption(
       const venue = data.entity as Venue;
 
       return {
+        key: venue.id.toString(),
         type: PolymeshEntityType.Venue,
         value: venue.id.toString(),
         link: `${ROUTES.Venue}?id=${venue.id.toString()}`,
@@ -41,6 +44,7 @@ export function transformToOption(
     case PolymeshEntityType.Asset: {
       const asset = data.entity as Asset;
       return {
+        key: asset.did,
         type: PolymeshEntityType.Asset,
         value: asset.ticker,
         link: `${ROUTES.Asset}?ticker=${asset.ticker}`,
@@ -48,6 +52,7 @@ export function transformToOption(
     }
     default:
       return {
+        key: 'unknown',
         type: PolymeshEntityType.Unknown,
         value: data.searchCriteria.searchTerm,
       };

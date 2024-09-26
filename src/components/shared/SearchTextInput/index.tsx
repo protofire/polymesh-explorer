@@ -41,7 +41,11 @@ export function SearchTextInput({
   }, [options]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && selectedOption) {
+    if (
+      event.key === 'Enter' &&
+      selectedOption &&
+      selectedOption?.type !== 'Unknown'
+    ) {
       window.location.href = selectedOption.link;
     }
   };
@@ -65,10 +69,15 @@ export function SearchTextInput({
           ? option
           : (option as SearchTextInputOption).value
       }
-      renderOption={(props, option) => (
+      value={selectedOption}
+      onChange={(event, newValue) => {
+        setSelectedOption(newValue as SearchTextInputOption | null);
+      }}
+      renderOption={(props, option, { selected }) => (
         <RenderOptionItem
           props={props}
           option={option as SearchTextInputOption}
+          selected={selected || option === selectedOption}
         />
       )}
       renderInput={(params) => (
