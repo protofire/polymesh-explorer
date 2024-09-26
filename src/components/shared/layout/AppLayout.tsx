@@ -34,7 +34,7 @@ export function AppLayout({ children }: React.PropsWithChildren) {
         width: '100%',
       }}
     >
-      <CustomAppBar position="static">
+      <CustomAppBar elevation={0} position="static">
         <Toolbar>
           <Image src={PolymeshLogo} height={22} alt="Polymesh logo" />
           <Typography variant="h6" ml={2}>
