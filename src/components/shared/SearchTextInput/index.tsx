@@ -1,70 +1,27 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
-import {
-  InputAdornment,
-  TextField,
-  styled,
-  Autocomplete,
-  Box,
-  Typography,
-} from '@mui/material';
+import { InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-
-interface Option {
-  value: string;
-  type: string;
-}
+import { StyledAutocomplete, StyledTextField } from './styled';
+import { SearchTextInputOption } from '@/domain/ui/SearchTextInputOption';
+import { RenderOptionItem } from './RenderOption';
 
 interface SearchFieldProps {
   label: string;
   value: string;
   onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  options?: Option[];
+  options?: SearchTextInputOption[];
+  isLoading?: boolean;
+  onRefetch?: () => void;
 }
-
-const StyledTextField = styled(TextField)({
-  backgroundColor: '#2a2a2a',
-  borderRadius: '4px',
-  input: {
-    color: '#fff',
-  },
-  '& label': {
-    color: '#ccc',
-  },
-  '& label.Mui-focused': {
-    color: '#fff',
-  },
-  '& .MuiOutlinedInput-root': {
-    '& fieldset': {
-      borderColor: '#555',
-    },
-    '&:hover fieldset': {
-      borderColor: '#888',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#fff',
-    },
-  },
-});
-
-const StyledAutocomplete = styled(Autocomplete)({
-  '& .MuiAutocomplete-paper': {
-    backgroundColor: '#2a2a2a',
-    color: '#fff',
-  },
-  '& .MuiAutocomplete-option': {
-    '&:hover': {
-      backgroundColor: '#3a3a3a',
-    },
-  },
-});
 
 export function SearchTextInput({
   label,
   value,
   onChange,
   options = [],
+  isLoading,
+  onRefetch,
 }: SearchFieldProps) {
   const [open, setOpen] = useState(false);
 
@@ -73,11 +30,6 @@ export function SearchTextInput({
     setOpen(event.target.value !== '');
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter') {
-      onSearch(value);
-    }
-  };
   return (
     <StyledAutocomplete
       freeSolo
@@ -93,13 +45,15 @@ export function SearchTextInput({
       }}
       options={options}
       getOptionLabel={(option: unknown) =>
-        typeof option === 'string' ? option : (option as Option).value
+        typeof option === 'string'
+          ? option
+          : (option as SearchTextInputOption).value
       }
       renderOption={(props, option) => (
-        <Box component="li" {...props}>
-          <AccountBalanceWalletIcon sx={{ color: '#ff5f5f', mr: 2 }} />
-          <Typography variant="body2">{(option as Option).value}</Typography>
-        </Box>
+        <RenderOptionItem
+          props={props}
+          option={option as SearchTextInputOption}
+        />
       )}
       renderInput={(params) => (
         <StyledTextField
@@ -111,16 +65,21 @@ export function SearchTextInput({
             ...params.InputProps,
             endAdornment: (
               <InputAdornment position="end">
-                <SearchIcon style={{ color: '#888' }} />
+                {isLoading ? (
+                  <CircularProgress color="inherit" size={20} />
+                ) : (
+                  <IconButton sx={{ color: '#888' }} onClick={onRefetch}>
+                    <SearchIcon />
+                  </IconButton>
+                )}
               </InputAdornment>
             ),
           }}
-          onKeyDown={handleKeyDown}
         />
       )}
       groupBy={(option: unknown) => {
         if (typeof option === 'string') return 'Others';
-        return (option as Option).type.toUpperCase();
+        return (option as SearchTextInputOption).type.toUpperCase();
       }}
       sx={{ width: '100%' }}
       noOptionsText="No results found"

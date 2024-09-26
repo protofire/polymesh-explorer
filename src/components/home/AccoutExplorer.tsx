@@ -1,19 +1,11 @@
 'use client';
 
-import { Typography, Box, Button, styled } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useMemo, useState } from 'react';
-import { useSearchPolymeshEntity } from '@/hooks/useSearchPolymeshEntity';
-import { JsonViewer } from '../shared/JsonViewer';
+import { useSearchPolymeshEntity } from '@/hooks/polymeshEntity/useSearchPolymeshEntity';
 import { SearchTextInput } from '../shared/SearchTextInput';
-
-const CustomBox = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  textAlign: 'center',
-  padding: '2rem',
-  color: '#fff',
-});
+import { CustomBox } from './styled';
+import { transformToOption } from '@/domain/trasnformers/toSearchTextInputOption';
 
 export default function AccountExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -27,8 +19,8 @@ export default function AccountExplorer() {
   });
 
   const options = useMemo(() => {
-    if (!data.data) return [];
-    return [{ type: data.searchCriteria.type, value: data.data?.key }];
+    if (!data.searchCriteria.type) return [];
+    return [transformToOption(data)];
   }, [data]);
 
   return (
@@ -41,25 +33,11 @@ export default function AccountExplorer() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         options={options}
+        isLoading={isLoading}
+        onRefetch={refetch}
       />
-      <Button
-        variant="contained"
-        sx={{ mt: 2, backgroundColor: '#f50057' }}
-        onClick={() => refetch()}
-      >
-        Search
-      </Button>
-      {isLoading && <Typography>Loading...</Typography>}
       {error && (
         <Typography color="error">Error: {(error as Error).message}</Typography>
-      )}
-      {data.data && (
-        <Box mt={2}>
-          <Typography variant="h6">
-            {data.searchCriteria.type} Details
-          </Typography>
-          <JsonViewer data={data.data} />
-        </Box>
       )}
     </CustomBox>
   );
