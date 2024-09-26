@@ -4,8 +4,8 @@ import {
   Typography,
   Card,
   CardContent,
-  Grid,
   Button,
+  Stack,
 } from '@mui/material';
 
 interface IdentityCardProps {
@@ -18,7 +18,7 @@ interface IdentityCardProps {
   secondaryKeys: string[];
 }
 
-const IdentityCard: React.FC<IdentityCardProps> = ({
+export function IdentityCard({
   did,
   claims,
   assets,
@@ -26,7 +26,7 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
   portfolios,
   primaryKey,
   secondaryKeys,
-}) => {
+}: IdentityCardProps): React.ReactElement {
   return (
     <Card>
       <CardContent>
@@ -39,32 +39,32 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
             {did}
           </Typography>
         </Box>
-        <Grid container spacing={2} mt={2}>
-          <Grid item xs={6} sm={3}>
+        <Stack direction="row" spacing={2} mt={2}>
+          <Box width="25%">
             <Typography variant="body2">Claims</Typography>
             <Typography variant="h6">{claims}</Typography>
-          </Grid>
-          <Grid item xs={6} sm={3}>
+          </Box>
+          <Box width="25%">
             <Typography variant="body2">Assets</Typography>
             <Typography variant="h6">{assets}</Typography>
-          </Grid>
-          <Grid item xs={6} sm={3}>
+          </Box>
+          <Box width="25%">
             <Typography variant="body2">Venue</Typography>
             <Typography variant="h6">{venue}</Typography>
-          </Grid>
-          <Grid item xs={6} sm={3}>
+          </Box>
+          <Box width="25%">
             <Typography variant="body2">Portfolios</Typography>
             <Typography variant="h6">{portfolios}</Typography>
-          </Grid>
-        </Grid>
+          </Box>
+        </Stack>
         <Box mt={2}>
           <Typography variant="body2">Primary Key</Typography>
           <Typography variant="body1">{primaryKey}</Typography>
         </Box>
         <Box mt={2}>
           <Typography variant="body2">Secondary Keys</Typography>
-          {secondaryKeys.map((key, index) => (
-            <Typography variant="body1" key={index}>
+          {secondaryKeys.map((key) => (
+            <Typography variant="body1" key={key}>
               {key}
             </Typography>
           ))}
@@ -77,6 +77,4 @@ const IdentityCard: React.FC<IdentityCardProps> = ({
       </CardContent>
     </Card>
   );
-};
-
-export default IdentityCard;
+}
