@@ -1,6 +1,5 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { SearchCriteria } from '@/domain/criteria/SearchCriteria';
 
 interface IdentityNode {
   did: string;

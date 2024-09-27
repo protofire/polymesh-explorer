@@ -8,9 +8,8 @@ import { useGetIdentity } from '@/hooks/identity/useGetIdentity';
 
 export default function IdentityPage() {
   const { did } = useParams();
-  const { data, isLoading } = useGetIdentity({ did: did as string });
+  const { data } = useGetIdentity({ did: did as string });
 
-  console.log('__data', data);
   return (
     <Box>
       <IdentityCard
