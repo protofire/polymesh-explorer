@@ -13,6 +13,7 @@ interface SearchFieldProps {
   options?: SearchTextInputOption[];
   isLoading?: boolean;
   onRefetch?: () => void;
+  size?: 'big' | 'small';
 }
 
 export function SearchTextInput({
@@ -22,6 +23,7 @@ export function SearchTextInput({
   options = [],
   isLoading,
   onRefetch,
+  size = 'small',
 }: SearchFieldProps) {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] =
@@ -73,13 +75,19 @@ export function SearchTextInput({
       onChange={(event, newValue) => {
         setSelectedOption(newValue as SearchTextInputOption | null);
       }}
-      renderOption={(props, option, { selected }) => (
-        <RenderOptionItem
-          props={props}
-          option={option as SearchTextInputOption}
-          selected={selected || option === selectedOption}
-        />
-      )}
+      renderOption={(props, option, { selected }) => {
+        // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
+        const _option = option as SearchTextInputOption;
+
+        return (
+          <RenderOptionItem
+            key={`${_option.type}-${_option.key}`}
+            props={props}
+            option={option as SearchTextInputOption}
+            selected={selected || option === selectedOption}
+          />
+        );
+      }}
       renderInput={(params) => (
         <StyledTextField
           {...params}
@@ -87,19 +95,22 @@ export function SearchTextInput({
           fullWidth
           margin="normal"
           onKeyDown={handleKeyDown}
-          InputProps={{
-            ...params.InputProps,
-            endAdornment: (
-              <InputAdornment position="end">
-                {isLoading ? (
-                  <CircularProgress color="inherit" size={20} />
-                ) : (
-                  <IconButton sx={{ color: '#888' }} onClick={onRefetch}>
-                    <SearchIcon />
-                  </IconButton>
-                )}
-              </InputAdornment>
-            ),
+          customBigHeight={size === 'big'}
+          slotProps={{
+            input: {
+              ...params.InputProps,
+              endAdornment: (
+                <InputAdornment position="end">
+                  {isLoading ? (
+                    <CircularProgress color="inherit" size={20} />
+                  ) : (
+                    <IconButton sx={{ color: '#888' }} onClick={onRefetch}>
+                      <SearchIcon />
+                    </IconButton>
+                  )}
+                </InputAdornment>
+              ),
+            },
           }}
         />
       )}
