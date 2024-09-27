@@ -118,7 +118,6 @@ export function SearchTextInput({
         if (typeof option === 'string') return 'Others';
         return (option as SearchTextInputOption).type.toUpperCase();
       }}
-      sx={{ width: '100%' }}
       noOptionsText="No results found"
     />
   );

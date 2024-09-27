@@ -24,7 +24,7 @@ export function NetworkSelector() {
       MenuProps={{
         PaperProps: {
           sx: {
-            backgroundColor: '#2D2D2D',
+            backgroundColor: '#070506',
             color: '#fff',
           },
         },

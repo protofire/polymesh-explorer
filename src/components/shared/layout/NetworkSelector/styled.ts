@@ -1,20 +1,19 @@
 import { Select, styled } from '@mui/material';
 
-export const NetworkSelect = styled(Select)(() => ({
-  marginLeft: 'auto',
+export const NetworkSelect = styled(Select)(({ theme }) => ({
   color: '#fff',
-  backgroundColor: '#2D2D2D',
-  borderRadius: '20px',
+  backgroundColor: theme.palette.primary.main,
+  borderRadius: '16px',
   minWidth: '120px',
-  height: '40px',
+  height: '32px',
   '.MuiOutlinedInput-notchedOutline': {
     border: 'none',
   },
   '&:hover': {
-    backgroundColor: '#3D3D3D',
+    backgroundColor: `${theme.palette.primary.main}95`,
   },
   '&.Mui-focused': {
-    backgroundColor: '#3D3D3D',
+    backgroundColor: `${theme.palette.primary.main}98`,
   },
   '.MuiSelect-select': {
     paddingTop: '8px',
