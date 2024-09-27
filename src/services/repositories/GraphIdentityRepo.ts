@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { SearchCriteria } from '../../domain/criteria/SearchCriteria';
+import { SearchCriteria } from '@/domain/criteria/SearchCriteria';
 
 interface IdentityNode {
   did: string;
@@ -8,7 +8,6 @@ interface IdentityNode {
   secondaryAccounts: string[];
   createdAt: string;
   lastModifiedAt: string;
-  // Añade aquí cualquier otro campo que esté disponible en el nodo de identidad
 }
 
 interface IdentityResponse {
@@ -50,5 +49,29 @@ export class GraphIdentityRepo {
     const identities = response.identities.nodes;
 
     return identities.length > 0 ? identities[0] : null;
+  }
+
+  async existsByIdentifier(criteria: SearchCriteria): Promise<boolean> {
+    const query = gql`
+      query ($filter: IdentityFilter!) {
+        identities(filter: $filter, first: 1) {
+          nodes {
+            did
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      filter: { did: { equalTo: criteria.searchTerm } },
+    };
+
+    const response = await this.client.request<IdentityResponse>(
+      query,
+      variables,
+    );
+    const identities = response.identities.nodes;
+
+    return identities.length > 0;
   }
 }

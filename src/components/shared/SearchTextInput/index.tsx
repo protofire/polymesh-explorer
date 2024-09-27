@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledAutocomplete, StyledTextField } from './styled';
@@ -24,10 +24,30 @@ export function SearchTextInput({
   onRefetch,
 }: SearchFieldProps) {
   const [open, setOpen] = useState(false);
+  const [selectedOption, setSelectedOption] =
+    useState<SearchTextInputOption | null>(null);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event);
     setOpen(event.target.value !== '');
+  };
+
+  useEffect(() => {
+    if (options.length > 0) {
+      setSelectedOption(options[0]);
+    } else {
+      setSelectedOption(null);
+    }
+  }, [options]);
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (
+      event.key === 'Enter' &&
+      selectedOption &&
+      selectedOption?.type !== 'Unknown'
+    ) {
+      window.location.href = selectedOption.link;
+    }
   };
 
   return (
@@ -49,10 +69,15 @@ export function SearchTextInput({
           ? option
           : (option as SearchTextInputOption).value
       }
-      renderOption={(props, option) => (
+      value={selectedOption}
+      onChange={(event, newValue) => {
+        setSelectedOption(newValue as SearchTextInputOption | null);
+      }}
+      renderOption={(props, option, { selected }) => (
         <RenderOptionItem
           props={props}
           option={option as SearchTextInputOption}
+          selected={selected || option === selectedOption}
         />
       )}
       renderInput={(params) => (
@@ -61,6 +86,7 @@ export function SearchTextInput({
           label={label}
           fullWidth
           margin="normal"
+          onKeyDown={handleKeyDown}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
