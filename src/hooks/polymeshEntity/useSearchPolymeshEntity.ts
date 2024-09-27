@@ -88,12 +88,19 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           break;
         }
         case PolymeshEntityType.DID: {
-          const exists =
-            await identityService.existsByIdentifier(searchCriteria);
+          const exists = await identityService.existsByIdentifier(
+            searchCriteria.searchTerm,
+          );
           if (exists) {
-            const identityData =
-              await identityService.findByIdentifier(searchCriteria);
-            data = { did: input.searchTerm, ...identityData };
+            const identityData = await identityService.findByIdentifier(
+              searchCriteria.searchTerm,
+            );
+
+            data = {
+              did: input.searchTerm,
+              ...identityData,
+              primaryAccount: identityData?.primaryAccount || '',
+            } as Identity;
           }
           break;
         }

@@ -1,13 +1,26 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { SearchCriteria } from '@/domain/criteria/SearchCriteria';
 
 interface IdentityNode {
   did: string;
   primaryAccount: string;
-  secondaryAccounts: string[];
+  secondaryAccounts: {
+    totalCount: number;
+    nodes: { address: string }[];
+  };
   createdAt: string;
-  lastModifiedAt: string;
+  claimsByTargetId: {
+    totalCount: number;
+  };
+  heldAssets: {
+    totalCount: number;
+  };
+  venuesByOwnerId: {
+    totalCount: number;
+  };
+  portfolios: {
+    totalCount: number;
+  };
 }
 
 interface IdentityResponse {
@@ -19,7 +32,7 @@ interface IdentityResponse {
 export class GraphIdentityRepo {
   constructor(private client: GraphQLClient) {}
 
-  async findByIdentifier(criteria: SearchCriteria): Promise<Identity | null> {
+  async findByIdentifier(did: string): Promise<Identity | null> {
     const query = gql`
       query ($filter: IdentityFilter!) {
         identities(filter: $filter, first: 1) {
@@ -33,13 +46,25 @@ export class GraphIdentityRepo {
                 address
               }
             }
+            claimsByTargetId {
+              totalCount
+            }
+            heldAssets {
+              totalCount
+            }
+            venuesByOwnerId {
+              totalCount
+            }
+            portfolios {
+              totalCount
+            }
           }
         }
       }
     `;
 
     const variables = {
-      filter: { did: { equalTo: criteria.searchTerm } },
+      filter: { did: { equalTo: did } },
     };
 
     const response = await this.client.request<IdentityResponse>(
@@ -48,10 +73,24 @@ export class GraphIdentityRepo {
     );
     const identities = response.identities.nodes;
 
-    return identities.length > 0 ? identities[0] : null;
+    if (identities.length === 0) return null;
+
+    const identity = identities[0];
+    return {
+      did: identity.did,
+      primaryAccount: identity.primaryAccount,
+      secondaryAccounts: identity.secondaryAccounts.nodes.map(
+        (node) => node.address,
+      ),
+      createdAt: identity.createdAt,
+      claimsCount: identity.claimsByTargetId.totalCount,
+      assetsCount: identity.heldAssets.totalCount,
+      venuesCount: identity.venuesByOwnerId.totalCount,
+      portfoliosCount: identity.portfolios.totalCount,
+    };
   }
 
-  async existsByIdentifier(criteria: SearchCriteria): Promise<boolean> {
+  async existsByIdentifier(did: string): Promise<boolean> {
     const query = gql`
       query ($filter: IdentityFilter!) {
         identities(filter: $filter, first: 1) {
@@ -63,7 +102,7 @@ export class GraphIdentityRepo {
     `;
 
     const variables = {
-      filter: { did: { equalTo: criteria.searchTerm } },
+      filter: { did: { equalTo: did } },
     };
 
     const response = await this.client.request<IdentityResponse>(

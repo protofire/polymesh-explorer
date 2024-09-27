@@ -35,6 +35,7 @@ export default function AccountExplorer() {
         options={options}
         isLoading={isLoading}
         onRefetch={refetch}
+        size="big"
       />
       {error && (
         <Typography color="error">Error: {(error as Error).message}</Typography>
