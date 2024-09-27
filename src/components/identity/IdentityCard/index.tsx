@@ -7,26 +7,28 @@ import {
   Button,
   Stack,
 } from '@mui/material';
+import { Identity } from '@/domain/entities/Identity';
 
 interface IdentityCardProps {
-  did: string;
-  claims: number;
-  assets: number;
-  venue: number;
-  portfolios: number;
-  primaryKey: string;
-  secondaryKeys: string[];
+  identityDid: Identity['did'];
+  identity: Identity;
+  isLoading?: boolean;
 }
 
 export function IdentityCard({
-  did,
-  claims,
-  assets,
-  venue,
-  portfolios,
-  primaryKey,
-  secondaryKeys,
+  identityDid,
+  identity,
+  isLoading,
 }: IdentityCardProps): React.ReactElement {
+  const {
+    claimsCount,
+    assetsCount,
+    venuesCount,
+    portfoliosCount,
+    secondaryAccounts,
+    primaryAccount,
+  } = identity;
+
   return (
     <Card>
       <CardContent>
@@ -36,34 +38,34 @@ export function IdentityCard({
             DID:
           </Typography>
           <Typography variant="body1" ml={1}>
-            {did}
+            {identityDid}
           </Typography>
         </Box>
         <Stack direction="row" spacing={2} mt={2}>
           <Box width="25%">
             <Typography variant="body2">Claims</Typography>
-            <Typography variant="h6">{claims}</Typography>
+            <Typography variant="h6">{claimsCount}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2">Assets</Typography>
-            <Typography variant="h6">{assets}</Typography>
+            <Typography variant="h6">{assetsCount}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2">Venue</Typography>
-            <Typography variant="h6">{venue}</Typography>
+            <Typography variant="h6">{venuesCount}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2">Portfolios</Typography>
-            <Typography variant="h6">{portfolios}</Typography>
+            <Typography variant="h6">{portfoliosCount}</Typography>
           </Box>
         </Stack>
         <Box mt={2}>
           <Typography variant="body2">Primary Key</Typography>
-          <Typography variant="body1">{primaryKey}</Typography>
+          <Typography variant="body1">{primaryAccount}</Typography>
         </Box>
         <Box mt={2}>
           <Typography variant="body2">Secondary Keys</Typography>
-          {secondaryKeys.map((key) => (
+          {secondaryAccounts.map((key) => (
             <Typography variant="body1" key={key}>
               {key}
             </Typography>
