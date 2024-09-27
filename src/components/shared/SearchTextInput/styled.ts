@@ -7,7 +7,6 @@ export const StyledTextField = styled(TextField, {
   theme,
   customBigHeight,
 }) => {
-  console.log('__custom', customBigHeight);
   return {
     backgroundColor: '#0705063d',
     backdropFilter: 'blur(2px)',
