@@ -9,7 +9,7 @@ export const StyledTextField = styled(TextField, {
 }) => {
   return {
     backgroundColor: '#0705063d',
-    backdropFilter: 'blur(2px)',
+    backdropFilter: 'blur(3px)',
     borderRadius: '4px',
     width: '50vw',
     [theme.breakpoints.down('lg')]: {
@@ -34,6 +34,7 @@ export const StyledTextField = styled(TextField, {
       '& fieldset': {
         borderColor: theme.palette.primary.main,
         height: customBigHeight ? '56px' : '48px',
+        top: customBigHeight ? '-3px' : '0',
       },
       '&:hover fieldset': {
         borderColor: '#888',
