@@ -21,11 +21,9 @@ export const useGetIdentity = ({ did }: Props) => {
       try {
         return await identityService.findByIdentifier(did);
       } catch (e) {
-        console.error('Error al buscar la identidad:', e);
+        console.error('Error with identity:', e);
         return null;
       }
-
-      return response;
     },
     enabled: !!did || !!identityService,
   });
