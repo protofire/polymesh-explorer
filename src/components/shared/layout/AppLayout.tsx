@@ -59,7 +59,7 @@ export function AppLayout({
       }}
     >
       <CustomAppBar elevation={0} position="static">
-        <Toolbar>
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <StyledLink href={ROUTES.Home}>
             <Box display="flex" alignItems="center">
               <Image src={PolymeshLogo} height={22} alt="Polymesh logo" />
