@@ -14,8 +14,8 @@ export default function IdentityPage() {
     <Box>
       <IdentityCard
         did={did as string}
-        claims={data?.claimsCount}
-        assets={data?.assetsCount}
+        claims={data?.claimsCount || 0}
+        assets={data?.assetsCount || 0}
         venue={4}
         portfolios={2}
         primaryKey="5FN9LL...M3Ph5c"
