@@ -27,7 +27,7 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { currentNetworkConfig, setCurrentNetwork } = useNetworkProvider();
+  const { currentNetworkConfig } = useNetworkProvider();
   // const [currentNodeUrl] = useState<string>(POLYMESH_NODE_URL);
 
   useEffect(() => {
