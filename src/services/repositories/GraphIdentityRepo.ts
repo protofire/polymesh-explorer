@@ -76,6 +76,7 @@ export class GraphIdentityRepo {
     if (identities.length === 0) return null;
 
     const identity = identities[0];
+    console.log('__secondary', identity);
     return {
       did: identity.did,
       primaryAccount: identity.primaryAccount,

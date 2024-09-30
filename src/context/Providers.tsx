@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { CustomMuiThemeProvider } from '@/theme/CustomMuiThemeProvider';
 import { PolymeshSdkProvider } from './PolymeshSdkProvider';
+import { NetworkProvider } from './NetworkProvider';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -13,7 +14,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <AppRouterCacheProvider options={{ enableCssLayer: true }}>
       <CustomMuiThemeProvider>
         <QueryClientProvider client={queryClient}>
-          <PolymeshSdkProvider>{children}</PolymeshSdkProvider>
+          <NetworkProvider>
+            <PolymeshSdkProvider>{children}</PolymeshSdkProvider>
+          </NetworkProvider>
         </QueryClientProvider>
       </CustomMuiThemeProvider>
     </AppRouterCacheProvider>
