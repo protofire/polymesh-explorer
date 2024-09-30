@@ -8,11 +8,10 @@ import {
 import { GraphQLClient } from 'graphql-request';
 import { useNetworkProvider } from '../NetworkProvider';
 import { PolymeshSdkService } from '@/services/PolymeshSdkService';
-import { IS_DEVELOPMENT } from '@/config/environment';
 import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
 
 interface IPolymeshSdkContext {
-  polymeshService: PolymeshSdkService | null;
+  polymeshService: PolymeshSdkService;
   isLoading: boolean;
   error: Error | null;
   graphQlClient: GraphQLClient;
@@ -28,16 +27,18 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { currentNetworkConfig, currentNetwork } = useNetworkProvider();
+  const { currentNetworkConfig } = useNetworkProvider();
   // const [currentNodeUrl] = useState<string>(POLYMESH_NODE_URL);
 
   useEffect(() => {
-    if (!currentNetworkConfig) return;
+    const rpc = currentNetworkConfig
+      ? currentNetworkConfig.rpc
+      : NETWORK_MAP[DEFAULT_NETWORK].rpc;
 
     setIsLoading(true);
     setError(null);
 
-    PolymeshSdkService.getInstance(currentNetworkConfig.rpc)
+    PolymeshSdkService.getInstance(rpc)
 
       .then((service) => {
         setPolymeshSdk(service);
@@ -60,8 +61,6 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
 
     return new GraphQLClient(currentNetworkConfig.graphQlNode);
   }, [currentNetworkConfig?.graphQlNode]);
-
-  console.log('__graphQl', currentNetwork, currentNetworkConfig);
 
   const contextValue = useMemo(
     () => ({
