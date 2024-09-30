@@ -19,7 +19,7 @@ interface AccountResponse {
 export class AccountGraphRepository {
   constructor(private client: GraphQLClient) {}
 
-  async findByAddress(address: string): Promise<Account | null> {
+  async findByAddress(key: string): Promise<Account | null> {
     const query = gql`
       query ($filter: AccountFilter!) {
         accounts(filter: $filter, first: 1) {
@@ -36,7 +36,7 @@ export class AccountGraphRepository {
     `;
 
     const variables = {
-      filter: { address: { equalTo: address } },
+      filter: { address: { equalTo: key } },
     };
 
     const response = await this.client.request<AccountResponse>(
@@ -49,7 +49,7 @@ export class AccountGraphRepository {
 
     const account = accounts[0];
 
-    debugger
+    debugger;
 
     return {
       key: account.address,

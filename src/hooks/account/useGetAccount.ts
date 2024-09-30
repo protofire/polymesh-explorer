@@ -5,10 +5,10 @@ import { AccountGraphRepository } from '@/services/repositories/AccountGraphRepo
 import { Account } from '@/domain/entities/Account';
 
 interface Props {
-  address: Account['address'];
+  key: Account['key'];
 }
 
-export const useGetAccount = ({ address }: Props) => {
+export const useGetAccount = ({ key }: Props) => {
   const { graphQlClient } = usePolymeshSdkService();
   const accountService = useMemo(() => {
     if (!graphQlClient) return null;
@@ -19,11 +19,11 @@ export const useGetAccount = ({ address }: Props) => {
   }, [graphQlClient]);
 
   return useQuery({
-    queryKey: ['useGetAccount', accountService, address],
+    queryKey: ['useGetAccount', accountService, key],
     queryFn: async () => {
       if (!accountService) return null;
       try {
-        return await accountService.findByAddress(address);
+        return await accountService.findByKey(key);
       } catch (e) {
         console.error('Error with account:', e);
         return null;
