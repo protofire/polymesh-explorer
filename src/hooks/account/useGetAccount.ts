@@ -29,6 +29,6 @@ export const useGetAccount = ({ key }: Props) => {
         return null;
       }
     },
-    enabled: !!address && !!accountService,
+    enabled: !!key && !!accountService,
   });
 };

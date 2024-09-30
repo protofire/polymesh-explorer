@@ -5,8 +5,11 @@ interface AccountNode {
   address: string;
   identityId: string | null;
   createdAt: string;
+  multiSigsByCreatorAccountId: {
+    totalCount: number;
+  };
   identity: {
-    did: string;
+    primaryAccount: string;
   } | null;
 }
 
@@ -19,7 +22,7 @@ interface AccountResponse {
 export class AccountGraphRepository {
   constructor(private client: GraphQLClient) {}
 
-  async findByAddress(key: string): Promise<Account | null> {
+  async findByKey(key: string): Promise<Account | null> {
     const query = gql`
       query ($filter: AccountFilter!) {
         accounts(filter: $filter, first: 1) {
@@ -27,8 +30,11 @@ export class AccountGraphRepository {
             address
             identityId
             createdAt
+            multiSigsByCreatorAccountId {
+              totalCount
+            }
             identity {
-              did
+              primaryAccount
             }
           }
         }
@@ -49,17 +55,19 @@ export class AccountGraphRepository {
 
     const account = accounts[0];
 
-    debugger;
-
     return {
       key: account.address,
       identityId: account.identityId,
-      createdAt: account.createdAt,
-      did: account.identity?.did || null,
+      createdAt: new Date(account.createdAt).toISOString(),
+      isMultisig: account.multiSigsByCreatorAccountId.totalCount > 0,
+      isPrimaryKey: account.identity?.primaryAccount === account.address,
+      isSecondaryKey:
+        !!account.identityId &&
+        account.identity?.primaryAccount !== account.address,
     };
   }
 
-  async existsByAddress(address: string): Promise<boolean> {
+  async existsByKey(key: string): Promise<boolean> {
     const query = gql`
       query ($filter: AccountFilter!) {
         accounts(filter: $filter, first: 1) {
@@ -71,7 +79,7 @@ export class AccountGraphRepository {
     `;
 
     const variables = {
-      filter: { address: { equalTo: address } },
+      filter: { address: { equalTo: key } },
     };
 
     const response = await this.client.request<AccountResponse>(
