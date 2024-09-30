@@ -6,6 +6,7 @@ import {
   CardContent,
   Button,
   Stack,
+  Skeleton,
 } from '@mui/material';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ interface IdentityCardProps {
 export function IdentityCard({
   identityDid,
   identity,
+  isLoading,
 }: IdentityCardProps): React.ReactElement {
   const {
     claimsCount,
@@ -31,6 +33,9 @@ export function IdentityCard({
     secondaryAccounts,
     primaryAccount,
   } = identity;
+
+  const renderValue = (value: string | number | undefined) =>
+    value === undefined ? <Skeleton /> : value;
 
   return (
     <Card>
@@ -54,11 +59,11 @@ export function IdentityCard({
         <Stack direction="row" spacing={2} mt={2}>
           <Box width="25%">
             <Typography variant="body2">Claims</Typography>
-            <Typography variant="h6">{claimsCount}</Typography>
+            <Typography variant="h6">{renderValue(claimsCount)}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2">Assets</Typography>
-            <Typography variant="h6">{assetsCount}</Typography>
+            <Typography variant="h6">{renderValue(assetsCount)}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2">Venue</Typography>
