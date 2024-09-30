@@ -82,7 +82,9 @@ export function IdentityCard({
             </Link>
           </Typography>
         </Box>
-        <SecondaryKeys secondaryAccounts={secondaryAccounts} />
+        {secondaryAccounts && secondaryAccounts.length > 0 && (
+          <SecondaryKeys secondaryAccounts={secondaryAccounts} />
+        )}
         <Box mt={2}>
           <Button variant="contained" color="primary">
             Custodian

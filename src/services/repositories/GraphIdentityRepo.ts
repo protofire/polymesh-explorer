@@ -76,13 +76,13 @@ export class GraphIdentityRepo {
     if (identities.length === 0) return null;
 
     const identity = identities[0];
-    console.log('__secondary', identity);
+
     return {
       did: identity.did,
       primaryAccount: identity.primaryAccount,
-      secondaryAccounts: identity.secondaryAccounts.nodes.map(
-        (node) => node.address,
-      ),
+      secondaryAccounts: identity.secondaryAccounts.nodes
+        .filter((node) => node.address !== identity.primaryAccount)
+        .map((node) => node.address),
       createdAt: identity.createdAt,
       claimsCount: identity.claimsByTargetId.totalCount,
       assetsCount: identity.heldAssets.totalCount,
