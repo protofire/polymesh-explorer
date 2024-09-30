@@ -10,12 +10,16 @@ interface Props {
 
 export const useGetIdentity = ({ did }: Props) => {
   const { graphQlClient } = usePolymeshSdkService();
-  const { identityService } = useMemo(() => {
-    return { identityService: new GraphIdentityRepo(graphQlClient) };
+  const identityService = useMemo(() => {
+    if (!graphQlClient) return null;
+
+    const service = new GraphIdentityRepo(graphQlClient);
+
+    return service;
   }, [graphQlClient]);
 
   return useQuery({
-    queryKey: ['useGetIdentity', did],
+    queryKey: ['useGetIdentity', identityService, did],
     queryFn: async () => {
       if (!identityService) return null;
       try {

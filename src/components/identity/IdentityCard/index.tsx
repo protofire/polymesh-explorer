@@ -7,7 +7,11 @@ import {
   Button,
   Stack,
 } from '@mui/material';
+import Identicon from '@polkadot/ui-identicon';
+import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
+import { truncateAddress } from '@/services/polymesh/address';
+import { SecondaryKeys } from './SecondaryKeys';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -18,7 +22,6 @@ interface IdentityCardProps {
 export function IdentityCard({
   identityDid,
   identity,
-  isLoading,
 }: IdentityCardProps): React.ReactElement {
   const {
     claimsCount,
@@ -32,7 +35,14 @@ export function IdentityCard({
   return (
     <Card>
       <CardContent>
-        <Typography variant="h4">Identity</Typography>
+        <Box display="flex" alignItems="center" mb={2}>
+          <Identicon
+            value={identityDid}
+            size={56}
+            style={{ marginRight: '16px' }}
+          />
+          <Typography variant="h4">Identity</Typography>
+        </Box>
         <Box display="flex" alignItems="center" mt={2}>
           <Typography variant="body1" color="textSecondary">
             DID:
@@ -61,16 +71,13 @@ export function IdentityCard({
         </Stack>
         <Box mt={2}>
           <Typography variant="body2">Primary Key</Typography>
-          <Typography variant="body1">{primaryAccount}</Typography>
+          <Typography variant="body1">
+            <Link href={`/account/${primaryAccount}`}>
+              {truncateAddress(primaryAccount)}
+            </Link>
+          </Typography>
         </Box>
-        <Box mt={2}>
-          <Typography variant="body2">Secondary Keys</Typography>
-          {secondaryAccounts.map((key) => (
-            <Typography variant="body1" key={key}>
-              {key}
-            </Typography>
-          ))}
-        </Box>
+        <SecondaryKeys secondaryAccounts={secondaryAccounts} />
         <Box mt={2}>
           <Button variant="contained" color="primary">
             Custodian

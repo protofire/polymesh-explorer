@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 import { Polymesh } from '@polymeshassociation/polymesh-sdk';
-import { POLYMESH_NODE_URL } from '@/config/constant';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =
@@ -13,9 +12,9 @@ export class PolymeshSdkService {
   }
 
   public static async getInstance(
-    nodeUrl?: string,
+    nodeUrl: string,
   ): Promise<PolymeshSdkService> {
-    const url = nodeUrl || POLYMESH_NODE_URL;
+    const url = nodeUrl;
     if (!this.instances.has(url)) {
       this.instances.set(url, this.initialize(url));
     }

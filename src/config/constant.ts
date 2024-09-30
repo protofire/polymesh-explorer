@@ -1,6 +1,23 @@
-export const POLYMESH_NODE_URL =
-  process.env.NEXT_PUBLIC_POLYMESH_NODE_URL ||
-  'wss://testnet-rpc.polymesh.live';
+import { NetworkConfig, NetworkType } from '@/domain/services/NetworkType';
+import { IS_DEVELOPMENT } from './environment';
 
-export const GRAPHQL_ENDPOINT =
-  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT || 'http://dev.polymesh.tech:3049';
+// network config nodes
+export const POLYMESH_RPC_URL = 'wss://mainnet-rpc.polymesh.network';
+export const GRAPHQL_ENDPOINT = 'https://mainnet-graphql.polymesh.network';
+
+export const POLYMESH_RPC_URL_TESTNET = 'wss://testnet-rpc.polymesh.live';
+export const GRAPHQL_ENDPOINT_TESTNET = 'https://testnet-graphql.polymesh.live';
+
+export const DEFAULT_NETWORK = IS_DEVELOPMENT ? 'testnet' : 'mainnet';
+
+type NetworkTypeWithoutCustom = Omit<NetworkType, 'custom'> & string;
+export const NETWORK_MAP: Record<NetworkTypeWithoutCustom, NetworkConfig> = {
+  mainnet: {
+    rpc: POLYMESH_RPC_URL,
+    graphQlNode: GRAPHQL_ENDPOINT,
+  },
+  testnet: {
+    rpc: POLYMESH_RPC_URL_TESTNET,
+    graphQlNode: GRAPHQL_ENDPOINT_TESTNET,
+  },
+};
