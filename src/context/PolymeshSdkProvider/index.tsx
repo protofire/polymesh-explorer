@@ -11,7 +11,7 @@ import { PolymeshSdkService } from '@/services/PolymeshSdkService';
 import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
 
 interface IPolymeshSdkContext {
-  polymeshService: PolymeshSdkService;
+  polymeshService: PolymeshSdkService | null;
   isLoading: boolean;
   error: Error | null;
   graphQlClient: GraphQLClient;
@@ -27,7 +27,7 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const { currentNetworkConfig } = useNetworkProvider();
+  const { currentNetworkConfig, setCurrentNetwork } = useNetworkProvider();
   // const [currentNodeUrl] = useState<string>(POLYMESH_NODE_URL);
 
   useEffect(() => {
@@ -71,9 +71,8 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
     }),
     [polymeshService, isLoading, error, graphQlClient],
   );
-
   return (
-    <PolymeshSdkContext.Provider value={contextValue}>
+    <PolymeshSdkContext.Provider value={contextValue as IPolymeshSdkContext}>
       {children}
     </PolymeshSdkContext.Provider>
   );
