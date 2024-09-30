@@ -35,7 +35,7 @@ export function IdentityCard({
   } = identity;
 
   const renderValue = (value: string | number | undefined) =>
-    value === undefined ? <Skeleton /> : value;
+    value === undefined || isLoading ? <Skeleton /> : value;
 
   return (
     <Card>
