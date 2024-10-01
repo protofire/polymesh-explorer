@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, notFound } from 'next/navigation';
 import { Typography, Box } from '@mui/material';
 import { useGetAsset } from '@/hooks/asset/useGetAsset';
-import { AssetCard } from '@/components/asset/AssetCard/AssetCard';
+import { AssetCard } from '@/components/asset/AssetCard';
 
 export default function AssetPage() {
   const { ticker } = useParams();
@@ -14,11 +14,12 @@ export default function AssetPage() {
     return <Typography color="error">Error: {error.message}</Typography>;
   }
 
+  if (!isLoading && asset === null) {
+    notFound();
+  }
+
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Asset Details
-      </Typography>
       <AssetCard asset={asset} isLoading={isLoading} />
     </Box>
   );

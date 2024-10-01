@@ -1,4 +1,5 @@
 import { GraphQLClient, gql } from 'graphql-request';
+import { Asset } from '@/domain/entities/Asset';
 
 interface AssetNode {
   ticker: string;
@@ -6,13 +7,14 @@ interface AssetNode {
   type: string;
   totalSupply: string;
   divisible: boolean;
+  createdAt: string;
   owner: {
     did: string;
   };
   documents: {
     totalCount: number;
   };
-  assetHolders: {
+  holders: {
     totalCount: number;
   };
 }
@@ -23,24 +25,6 @@ interface AssetResponse {
   };
 }
 
-interface AssetListNode {
-  ticker: string;
-  name: string;
-  type: string;
-  totalSupply: string;
-  divisible: boolean;
-  owner: {
-    did: string;
-  };
-  documents: {
-    totalCount: number;
-  };
-  assetHolders: {
-    totalCount: number;
-  };
-  createdAt: string;
-}
-
 interface AssetListResponse {
   assets: {
     totalCount: number;
@@ -48,14 +32,27 @@ interface AssetListResponse {
       hasNextPage: boolean;
       endCursor: string;
     };
-    nodes: AssetListNode[];
+    nodes: AssetNode[];
+  };
+}
+
+function transformAssetNodeToAsset(assetNode: AssetNode): Asset {
+  return {
+    ticker: assetNode.ticker,
+    name: assetNode.name,
+    type: assetNode.type,
+    totalSupply: assetNode.totalSupply,
+    ownerDid: assetNode.owner.did,
+    holders: assetNode.holders.totalCount.toString(),
+    createdAt: new Date(assetNode.createdAt),
+    documents: assetNode.documents.totalCount.toString(),
   };
 }
 
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  async findByTicker(ticker: string): Promise<AssetNode | null> {
+  async findByTicker(ticker: string): Promise<Asset | null> {
     const query = gql`
       query ($filter: AssetFilter!) {
         assets(filter: $filter, first: 1) {
@@ -64,6 +61,7 @@ export class AssetGraphRepo {
             name
             type
             totalSupply
+            createdAt
             owner {
               did
             }
@@ -87,14 +85,14 @@ export class AssetGraphRepo {
 
     if (assets.length === 0) return null;
 
-    return assets[0];
+    return transformAssetNodeToAsset(assets[0]);
   }
 
   async getAssetList(
     first: number,
     after?: string,
   ): Promise<{
-    assets: AssetListNode[];
+    assets: Asset[];
     totalCount: number;
     hasNextPage: boolean;
     endCursor: string;
@@ -139,7 +137,7 @@ export class AssetGraphRepo {
     const { assets } = response;
 
     return {
-      assets: assets.nodes,
+      assets: assets.nodes.map(transformAssetNodeToAsset),
       totalCount: assets.totalCount,
       hasNextPage: assets.pageInfo.hasNextPage,
       endCursor: assets.pageInfo.endCursor,

@@ -4,7 +4,7 @@ export interface Identity {
   did: string;
   primaryAccount: string;
   secondaryAccounts: Array<string>;
-  createdAt: string;
+  createdAt: Date;
   claimsCount: number;
   assetsCount: number;
   venuesCount: number;

@@ -66,6 +66,41 @@ interface IdentityListResponse {
   };
 }
 
+function transformToIdentity(node: IdentityNode): Identity {
+  return {
+    did: node.did,
+    primaryAccount: node.primaryAccount,
+    secondaryAccounts: node.secondaryAccounts.nodes
+      .filter((account) => account.address !== node.primaryAccount)
+      .map((account) => account.address),
+    createdAt: new Date(node.createdAt),
+    claimsCount: node.claimsByTargetId.totalCount,
+    assetsCount: node.heldAssets.totalCount,
+    venuesCount: node.venuesByOwnerId.totalCount,
+    portfoliosCount: node.portfolios.totalCount,
+    ownedAssets: node.assetsByOwnerId.nodes.map((asset) => ({
+      ticker: asset.ticker,
+      name: asset.name,
+      type: asset.type,
+      totalSupply: 0,
+      ownerDid: node.did,
+      holders: [],
+      createdAt: new Date(),
+      documents: [],
+    })),
+    heldAssets: node.heldAssets.nodes.map((heldAsset) => ({
+      ticker: heldAsset.asset.ticker,
+      name: heldAsset.asset.name,
+      type: heldAsset.asset.type,
+      totalSupply: 0,
+      ownerDid: '',
+      holders: [],
+      createdAt: new Date(),
+      documents: [],
+    })),
+  };
+}
+
 export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}
 
@@ -86,6 +121,12 @@ export class IdentityGraphRepo {
             claimsByTargetId {
               totalCount
             }
+            venuesByOwnerId {
+              totalCount
+            }
+            portfolios {
+              totalCount
+            }
             heldAssets {
               totalCount
               nodes {
@@ -95,12 +136,6 @@ export class IdentityGraphRepo {
                   type
                 }
               }
-            }
-            venuesByOwnerId {
-              totalCount
-            }
-            portfolios {
-              totalCount
             }
             assetsByOwnerId {
               totalCount
@@ -129,28 +164,7 @@ export class IdentityGraphRepo {
 
     const identity = identities[0];
 
-    return {
-      did: identity.did,
-      primaryAccount: identity.primaryAccount,
-      secondaryAccounts: identity.secondaryAccounts.nodes
-        .filter((node) => node.address !== identity.primaryAccount)
-        .map((node) => node.address),
-      createdAt: identity.createdAt,
-      claimsCount: identity.claimsByTargetId.totalCount,
-      assetsCount: identity.heldAssets.totalCount,
-      venuesCount: identity.venuesByOwnerId.totalCount,
-      portfoliosCount: identity.portfolios.totalCount,
-      ownedAssets: identity.assetsByOwnerId.nodes.map((asset) => ({
-        ticker: asset.ticker,
-        name: asset.name,
-        type: asset.type,
-      })),
-      heldAssets: identity.heldAssets.nodes.map((node) => ({
-        ticker: node.asset.ticker,
-        name: node.asset.name,
-        type: node.asset.type,
-      })),
-    };
+    return transformToIdentity(identity);
   }
 
   async existsByIdentifier(did: string): Promise<boolean> {

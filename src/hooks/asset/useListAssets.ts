@@ -2,27 +2,10 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { AssetGraphRepo } from '@/services/repositories/AssetGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-
-interface AssetListItem {
-  ticker: string;
-  name: string;
-  type: string;
-  totalSupply: string;
-  divisible: boolean;
-  owner: {
-    did: string;
-  };
-  documents: {
-    totalCount: number;
-  };
-  assetHolders: {
-    totalCount: number;
-  };
-  createdAt: string; // Añadimos este campo
-}
+import { Asset } from '@/domain/entities/Asset';
 
 interface AssetListResponse {
-  assets: AssetListItem[];
+  assets: Asset[];
   totalCount: number;
   hasNextPage: boolean;
   endCursor: string;

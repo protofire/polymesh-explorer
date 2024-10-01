@@ -2,24 +2,7 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { AssetGraphRepo } from '@/services/repositories/AssetGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-
-export interface Asset {
-  ticker: string;
-  name: string;
-  type: string;
-  totalSupply: string;
-  divisible: boolean;
-  owner: {
-    did: string;
-  };
-  documents: {
-    totalCount: number;
-  };
-  assetHolders: {
-    totalCount: number;
-  };
-  createdAt: string;
-}
+import { Asset } from '@/domain/entities/Asset';
 
 export function useGetAsset(
   ticker: string,
@@ -30,8 +13,14 @@ export function useGetAsset(
     return new AssetGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  return useQuery<Asset | null, Error>(['asset', ticker], async () => {
-    if (!assetService) throw new Error('Asset service not initialized');
-    return assetService.findByTicker(ticker);
+  return useQuery<Asset | null, Error>({
+    queryKey: ['asset', ticker],
+    queryFn: async () => {
+      if (!assetService) throw new Error('Asset service not initialized');
+      const assetNode = await assetService.findByTicker(ticker);
+      if (assetNode === null) return null;
+
+      return assetNode;
+    },
   });
 }

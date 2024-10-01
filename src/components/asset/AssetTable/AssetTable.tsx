@@ -18,24 +18,7 @@ import {
 import Link from 'next/link';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
-
-interface Asset {
-  ticker: string;
-  name: string;
-  type: string;
-  totalSupply: string;
-  divisible: boolean;
-  owner: {
-    did: string;
-  };
-  documents: {
-    totalCount: number;
-  };
-  assetHolders: {
-    totalCount: number;
-  };
-  createdAt: string;
-}
+import { Asset } from '@/domain/entities/Asset';
 
 interface AssetTableProps {
   assets: Asset[];
@@ -115,14 +98,12 @@ export function AssetTable({
                 <TableCell>{asset.type}</TableCell>
                 <TableCell>{asset.totalSupply}</TableCell>
                 <TableCell>
-                  <Link href={`${ROUTES.Identity}/${asset.owner.did}`}>
-                    {truncateAddress(asset.owner.did)}
+                  <Link href={`${ROUTES.Identity}/${asset.ownerDid}`}>
+                    {truncateAddress(asset.ownerDid)}
                   </Link>
                 </TableCell>
-                <TableCell>{asset.documents.totalCount}</TableCell>
-                <TableCell>
-                  {new Date(asset.createdAt).toLocaleString()}
-                </TableCell>
+                <TableCell>{asset.documents}</TableCell>
+                <TableCell>{asset.createdAt.toLocaleString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
