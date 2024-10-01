@@ -53,18 +53,6 @@ interface IdentityListNode {
   claimsByTargetId: {
     totalCount: number;
   };
-  extrinsics: {
-    nodes: {
-      hash: string;
-      module: string;
-      call: string;
-      success: boolean;
-      blockId: string;
-    }[];
-  };
-  custodianForPortfolios: {
-    totalCount: number;
-  };
 }
 
 interface IdentityListResponse {
