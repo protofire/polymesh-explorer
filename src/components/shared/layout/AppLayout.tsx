@@ -1,39 +1,17 @@
 'use client';
 
-import {
-  AppBar,
-  Box,
-  Container,
-  styled,
-  Toolbar,
-  Typography,
-} from '@mui/material';
-import Image from 'next/image';
-import PolymeshLogo from 'public/polymesh-logo.svg';
+import { Box, Container, styled } from '@mui/material';
+
 import PolymeshBG from 'public/background.png';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
-
-import { ROUTES } from '@/config/routes';
 
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
 }));
-
-const CustomAppBar = styled(AppBar)({
-  backgroundColor: 'transparent',
-  boxShadow: 'none',
-  padding: '1rem 0',
-  height: '7.5rem',
-});
-
-const StyledLink = styled(Link)({
-  textDecoration: 'none',
-  color: 'inherit',
-});
 
 interface Props {
   children: React.ReactNode;
@@ -46,6 +24,14 @@ export function AppLayout({
 }: Props) {
   const pathname = usePathname();
   const isHomePage = pathname === '/';
+  const barActions = useMemo(() => {
+    return (
+      <>
+        {isHomePage ? null : <LayoutSearchTextInput />}
+        {buttonActionComponent}
+      </>
+    );
+  }, [buttonActionComponent, isHomePage]);
 
   return (
     <Box
@@ -58,21 +44,13 @@ export function AppLayout({
         width: '100%',
       }}
     >
-      <CustomAppBar elevation={0} position="static">
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <StyledLink href={ROUTES.Home}>
-            <Box display="flex" alignItems="center">
-              <Image src={PolymeshLogo} height={22} alt="Polymesh logo" />
-              <Typography variant="h6" ml={2}>
-                EXPLORER
-              </Typography>
-            </Box>
-          </StyledLink>
-          {isHomePage ? null : <LayoutSearchTextInput />}
-          {buttonActionComponent}
-        </Toolbar>
-      </CustomAppBar>
-      <MainContainer maxWidth="lg">{children}</MainContainer>
+      <DashboardLayout
+        slots={{
+          toolbarActions: () => barActions,
+        }}
+      >
+        <MainContainer maxWidth="lg">{children}</MainContainer>
+      </DashboardLayout>
     </Box>
   );
 }
