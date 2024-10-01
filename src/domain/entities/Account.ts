@@ -2,7 +2,8 @@ import { Identity } from './Identity';
 
 export interface Account {
   key: string;
-  identityId: Identity['did'] | null;
+  identityDid: Identity['did'] | null;
+  balance?: string;
   createdAt: string;
   isMultisig: boolean;
   isPrimaryKey: boolean;

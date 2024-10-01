@@ -57,7 +57,7 @@ export class AccountGraphRepository {
 
     return {
       key: account.address,
-      identityId: account.identityId,
+      identityDid: account.identityId,
       createdAt: new Date(account.createdAt).toISOString(),
       isMultisig: account.multiSigsByCreatorAccountId.totalCount > 0,
       isPrimaryKey: account.identity?.primaryAccount === account.address,

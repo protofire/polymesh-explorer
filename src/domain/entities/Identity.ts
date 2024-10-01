@@ -1,3 +1,5 @@
+import { Asset } from './Asset';
+
 export interface Identity {
   did: string;
   primaryAccount: string;
@@ -7,4 +9,6 @@ export interface Identity {
   assetsCount: number;
   venuesCount: number;
   portfoliosCount: number;
+  ownedAssets: Asset[];
+  heldAssets: Asset[];
 }

@@ -14,12 +14,27 @@ interface IdentityNode {
   };
   heldAssets: {
     totalCount: number;
+    nodes: {
+      asset: {
+        ticker: string;
+        name: string;
+        id: string;
+      };
+    }[];
   };
   venuesByOwnerId: {
     totalCount: number;
   };
   portfolios: {
     totalCount: number;
+  };
+  assetsByOwnerId: {
+    totalCount: number;
+    nodes: {
+      ticker: string;
+      name: string;
+      id: string;
+    }[];
   };
 }
 
@@ -29,7 +44,7 @@ interface IdentityResponse {
   };
 }
 
-export class GraphIdentityRepo {
+export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}
 
   async findByIdentifier(did: string): Promise<Identity | null> {
@@ -51,12 +66,27 @@ export class GraphIdentityRepo {
             }
             heldAssets {
               totalCount
+              nodes {
+                asset {
+                  ticker
+                  name
+                  id
+                }
+              }
             }
             venuesByOwnerId {
               totalCount
             }
             portfolios {
               totalCount
+            }
+            assetsByOwnerId {
+              totalCount
+              nodes {
+                ticker
+                name
+                id
+              }
             }
           }
         }
@@ -88,6 +118,16 @@ export class GraphIdentityRepo {
       assetsCount: identity.heldAssets.totalCount,
       venuesCount: identity.venuesByOwnerId.totalCount,
       portfoliosCount: identity.portfolios.totalCount,
+      ownedAssets: identity.assetsByOwnerId.nodes.map((asset) => ({
+        ticker: asset.ticker,
+        name: asset.name,
+        id: asset.id,
+      })),
+      heldAssets: identity.heldAssets.nodes.map((node) => ({
+        ticker: node.asset.ticker,
+        name: node.asset.name,
+        id: node.id,
+      })),
     };
   }
 

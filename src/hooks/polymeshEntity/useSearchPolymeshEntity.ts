@@ -9,7 +9,7 @@ import { Account } from '@/domain/entities/Account';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
 import { Asset } from '@/domain/entities/Asset';
-import { GraphIdentityRepo } from '@/services/repositories/GraphIdentityRepo';
+import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 
 async function identifyPolymeshEntity(
   sdk: Polymesh,
@@ -58,7 +58,7 @@ export interface UseSearchPolymeshEntityResult {
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
   const { polymeshService, graphQlClient } = usePolymeshSdkService();
   const { identityService } = useMemo(() => {
-    return { identityService: new GraphIdentityRepo(graphQlClient) };
+    return { identityService: new IdentityGraphRepo(graphQlClient) };
   }, [graphQlClient]);
 
   return useQuery<UseSearchPolymeshEntityResult, Error>({
