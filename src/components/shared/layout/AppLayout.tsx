@@ -10,8 +10,6 @@ import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
 
-// import { ROUTES } from '@/config/routes';
-
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
 }));
@@ -47,15 +45,13 @@ export function AppLayout({
         width: '100%',
       }}
     >
-      <AppProvider>
-        <DashboardLayout
-          slots={{
-            toolbarActions: () => barActions,
-          }}
-        >
-          <MainContainer maxWidth="lg">{children}</MainContainer>
-        </DashboardLayout>
-      </AppProvider>
+      <DashboardLayout
+        slots={{
+          toolbarActions: () => barActions,
+        }}
+      >
+        <MainContainer maxWidth="lg">{children}</MainContainer>
+      </DashboardLayout>
     </Box>
   );
 }
