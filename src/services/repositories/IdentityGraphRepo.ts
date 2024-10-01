@@ -44,6 +44,40 @@ interface IdentityResponse {
   };
 }
 
+interface IdentityListNode {
+  did: string;
+  primaryAccount: string;
+  portfolios: {
+    totalCount: number;
+  };
+  claimsByTargetId: {
+    totalCount: number;
+  };
+  extrinsics: {
+    nodes: {
+      hash: string;
+      module: string;
+      call: string;
+      success: boolean;
+      blockId: string;
+    }[];
+  };
+  custodianForPortfolios: {
+    totalCount: number;
+  };
+}
+
+interface IdentityListResponse {
+  identities: {
+    totalCount: number;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string;
+    };
+    nodes: IdentityListNode[];
+  };
+}
+
 export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}
 
@@ -153,5 +187,73 @@ export class IdentityGraphRepo {
     const identities = response.identities.nodes;
 
     return identities.length > 0;
+  }
+
+  async getIdentityList(
+    first: number,
+    after?: string,
+  ): Promise<{
+    identities: {
+      did: string;
+      primaryAccount: string;
+      portfoliosCount: number;
+      claimsCount: number;
+      recentActivity: {
+        hash: string;
+        module: string;
+        call: string;
+        success: boolean;
+        blockId: string;
+      } | null;
+      isCustodian: boolean;
+    }[];
+    totalCount: number;
+    hasNextPage: boolean;
+    endCursor: string;
+  }> {
+    const query = gql`
+      query ($first: Int!, $after: Cursor) {
+        identities(first: $first, after: $after) {
+          totalCount
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+          nodes {
+            did
+            primaryAccount
+            portfolios {
+              totalCount
+            }
+            claimsByTargetId {
+              totalCount
+            }
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      first,
+      after,
+    };
+
+    const response = await this.client.request<IdentityListResponse>(
+      query,
+      variables,
+    );
+    const { identities } = response;
+
+    return {
+      identities: identities.nodes.map((node) => ({
+        did: node.did,
+        primaryAccount: node.primaryAccount,
+        portfoliosCount: node.portfolios.totalCount,
+        claimsCount: node.claimsByTargetId.totalCount,
+      })),
+      totalCount: identities.totalCount,
+      hasNextPage: identities.pageInfo.hasNextPage,
+      endCursor: identities.pageInfo.endCursor,
+    };
   }
 }
