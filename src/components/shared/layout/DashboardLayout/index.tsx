@@ -34,6 +34,7 @@ import { Navigation } from '@toolpad/core/AppProvider';
 import { AccountProps } from '@toolpad/core/Account';
 import { ToolbarActions } from '@toolpad/core/DashboardLayout';
 import Image from 'next/image';
+import NextLink from 'next/link';
 
 import {
   getItemTitle,
@@ -41,23 +42,6 @@ import {
   isPageItemSelected,
 } from './navigation';
 import { MENU_NAVIGATION } from './menuItems';
-/* import {
-  BrandingContext,
-  NavigationContext,
-  RouterContext,
-  WindowContext,
-} from '../shared/context';
-import type { Navigation } from '../AppProvider';
-import { Account, type AccountProps } from '../Account';
-import {
-  getItemTitle,
-  getPageItemFullPath,
-  hasSelectedNavigationChildren,
-  isPageItemSelected,
-} from '../shared/navigation';
-import { useApplicationTitle } from '../shared/branding';
-import { ToolbarActions } from './ToolbarActions';
-import { ToolpadLogo } from './ToolpadLogo'; */
 
 const AppBar = styled(MuiAppBar)(({ theme }) => ({
   borderWidth: 0,
@@ -132,7 +116,7 @@ interface DashboardSidebarSubNavigationProps {
 }
 
 function DashboardSidebarSubNavigation({
-  subNavigation: sub2,
+  subNavigation,
   basePath = '',
   depth = 0,
   onLinkClick,
@@ -141,7 +125,6 @@ function DashboardSidebarSubNavigation({
   hasDrawerTransitions = false,
   selectedItemId,
 }: DashboardSidebarSubNavigationProps) {
-  const subNavigation = [];
   const pathname = usePathname() ?? '/';
   const initialExpandedSidebarItemIds = React.useMemo(
     () =>
@@ -276,7 +259,7 @@ function DashboardSidebarSubNavigation({
                     onClick: handleOpenFolderClick(navigationItemId),
                   }
                 : {
-                    LinkComponent: Link,
+                    LinkComponent: NextLink,
                     href: navigationItemFullPath,
                     onClick: onLinkClick,
                   })}
@@ -537,12 +520,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
           aria-label={ariaLabel}
           sx={{
             overflow: 'auto',
-            pt:
-              navigation[0] !== null &&
-              navigation[0]?.kind === 'header' &&
-              !isMini
-                ? 0
-                : 2,
+            pt: 2,
             ...(hasDrawerTransitions
               ? getDrawerSxTransitionMixin(isNavigationFullyExpanded, 'padding')
               : {}),

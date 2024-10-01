@@ -1,24 +1,25 @@
 import DescriptionIcon from '@mui/icons-material/Description';
+import { ROUTES } from '@/config/routes';
 
 export const MENU_NAVIGATION = [
   {
-    segment: 'home',
+    segment: ROUTES.Home,
     title: 'Home',
     icon: <DescriptionIcon />,
   },
   {
-    segment: 'Identities',
+    segment: ROUTES.Identity.substring(1),
     title: 'Identities',
     icon: <DescriptionIcon />,
   },
   {
-    segment: 'Assets',
+    segment: ROUTES.Asset.substring(1),
     title: 'Assets',
     icon: <DescriptionIcon />,
   },
   {
-    segment: 'Settelments',
-    title: 'Settelmensts',
+    segment: ROUTES.Venue.substring(1),
+    title: 'Venue',
     icon: <DescriptionIcon />,
   },
 ];
