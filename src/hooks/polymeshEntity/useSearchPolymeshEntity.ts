@@ -52,7 +52,7 @@ async function identifyPolymeshEntity(
 
 export interface UseSearchPolymeshEntityResult {
   searchCriteria: SearchCriteria;
-  entity?: Account | Identity | Venue | Asset;
+  entity?: Partial<Account> | Identity | Venue | Partial<Asset>;
 }
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
@@ -66,7 +66,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
     queryFn: async () => {
       if (!polymeshService?.polymeshSdk) return { searchCriteria: input };
 
-      let data: Account | Identity | Venue | Asset | undefined;
+      let data: UseSearchPolymeshEntityResult['entity'] | undefined;
       const polymeshEntity = await identifyPolymeshEntity(
         polymeshService.polymeshSdk,
         input.searchTerm,

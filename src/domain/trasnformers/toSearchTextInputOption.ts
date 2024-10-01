@@ -44,7 +44,7 @@ export function transformToOption(
     case PolymeshEntityType.Asset: {
       const asset = data.entity as Asset;
       return {
-        key: asset.did,
+        key: asset.ticker,
         type: PolymeshEntityType.Asset,
         value: asset.ticker,
         link: `${ROUTES.Asset}/${asset.ticker}`,
