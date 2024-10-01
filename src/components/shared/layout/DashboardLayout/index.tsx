@@ -546,7 +546,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
 
   const getDrawerSharedSx = React.useCallback(
     (isMini: boolean) => {
-      const drawerWidth = isMini ? 64 : 320;
+      const drawerWidth = isMini ? 64 : 170;
 
       return {
         width: drawerWidth,
