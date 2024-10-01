@@ -17,19 +17,7 @@ import {
 import Link from 'next/link';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
-
-interface Identity {
-  did: string;
-  primaryAccount: string;
-  portfoliosCount: number;
-  claimsCount: number;
-  recentActivity: {
-    module: string;
-    call: string;
-    success: boolean;
-  } | null;
-  isCustodian: boolean;
-}
+import { Identity } from '@/domain/entities/Identity';
 
 interface IdentityTableProps {
   identities: Identity[];

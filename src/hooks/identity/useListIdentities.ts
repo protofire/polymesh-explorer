@@ -2,24 +2,10 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-
-interface IdentityListItem {
-  did: string;
-  primaryAccount: string;
-  portfoliosCount: number;
-  claimsCount: number;
-  recentActivity: {
-    hash: string;
-    module: string;
-    call: string;
-    success: boolean;
-    blockId: string;
-  } | null;
-  isCustodian: boolean;
-}
+import { Identity } from '@/domain/entities/Identity';
 
 interface IdentityListResult {
-  identities: IdentityListItem[];
+  identities: Identity[];
   totalCount: number;
   hasNextPage: boolean;
   endCursor: string;

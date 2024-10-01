@@ -1,5 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
+import { AssetNode } from './AssetGraphRepo';
+import { transformAssetNodeToAsset } from './transformer';
+import { assetFragment } from './fragments';
 
 interface IdentityNode {
   did: string;
@@ -15,11 +18,7 @@ interface IdentityNode {
   heldAssets: {
     totalCount: number;
     nodes: {
-      asset: {
-        ticker: string;
-        name: string;
-        type: string;
-      };
+      asset: AssetNode;
     }[];
   };
   venuesByOwnerId: {
@@ -30,28 +29,13 @@ interface IdentityNode {
   };
   assetsByOwnerId: {
     totalCount: number;
-    nodes: {
-      ticker: string;
-      name: string;
-      type: string;
-    }[];
+    nodes: AssetNode[];
   };
 }
 
 interface IdentityResponse {
   identities: {
     nodes: IdentityNode[];
-  };
-}
-
-interface IdentityListNode {
-  did: string;
-  primaryAccount: string;
-  portfolios: {
-    totalCount: number;
-  };
-  claimsByTargetId: {
-    totalCount: number;
   };
 }
 
@@ -62,7 +46,7 @@ interface IdentityListResponse {
       hasNextPage: boolean;
       endCursor: string;
     };
-    nodes: IdentityListNode[];
+    nodes: IdentityNode[];
   };
 }
 
@@ -78,26 +62,12 @@ function transformToIdentity(node: IdentityNode): Identity {
     assetsCount: node.heldAssets.totalCount,
     venuesCount: node.venuesByOwnerId.totalCount,
     portfoliosCount: node.portfolios.totalCount,
-    ownedAssets: node.assetsByOwnerId.nodes.map((asset) => ({
-      ticker: asset.ticker,
-      name: asset.name,
-      type: asset.type,
-      totalSupply: 0,
-      ownerDid: node.did,
-      holders: [],
-      createdAt: new Date(),
-      documents: [],
-    })),
-    heldAssets: node.heldAssets.nodes.map((heldAsset) => ({
-      ticker: heldAsset.asset.ticker,
-      name: heldAsset.asset.name,
-      type: heldAsset.asset.type,
-      totalSupply: 0,
-      ownerDid: '',
-      holders: [],
-      createdAt: new Date(),
-      documents: [],
-    })),
+    ownedAssets: node.assetsByOwnerId.nodes.map((asset) =>
+      transformAssetNodeToAsset(asset),
+    ),
+    heldAssets: node.heldAssets.nodes.map((heldAsset) =>
+      transformAssetNodeToAsset(heldAsset.asset),
+    ),
   };
 }
 
@@ -106,6 +76,7 @@ export class IdentityGraphRepo {
 
   async findByIdentifier(did: string): Promise<Identity | null> {
     const query = gql`
+      ${assetFragment}
       query ($filter: IdentityFilter!) {
         identities(filter: $filter, first: 1) {
           nodes {
@@ -131,18 +102,14 @@ export class IdentityGraphRepo {
               totalCount
               nodes {
                 asset {
-                  ticker
-                  name
-                  type
+                  ...AssetFields
                 }
               }
             }
             assetsByOwnerId {
               totalCount
               nodes {
-                ticker
-                name
-                type
+                ...AssetFields
               }
             }
           }
@@ -195,25 +162,13 @@ export class IdentityGraphRepo {
     first: number,
     after?: string,
   ): Promise<{
-    identities: {
-      did: string;
-      primaryAccount: string;
-      portfoliosCount: number;
-      claimsCount: number;
-      recentActivity: {
-        hash: string;
-        module: string;
-        call: string;
-        success: boolean;
-        blockId: string;
-      } | null;
-      isCustodian: boolean;
-    }[];
+    identities: Identity[];
     totalCount: number;
     hasNextPage: boolean;
     endCursor: string;
   }> {
     const query = gql`
+      ${assetFragment}
       query ($first: Int!, $after: Cursor) {
         identities(first: $first, after: $after) {
           totalCount
@@ -224,11 +179,35 @@ export class IdentityGraphRepo {
           nodes {
             did
             primaryAccount
-            portfolios {
+            createdAt
+            secondaryAccounts {
               totalCount
+              nodes {
+                address
+              }
             }
             claimsByTargetId {
               totalCount
+            }
+            venuesByOwnerId {
+              totalCount
+            }
+            portfolios {
+              totalCount
+            }
+            heldAssets {
+              totalCount
+              nodes {
+                asset {
+                  ...AssetFields
+                }
+              }
+            }
+            assetsByOwnerId {
+              totalCount
+              nodes {
+                ...AssetFields
+              }
             }
           }
         }
@@ -247,12 +226,7 @@ export class IdentityGraphRepo {
     const { identities } = response;
 
     return {
-      identities: identities.nodes.map((node) => ({
-        did: node.did,
-        primaryAccount: node.primaryAccount,
-        portfoliosCount: node.portfolios.totalCount,
-        claimsCount: node.claimsByTargetId.totalCount,
-      })),
+      identities: identities.nodes.map((node) => transformToIdentity(node)),
       totalCount: identities.totalCount,
       hasNextPage: identities.pageInfo.hasNextPage,
       endCursor: identities.pageInfo.endCursor,

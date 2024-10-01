@@ -1,7 +1,9 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
+import { transformAssetNodeToAsset } from './transformer';
+import { assetFragment } from './fragments';
 
-interface AssetNode {
+export interface AssetNode {
   ticker: string;
   name: string;
   type: string;
@@ -36,41 +38,17 @@ interface AssetListResponse {
   };
 }
 
-function transformAssetNodeToAsset(assetNode: AssetNode): Asset {
-  return {
-    ticker: assetNode.ticker,
-    name: assetNode.name,
-    type: assetNode.type,
-    totalSupply: assetNode.totalSupply,
-    ownerDid: assetNode.owner.did,
-    holders: assetNode.holders.totalCount.toString(),
-    createdAt: new Date(assetNode.createdAt),
-    documents: assetNode.documents.totalCount.toString(),
-  };
-}
 
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}
 
   async findByTicker(ticker: string): Promise<Asset | null> {
     const query = gql`
+      ${assetFragment}
       query ($filter: AssetFilter!) {
         assets(filter: $filter, first: 1) {
           nodes {
-            ticker
-            name
-            type
-            totalSupply
-            createdAt
-            owner {
-              did
-            }
-            documents {
-              totalCount
-            }
-            holders {
-              totalCount
-            }
+            ...AssetFields
           }
         }
       }
@@ -98,6 +76,7 @@ export class AssetGraphRepo {
     endCursor: string;
   }> {
     const query = gql`
+      ${assetFragment}
       query ($first: Int!, $after: Cursor) {
         assets(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
@@ -106,20 +85,7 @@ export class AssetGraphRepo {
             endCursor
           }
           nodes {
-            ticker
-            name
-            type
-            totalSupply
-            owner {
-              did
-            }
-            documents {
-              totalCount
-            }
-            createdAt
-            holders {
-              totalCount
-            }
+            ...AssetFields
           }
         }
       }
