@@ -13,6 +13,7 @@ import {
   Paper,
 } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
+import Link from 'next/link';
 
 interface AssetTabsProps {
   ownedAssets: Asset[];
@@ -54,7 +55,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
         </TableHead>
         <TableBody>
           {assets.map((asset) => (
-            <TableRow key={asset.ticker}>
+            <TableRow >
               <TableCell>{asset.name}</TableCell>
               <TableCell>{asset.ticker}</TableCell>
               <TableCell>{asset.type}</TableCell>

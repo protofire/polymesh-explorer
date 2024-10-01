@@ -48,7 +48,7 @@ interface AssetTableProps {
   cursor: string | undefined;
 }
 
-const MAX_NAME_LENGTH = 20; // Definimos una longitud máxima para el nombre
+const MAX_NAME_LENGTH = 20;
 
 export function AssetTable({
   assets,

@@ -38,7 +38,7 @@ interface AssetListNode {
   assetHolders: {
     totalCount: number;
   };
-  createdAt: string; // Añadimos este campo
+  createdAt: string;
 }
 
 interface AssetListResponse {
