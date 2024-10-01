@@ -4,7 +4,6 @@ import { Box, Container, styled } from '@mui/material';
 
 import PolymeshBG from 'public/background.png';
 import React, { useMemo } from 'react';
-import { AppProvider } from '@toolpad/core/nextjs';
 import { usePathname } from 'next/navigation';
 import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
