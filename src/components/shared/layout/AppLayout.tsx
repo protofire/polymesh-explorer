@@ -8,8 +8,6 @@ import { AppProvider } from '@toolpad/core/nextjs';
 import { usePathname } from 'next/navigation';
 import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
-import { Providers } from '@/context/Providers';
-import TopLoader from '@/components/shared/TopLoader';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
 
 // import { ROUTES } from '@/config/routes';
@@ -50,16 +48,13 @@ export function AppLayout({
       }}
     >
       <AppProvider>
-        <TopLoader />
-        <Providers>
-          <DashboardLayout
-            slots={{
-              toolbarActions: () => barActions,
-            }}
-          >
-            <MainContainer maxWidth="lg">{children}</MainContainer>
-          </DashboardLayout>
-        </Providers>
+        <DashboardLayout
+          slots={{
+            toolbarActions: () => barActions,
+          }}
+        >
+          <MainContainer maxWidth="lg">{children}</MainContainer>
+        </DashboardLayout>
       </AppProvider>
     </Box>
   );
