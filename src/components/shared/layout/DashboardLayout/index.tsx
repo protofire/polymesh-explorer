@@ -401,10 +401,9 @@ export function DashboardLayout(props: DashboardLayoutProps) {
 
   const theme = useTheme();
   const navigation = MENU_NAVIGATION;
-  /* const branding = React.useContext(BrandingContext);
-  const navigation = React.useContext(NavigationContext);
+  /* 
   const appWindow = React.useContext(WindowContext);
-  const applicationTitle = useApplicationTitle(); */
+  */
 
   const [isDesktopNavigationExpanded, setIsDesktopNavigationExpanded] =
     React.useState(true);
