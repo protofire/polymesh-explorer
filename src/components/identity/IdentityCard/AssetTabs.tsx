@@ -55,7 +55,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
         </TableHead>
         <TableBody>
           {assets.map((asset) => (
-            <TableRow >
+            <TableRow key={asset.ticker}>
               <TableCell>{asset.name}</TableCell>
               <TableCell>{asset.ticker}</TableCell>
               <TableCell>{asset.type}</TableCell>
