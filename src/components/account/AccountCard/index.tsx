@@ -59,26 +59,20 @@ export function AccountCard({
         </Box>
         <Stack direction="row" spacing={2} mt={2}>
           <Box width="33%">
-            <Typography variant="body2">Identity</Typography>
-            <Typography variant="h6">
-              {identityDid ? truncateAddress(identityDid) : 'unverified'}
-            </Typography>
-          </Box>
-          <Box width="33%">
             <Typography variant="body2">Key Type</Typography>
             <Typography variant="h6">{renderValue(keyType)}</Typography>
           </Box>
+          {identityDid && (
+            <Box mt={2}>
+              <Typography variant="body2">Associated Identity</Typography>
+              <Typography variant="body2">
+                <Link href={`/identity/${identityDid}`}>
+                  {truncateAddress(identityDid)}
+                </Link>
+              </Typography>
+            </Box>
+          )}
         </Stack>
-        {identityDid && (
-          <Box mt={2}>
-            <Typography variant="body2">Associated Identity</Typography>
-            <Typography variant="body2">
-              <Link href={`/identity/${identityDid}`}>
-                {truncateAddress(identityDid)}
-              </Link>
-            </Typography>
-          </Box>
-        )}
       </CardContent>
     </Card>
   );
