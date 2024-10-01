@@ -47,9 +47,9 @@ function AssetTable({ assets }: { assets: Asset[] }) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Nombre</TableCell>
+            <TableCell>Name</TableCell>
             <TableCell>Ticker</TableCell>
-            <TableCell>Tipo</TableCell>
+            <TableCell>Type</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -57,6 +57,7 @@ function AssetTable({ assets }: { assets: Asset[] }) {
             <TableRow key={asset.ticker}>
               <TableCell>{asset.name}</TableCell>
               <TableCell>{asset.ticker}</TableCell>
+              <TableCell>{asset.type}</TableCell>
             </TableRow>
           ))}
         </TableBody>

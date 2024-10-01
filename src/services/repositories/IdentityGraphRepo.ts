@@ -18,7 +18,7 @@ interface IdentityNode {
       asset: {
         ticker: string;
         name: string;
-        id: string;
+        type: string;
       };
     }[];
   };
@@ -33,7 +33,7 @@ interface IdentityNode {
     nodes: {
       ticker: string;
       name: string;
-      id: string;
+      type: string;
     }[];
   };
 }
@@ -70,7 +70,7 @@ export class IdentityGraphRepo {
                 asset {
                   ticker
                   name
-                  id
+                  type
                 }
               }
             }
@@ -85,7 +85,7 @@ export class IdentityGraphRepo {
               nodes {
                 ticker
                 name
-                id
+                type
               }
             }
           }
@@ -121,12 +121,12 @@ export class IdentityGraphRepo {
       ownedAssets: identity.assetsByOwnerId.nodes.map((asset) => ({
         ticker: asset.ticker,
         name: asset.name,
-        id: asset.id,
+        type: asset.type,
       })),
       heldAssets: identity.heldAssets.nodes.map((node) => ({
         ticker: node.asset.ticker,
         name: node.asset.name,
-        id: node.id,
+        type: node.asset.type,
       })),
     };
   }
