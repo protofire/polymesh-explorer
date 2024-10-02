@@ -1,5 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledAutocomplete, StyledTextField } from './styled';
@@ -29,6 +28,8 @@ export function SearchTextInput({
   const [selectedOption, setSelectedOption] =
     useState<SearchTextInputOption | null>(null);
 
+  const searchInputRef = useRef<HTMLInputElement | null>(null); // Ref for the input
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event);
     setOpen(event.target.value !== '');
@@ -51,6 +52,21 @@ export function SearchTextInput({
       window.location.href = selectedOption.link;
     }
   };
+
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if (event.ctrlKey && event.key === 'k') {
+        event.preventDefault();
+        searchInputRef.current?.focus(); // Focus the search input on Ctrl + K
+      }
+    };
+
+    window.addEventListener('keydown', handleShortcut);
+
+    return () => {
+      window.removeEventListener('keydown', handleShortcut);
+    };
+  }, []);
 
   return (
     <StyledAutocomplete
@@ -76,7 +92,6 @@ export function SearchTextInput({
         setSelectedOption(newValue as SearchTextInputOption | null);
       }}
       renderOption={(props, option, { selected }) => {
-        // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
         const _option = option as SearchTextInputOption;
 
         return (
@@ -90,10 +105,11 @@ export function SearchTextInput({
       }}
       renderInput={(params) => (
         <StyledTextField
+          // eslint-disable-next-line react/jsx-props-no-spreading
           {...params}
           label={label}
           fullWidth
-          // margin="normal"
+          inputRef={searchInputRef} // Attach the ref here
           onKeyDown={handleKeyDown}
           customBigHeight={size === 'big'}
           slotProps={{
