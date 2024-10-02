@@ -1,5 +1,10 @@
 export interface Asset {
   ticker: string;
-  did: string;
-  uuid: string;
+  name: string;
+  type: string;
+  totalSupply: string;
+  ownerDid: string;
+  holders: string;
+  createdAt: Date;
+  documents: string;
 }
