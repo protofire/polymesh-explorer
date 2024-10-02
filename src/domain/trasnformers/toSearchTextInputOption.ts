@@ -18,7 +18,7 @@ export function transformToOption(
         key: account.key,
         type: PolymeshEntityType.Account,
         value: account.key,
-        link: `${ROUTES.Account}?key=${account.key}`,
+        link: `${ROUTES.Account}/${account.key}`,
       };
     }
     case PolymeshEntityType.DID: {
@@ -38,16 +38,16 @@ export function transformToOption(
         key: venue.id.toString(),
         type: PolymeshEntityType.Venue,
         value: venue.id.toString(),
-        link: `${ROUTES.Venue}?id=${venue.id.toString()}`,
+        link: `${ROUTES.Venue}/${venue.id.toString()}`,
       };
     }
     case PolymeshEntityType.Asset: {
       const asset = data.entity as Asset;
       return {
-        key: asset.did,
+        key: asset.ticker,
         type: PolymeshEntityType.Asset,
         value: asset.ticker,
-        link: `${ROUTES.Asset}?ticker=${asset.ticker}`,
+        link: `${ROUTES.Asset}/${asset.ticker}`,
       };
     }
     default:

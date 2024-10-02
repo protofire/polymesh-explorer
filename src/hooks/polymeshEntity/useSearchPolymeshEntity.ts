@@ -9,7 +9,7 @@ import { Account } from '@/domain/entities/Account';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
 import { Asset } from '@/domain/entities/Asset';
-import { GraphIdentityRepo } from '@/services/repositories/GraphIdentityRepo';
+import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 
 async function identifyPolymeshEntity(
   sdk: Polymesh,
@@ -52,13 +52,13 @@ async function identifyPolymeshEntity(
 
 export interface UseSearchPolymeshEntityResult {
   searchCriteria: SearchCriteria;
-  entity?: Account | Identity | Venue | Asset;
+  entity?: Partial<Account> | Identity | Venue | Partial<Asset>;
 }
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
   const { polymeshService, graphQlClient } = usePolymeshSdkService();
   const { identityService } = useMemo(() => {
-    return { identityService: new GraphIdentityRepo(graphQlClient) };
+    return { identityService: new IdentityGraphRepo(graphQlClient) };
   }, [graphQlClient]);
 
   return useQuery<UseSearchPolymeshEntityResult, Error>({
@@ -66,7 +66,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
     queryFn: async () => {
       if (!polymeshService?.polymeshSdk) return { searchCriteria: input };
 
-      let data: Account | Identity | Venue | Asset | undefined;
+      let data: UseSearchPolymeshEntityResult['entity'] | undefined;
       const polymeshEntity = await identifyPolymeshEntity(
         polymeshService.polymeshSdk,
         input.searchTerm,

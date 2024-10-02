@@ -15,7 +15,11 @@ interface Props {
 
 export function RenderOptionItem({ props, option, selected }: Props) {
   if (option.type === 'Unknown') {
-    return null;
+    return (
+      <Box>
+        <Typography>No results found with this search</Typography>
+      </Box>
+    );
   }
 
   const { key, ...rest } = props;

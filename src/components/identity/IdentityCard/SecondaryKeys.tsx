@@ -72,32 +72,35 @@ export function SecondaryKeys({
             size="small"
           />
         )}
-        renderOption={(props, option) => (
-          <li {...props}>
-            <OptionWrapper>
-              <Link href={`/account/${option as string}`}>
-                <Typography variant="body2">
-                  {truncateAddress(option as string)}
-                </Typography>
-              </Link>
-              <Box>
-                <IconButton
-                  size="small"
-                  onClick={() => handleCopy(option as string)}
-                >
-                  <ContentCopyIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  component={Link}
-                  href={`/account/${option}`}
-                >
-                  <LaunchIcon fontSize="small" />
-                </IconButton>
-              </Box>
-            </OptionWrapper>
-          </li>
-        )}
+        renderOption={(props, option) => {
+          const { key, ...otherProps } = props;
+          return (
+            <li key={key} {...otherProps}>
+              <OptionWrapper>
+                <Link href={`/account/${option as string}`}>
+                  <Typography variant="body2">
+                    {truncateAddress(option as string)}
+                  </Typography>
+                </Link>
+                <Box>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopy(option as string)}
+                  >
+                    <ContentCopyIcon fontSize="small" />
+                  </IconButton>
+                  <IconButton
+                    size="small"
+                    component={Link}
+                    href={`/account/${option}`}
+                  >
+                    <LaunchIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </OptionWrapper>
+            </li>
+          );
+        }}
         getOptionLabel={(option) => truncateAddress(option as string)}
       />
     </Box>

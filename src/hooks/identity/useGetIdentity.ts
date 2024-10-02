@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { GraphIdentityRepo } from '@/services/repositories/GraphIdentityRepo';
 import { Identity } from '@/domain/entities/Identity';
+import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 
 interface Props {
   did: Identity['did'];
@@ -13,9 +13,7 @@ export const useGetIdentity = ({ did }: Props) => {
   const identityService = useMemo(() => {
     if (!graphQlClient) return null;
 
-    const service = new GraphIdentityRepo(graphQlClient);
-
-    return service;
+    return new IdentityGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
   return useQuery({
