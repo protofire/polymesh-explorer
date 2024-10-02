@@ -46,8 +46,8 @@ export function IdentityTable({
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Identity List
+      <Typography variant="h4" gutterBottom mt={2}>
+        Identities
       </Typography>
       <TableContainer component={Paper}>
         <Table>
