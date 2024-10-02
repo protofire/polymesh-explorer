@@ -92,6 +92,7 @@ export function SearchTextInput({
         setSelectedOption(newValue as SearchTextInputOption | null);
       }}
       renderOption={(props, option, { selected }) => {
+        // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
         const _option = option as SearchTextInputOption;
 
         return (
