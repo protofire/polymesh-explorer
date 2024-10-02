@@ -12,7 +12,9 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
+import Link from 'next/link';
 import { Asset } from '@/domain/entities/Asset';
+import { ROUTES } from '@/config/routes';
 
 interface AssetTabsProps {
   ownedAssets: Asset[];
@@ -56,7 +58,11 @@ function AssetTable({ assets }: { assets: Asset[] }) {
           {assets.map((asset) => (
             <TableRow key={asset.ticker}>
               <TableCell>{asset.name}</TableCell>
-              <TableCell>{asset.ticker}</TableCell>
+              <TableCell>
+                <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
+                  {asset.ticker}
+                </Link>
+              </TableCell>
               <TableCell>{asset.type}</TableCell>
             </TableRow>
           ))}
