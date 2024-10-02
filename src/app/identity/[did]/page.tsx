@@ -10,7 +10,6 @@ export default function IdentityPage() {
   const { did } = useParams();
   const { data, isLoading } = useGetIdentity({ did: did as string });
 
-
   return (
     <Box>
       {data && (

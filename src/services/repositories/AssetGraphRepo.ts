@@ -2,42 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
 import { transformAssetNodeToAsset } from './transformer';
 import { assetFragment } from './fragments';
-
-export interface AssetNode {
-  ticker: string;
-  name: string;
-  type: string;
-  totalSupply: string;
-  divisible: boolean;
-  createdAt: string;
-  owner: {
-    did: string;
-  };
-  documents: {
-    totalCount: number;
-  };
-  holders: {
-    totalCount: number;
-  };
-}
-
-interface AssetResponse {
-  assets: {
-    nodes: AssetNode[];
-  };
-}
-
-interface AssetListResponse {
-  assets: {
-    totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-    nodes: AssetNode[];
-  };
-}
-
+import { AssetListResponse, AssetResponse } from './types';
 
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}

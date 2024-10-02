@@ -16,7 +16,6 @@ export const useGetIdentity = ({ did }: Props) => {
     return new IdentityGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-
   return useQuery({
     queryKey: ['useGetIdentity', identityService, did],
     queryFn: async () => {

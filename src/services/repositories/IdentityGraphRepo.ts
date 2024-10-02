@@ -1,75 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { AssetNode } from './AssetGraphRepo';
-import { transformAssetNodeToAsset } from './transformer';
 import { assetFragment } from './fragments';
-
-interface IdentityNode {
-  did: string;
-  primaryAccount: string;
-  secondaryAccounts: {
-    totalCount: number;
-    nodes: { address: string }[];
-  };
-  createdAt: string;
-  claimsByTargetId: {
-    totalCount: number;
-  };
-  heldAssets: {
-    totalCount: number;
-    nodes: {
-      asset: AssetNode;
-    }[];
-  };
-  venuesByOwnerId: {
-    totalCount: number;
-  };
-  portfolios: {
-    totalCount: number;
-  };
-  assetsByOwnerId: {
-    totalCount: number;
-    nodes: AssetNode[];
-  };
-}
-
-interface IdentityResponse {
-  identities: {
-    nodes: IdentityNode[];
-  };
-}
-
-interface IdentityListResponse {
-  identities: {
-    totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-    nodes: IdentityNode[];
-  };
-}
-
-function transformToIdentity(node: IdentityNode): Identity {
-  return {
-    did: node.did,
-    primaryAccount: node.primaryAccount,
-    secondaryAccounts: node.secondaryAccounts.nodes
-      .filter((account) => account.address !== node.primaryAccount)
-      .map((account) => account.address),
-    createdAt: new Date(node.createdAt),
-    claimsCount: node.claimsByTargetId.totalCount,
-    assetsCount: node.heldAssets.totalCount,
-    venuesCount: node.venuesByOwnerId.totalCount,
-    portfoliosCount: node.portfolios.totalCount,
-    ownedAssets: node.assetsByOwnerId.nodes.map((asset) =>
-      transformAssetNodeToAsset(asset),
-    ),
-    heldAssets: node.heldAssets.nodes.map((heldAsset) =>
-      transformAssetNodeToAsset(heldAsset.asset),
-    ),
-  };
-}
+import { IdentityListResponse, IdentityResponse } from './types';
+import { transformToIdentity } from './transformer';
 
 export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}

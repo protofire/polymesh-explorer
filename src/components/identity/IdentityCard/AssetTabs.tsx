@@ -13,7 +13,6 @@ import {
   Paper,
 } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
-import Link from 'next/link';
 
 interface AssetTabsProps {
   ownedAssets: Asset[];
