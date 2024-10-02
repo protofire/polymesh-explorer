@@ -70,8 +70,8 @@ export function AssetTable({
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom>
-        Asset List
+      <Typography variant="h4" gutterBottom mt={2}>
+        Assets
       </Typography>
       <TableContainer component={Paper}>
         <Table>

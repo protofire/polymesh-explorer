@@ -26,10 +26,19 @@ export function AppLayout({
   const isHomePage = pathname === '/';
   const barActions = useMemo(() => {
     return (
-      <>
-        {isHomePage ? null : <LayoutSearchTextInput />}
-        {buttonActionComponent}
-      </>
+      <Box
+        sx={{
+          display: 'flex',
+          flexGrow: '1',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Box sx={{ display: 'flex' }}>
+          {isHomePage ? null : <LayoutSearchTextInput />}
+        </Box>
+        <Box sx={{ display: 'flex' }}>{buttonActionComponent}</Box>
+      </Box>
     );
   }, [buttonActionComponent, isHomePage]);
 
