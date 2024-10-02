@@ -93,7 +93,7 @@ export function SearchTextInput({
           {...params}
           label={label}
           fullWidth
-          margin="normal"
+          // margin="normal"
           onKeyDown={handleKeyDown}
           customBigHeight={size === 'big'}
           slotProps={{
@@ -104,7 +104,7 @@ export function SearchTextInput({
                   {isLoading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : (
-                    <IconButton sx={{ color: '#888' }} onClick={onRefetch}>
+                    <IconButton sx={{ color: '#d4d4d4' }} onClick={onRefetch}>
                       <SearchIcon />
                     </IconButton>
                   )}
