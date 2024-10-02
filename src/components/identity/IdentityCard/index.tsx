@@ -95,7 +95,7 @@ export function IdentityCard({
         </Box>
         <Box mt={3}>
           <Typography variant="h6" gutterBottom>
-            Activos
+            Assets
           </Typography>
           <AssetTabs ownedAssets={ownedAssets} heldAssets={heldAssets} />
         </Box>
