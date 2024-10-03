@@ -22,6 +22,7 @@ export const assetFragment = gql`
 export const venueFragment = gql`
   fragment VenueFields on Venue {
     id
+    nodeId
     details
     type
     ownerId
