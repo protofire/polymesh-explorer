@@ -56,7 +56,9 @@ export function VenueTable({
           <TableBody>
             {venues.map((venue) => (
               <TableRow key={venue.id}>
-                <TableCell>{venue.id}</TableCell>
+                <TableCell>
+                  <Link href={`${ROUTES.Venue}/${venue.id}`}>{venue.id}</Link>
+                </TableCell>
                 <TableCell>{venue.type}</TableCell>
                 <TableCell>{venue.details}</TableCell>
                 <TableCell>
