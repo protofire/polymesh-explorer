@@ -556,6 +556,8 @@ export function DashboardLayout(props: DashboardLayoutProps) {
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundImage: 'none',
+          background: 'transparent',
+          border: '0',
           ...getDrawerWidthTransitionMixin(isNavigationExpanded),
         },
       };
@@ -567,7 +569,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar color="inherit" position="fixed">
+      <AppBar color="transparent" position="fixed" sx={{ border: 'none' }}>
         {
           // TODO: (minWidth: 100vw) Temporary fix to issue reported in https://github.com/mui/material-ui/issues/43244
         }
