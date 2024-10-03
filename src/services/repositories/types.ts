@@ -79,3 +79,29 @@ export interface IdentityListResponse {
     nodes: IdentityNode[];
   };
 }
+
+// Venue
+export interface VenueNode {
+  id: string;
+  details: string;
+  type: string;
+  ownerId: string;
+  createdAt: string;
+}
+
+export interface VenueResponse {
+  venues: {
+    nodes: VenueNode[];
+  };
+}
+
+export interface VenueListResponse {
+  venues: {
+    totalCount: number;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string;
+    };
+    nodes: VenueNode[];
+  };
+}

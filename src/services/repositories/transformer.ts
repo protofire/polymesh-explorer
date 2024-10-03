@@ -1,6 +1,8 @@
 import { Asset } from '@/domain/entities/Asset';
 import { AssetNode, IdentityNode } from './types';
 import { Identity } from '@/domain/entities/Identity';
+import { Venue } from '@/domain/entities/Venue';
+import { VenueNode } from './types';
 
 export function transformAssetNodeToAsset(assetNode: AssetNode): Asset {
   return {
@@ -33,5 +35,15 @@ export function transformToIdentity(node: IdentityNode): Identity {
     heldAssets: node.heldAssets.nodes.map((heldAsset) =>
       transformAssetNodeToAsset(heldAsset.asset),
     ),
+  };
+}
+
+export function transformVenueNodeToVenue(node: VenueNode): Venue {
+  return {
+    id: node.id,
+    details: node.details,
+    type: node.type,
+    ownerId: node.ownerId,
+    createdAt: new Date(node.createdAt),
   };
 }

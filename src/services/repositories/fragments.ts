@@ -22,11 +22,9 @@ export const assetFragment = gql`
 export const venueFragment = gql`
   fragment VenueFields on Venue {
     id
-    name
-    description
+    details
     type
     ownerId
     createdAt
-    updatedAt
   }
 `;

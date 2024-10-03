@@ -1,29 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import React from 'react';
+import { Box } from '@mui/material';
 import { useListVenues } from '@/hooks/venue/useListVenues';
+import { VenueTable } from '@/components/venue/VenueTable/VenueTable';
 
 const PAGE_SIZE = 10;
 
 export default function VenuePage() {
-  const [cursor, setCursor] = useState<string | undefined>(undefined);
-  const { data, isLoading, error } = useListVenues({ pageSize: PAGE_SIZE, cursor });
+  const [cursor, setCursor] = React.useState<string | undefined>(undefined);
+  const { data, isLoading, error, isFetching } = useListVenues({
+    pageSize: PAGE_SIZE,
+    cursor,
+  });
 
-  if (isLoading) return <div>Cargando...</div>;
-  if (error) return <div>Error: {error.message}</div>;
-  if (!data) return <div>No hay datos disponibles</div>;
+  const handleFirstPage = () => setCursor(undefined);
+  const handleNextPage = () => setCursor(data?.endCursor);
 
   return (
-    <div>
-      <h1>Lista de Venues</h1>
-      <ul>
-        {data.venues.map((venue) => (
-          <li key={venue.id}>{venue.name}</li>
-        ))}
-      </ul>
-      {data.hasNextPage && (
-        <button onClick={() => setCursor(data.endCursor)}>Cargar más</button>
-      )}
-    </div>
+    <Box>
+      <VenueTable
+        venues={data?.venues || []}
+        isLoading={isLoading}
+        error={error}
+        hasNextPage={data?.hasNextPage || false}
+        isPreviousData={isFetching}
+        onFirstPage={handleFirstPage}
+        onNextPage={handleNextPage}
+        cursor={cursor}
+      />
+    </Box>
   );
 }
