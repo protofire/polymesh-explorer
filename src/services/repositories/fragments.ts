@@ -27,5 +27,6 @@ export const venueFragment = gql`
     type
     ownerId
     createdAt
+    type
   }
 `;
