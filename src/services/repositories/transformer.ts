@@ -1,8 +1,7 @@
 import { Asset } from '@/domain/entities/Asset';
-import { AssetNode, IdentityNode } from './types';
+import { AssetNode, IdentityNode, VenueNode } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
-import { VenueNode } from './types';
 
 export function transformAssetNodeToAsset(assetNode: AssetNode): Asset {
   return {
