@@ -108,15 +108,11 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           const venue = await polymeshService.polymeshSdk.settlements.getVenue({
             id: new BigNumber(input.searchTerm),
           });
+
           const venueDetails = await venue.details();
           data = {
-            id: venue.id,
-            uuid: venue.uuid,
-            details: {
-              description: venueDetails.description,
-              owner: venueDetails.owner.did,
-              type: venueDetails.type,
-            },
+            id: venue.id.toString(),
+            type: venueDetails.type,
           };
           break;
         }
@@ -127,7 +123,6 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           data = {
             ticker: asset.ticker,
             did: asset.did,
-            uuid: asset.uuid,
           };
           break;
         }
