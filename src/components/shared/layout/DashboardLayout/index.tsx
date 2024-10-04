@@ -556,7 +556,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundImage: 'none',
-          background: 'transparent',
+          background: { xs: '#050204', sm: 'transparent' },
           border: '0',
           ...getDrawerWidthTransitionMixin(isNavigationExpanded),
         },
