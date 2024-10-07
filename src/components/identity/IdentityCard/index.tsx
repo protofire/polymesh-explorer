@@ -41,12 +41,21 @@ export function IdentityCard({
     value === undefined || isLoading ? <Skeleton /> : value;
 
   return (
-    <Card>
+    <Card
+      variant="outlined"
+      sx={{
+        background: '#0a0608d1',
+        marginTop: '2rem',
+        padding: '1rem',
+        borderRadius: '1rem',
+        border: '1px solid #240A2E',
+      }}
+    >
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
           <Identicon
             value={identityDid}
-            size={56}
+            size={42}
             style={{ marginRight: '16px' }}
           />
           <Typography variant="h4">Identity</Typography>

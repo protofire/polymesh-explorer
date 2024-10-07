@@ -49,7 +49,6 @@ const AppBar = styled(MuiAppBar)(({ theme }) => ({
   borderStyle: 'solid',
   borderColor: (theme.vars ?? theme).palette.divider,
   boxShadow: 'none',
-  // TODO: Temporary fix to issue reported in https://github.com/mui/material-ui/issues/43244
   left: 0,
   zIndex: theme.zIndex.drawer + 1,
 }));
@@ -546,7 +545,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
 
   const getDrawerSharedSx = React.useCallback(
     (isMini: boolean) => {
-      const drawerWidth = isMini ? 64 : 170;
+      const drawerWidth = isMini ? 60 : 190;
 
       return {
         width: drawerWidth,
@@ -556,6 +555,8 @@ export function DashboardLayout(props: DashboardLayoutProps) {
           width: drawerWidth,
           boxSizing: 'border-box',
           backgroundImage: 'none',
+          background: { xs: '#050204', sm: 'transparent' },
+          border: '0',
           ...getDrawerWidthTransitionMixin(isNavigationExpanded),
         },
       };
@@ -567,10 +568,7 @@ export function DashboardLayout(props: DashboardLayoutProps) {
 
   return (
     <Box sx={{ display: 'flex' }}>
-      <AppBar color="inherit" position="fixed">
-        {
-          // TODO: (minWidth: 100vw) Temporary fix to issue reported in https://github.com/mui/material-ui/issues/43244
-        }
+      <AppBar color="transparent" position="fixed" sx={{ border: 'none' }}>
         <Toolbar
           sx={{
             backgroundColor: 'inherit',
@@ -693,7 +691,6 @@ export function DashboardLayout(props: DashboardLayoutProps) {
         component="main"
         sx={{
           flexGrow: 1,
-          // TODO: Temporary fix to issue reported in https://github.com/mui/material-ui/issues/43244
           minWidth: {
             xs:
               disableCollapsibleSidebar && isNavigationExpanded
