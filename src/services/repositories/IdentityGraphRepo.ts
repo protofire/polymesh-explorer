@@ -99,7 +99,6 @@ export class IdentityGraphRepo {
     totalCount: number;
     hasNextPage: boolean;
     endCursor: string;
-    creationDates: string[]; // Añadimos esta línea
   }> {
     const query = gql`
       ${assetFragment}
@@ -114,9 +113,6 @@ export class IdentityGraphRepo {
             did
             primaryAccount
             createdAt
-            createdBlock {
-              datetime
-            }
             secondaryAccounts {
               totalCount
               nodes {
@@ -167,7 +163,67 @@ export class IdentityGraphRepo {
       totalCount: identities.totalCount,
       hasNextPage: identities.pageInfo.hasNextPage,
       endCursor: identities.pageInfo.endCursor,
-      creationDates: identities.nodes.map((node) => node.createdBlock.datetime), // Añadimos esta línea
     };
+  }
+
+  async getIdentityCreationCountByMonth(
+    months: number = 12,
+  ): Promise<{ date: string; count: number }[]> {
+    const endDate = new Date();
+    const queries = [];
+
+    for (let i = 0; i < months; i += 1) {
+      const monthStart = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - i,
+        1,
+      );
+      const monthEnd = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - i + 1,
+        0,
+      );
+
+      queries.push(`
+        month${i}: identities(filter: {createdAt: { greaterThanOrEqualTo: "${monthStart.toISOString()}", lessThanOrEqualTo: "${monthEnd.toISOString()}"}}) {
+          aggregates {
+            distinctCount {
+              createdAt
+            }
+          }
+        }
+      `);
+    }
+
+    const query = gql`
+      query GetIdentityCreationCountByMonth {
+        ${queries.join('\n')}
+      }
+    `;
+
+    const response =
+      await this.client.request<
+        Record<string, { aggregates: { distinctCount: { createdAt: number } } }>
+      >(query);
+
+    const result = Object.entries(response).map(([key, value]) => {
+      const monthIndex = parseInt(key.replace('month', ''), 10);
+      const date = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth() - monthIndex,
+        1,
+      );
+      return {
+        date: date.toLocaleString('default', {
+          month: 'short',
+          year: 'numeric',
+        }),
+        count: value.aggregates.distinctCount.createdAt,
+      };
+    });
+
+    return result.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    );
   }
 }

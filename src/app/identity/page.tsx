@@ -1,9 +1,17 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCreationCountByMonth';
 
 const PAGE_SIZE = 10;
 
@@ -13,32 +21,40 @@ export default function IdentityPage() {
     pageSize: PAGE_SIZE,
     cursor,
   });
+  const {
+    data: chartData,
+    isLoading: isChartLoading,
+    error: chartError,
+  } = useIdentityCreationCountByMonth();
 
   const handleFirstPage = () => setCursor(undefined);
   const handleNextPage = () => setCursor(data?.endCursor);
 
-  const chartData = useMemo(() => {
-    if (!data?.creationDates) return [];
-
-    const countByMonth: { [key: string]: number } = {};
-    data.creationDates.forEach((date) => {
-      const monthYear = new Date(date).toLocaleString('default', { month: 'short', year: 'numeric' });
-      countByMonth[monthYear] = (countByMonth[monthYear] || 0) + 1;
-    });
-
-    return Object.entries(countByMonth).map(([date, count]) => ({ date, count }));
-  }, [data?.creationDates]);
+  React.useEffect(() => {
+    if (chartError) {
+      console.error('Error in IdentityPage component:', chartError);
+    }
+  }, [chartError]);
 
   return (
     <>
-      <ResponsiveContainer width="100%" height={300}>
-        <BarChart data={chartData}>
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="count" fill="#8884d8" />
-        </BarChart>
-      </ResponsiveContainer>
+      {isChartLoading ? (
+        <p>Loading chart data...</p>
+      ) : chartError ? (
+        <p>
+          Error loading chart data:{' '}
+          {chartError instanceof Error ? chartError.message : 'Unknown error'}
+        </p>
+      ) : (
+        <ResponsiveContainer width="50%" height={300}>
+          <BarChart data={chartData}>
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="count" fill="#8884d8" />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
       <IdentityTable
         identities={data?.identities || []}
         isLoading={isLoading}

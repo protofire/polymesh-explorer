@@ -6,7 +6,8 @@ export const POLYMESH_RPC_URL = 'wss://mainnet-rpc.polymesh.network';
 export const GRAPHQL_ENDPOINT = 'https://mainnet-graphql.polymesh.network';
 
 export const POLYMESH_RPC_URL_TESTNET = 'wss://testnet-rpc.polymesh.live';
-export const GRAPHQL_ENDPOINT_TESTNET = 'https://testnet-graphql.polymesh.live';
+// export const GRAPHQL_ENDPOINT_TESTNET = 'https://testnet-graphql.polymesh.live';
+export const GRAPHQL_ENDPOINT_TESTNET = 'http://dev.polymesh.tech:3049';
 
 export const DEFAULT_NETWORK = IS_DEVELOPMENT ? 'testnet' : 'mainnet';
 
