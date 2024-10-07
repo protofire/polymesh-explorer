@@ -99,6 +99,7 @@ export class IdentityGraphRepo {
     totalCount: number;
     hasNextPage: boolean;
     endCursor: string;
+    creationDates: string[]; // Añadimos esta línea
   }> {
     const query = gql`
       ${assetFragment}
@@ -113,6 +114,9 @@ export class IdentityGraphRepo {
             did
             primaryAccount
             createdAt
+            createdBlock {
+              datetime
+            }
             secondaryAccounts {
               totalCount
               nodes {
@@ -163,6 +167,7 @@ export class IdentityGraphRepo {
       totalCount: identities.totalCount,
       hasNextPage: identities.pageInfo.hasNextPage,
       endCursor: identities.pageInfo.endCursor,
+      creationDates: identities.nodes.map((node) => node.createdBlock.datetime), // Añadimos esta línea
     };
   }
 }
