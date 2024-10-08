@@ -18,31 +18,34 @@ import Link from 'next/link';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
+import { PaginatedData } from '@/types/pagination';
 
 interface IdentityTableProps {
-  identities: Identity[];
+  paginatedIdentities: PaginatedData<Identity>;
   isLoading: boolean;
   error: Error | null;
-  hasNextPage: boolean;
   isPreviousData: boolean;
   onFirstPage: () => void;
   onNextPage: () => void;
-  cursor: string | undefined;
 }
 
 export function IdentityTable({
-  identities,
+  paginatedIdentities,
   isLoading,
   error,
-  hasNextPage,
   isPreviousData,
   onFirstPage,
   onNextPage,
-  cursor,
 }: IdentityTableProps) {
+  const { data: identities, paginationInfo } = paginatedIdentities;
+  const { totalCount, hasNextPage, currentStartIndex } = paginationInfo;
+
   if (isLoading) return <CircularProgress />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
+
+  const startIndex = currentStartIndex;
+  const endIndex = Math.min(startIndex + identities.length - 1, totalCount);
 
   return (
     <Box>
@@ -79,14 +82,22 @@ export function IdentityTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box mt={2} display="flex" justifyContent="space-between">
-        <Button onClick={onFirstPage} disabled={!cursor}>
+      <Box
+        mt={2}
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+      >
+        <Button onClick={onFirstPage} disabled={currentStartIndex === 1}>
           First page
         </Button>
         <Button onClick={onNextPage} disabled={!hasNextPage || isPreviousData}>
           Next page
         </Button>
       </Box>
+      <Typography variant="body2" align="center" mt={1}>
+        Showing records {startIndex} - {endIndex} of {totalCount}
+      </Typography>
     </Box>
   );
 }

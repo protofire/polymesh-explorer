@@ -3,41 +3,49 @@ import { useMemo } from 'react';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
-
-interface IdentityListResult {
-  identities: Identity[];
-  totalCount: number;
-  hasNextPage: boolean;
-  endCursor: string;
-}
+import { PaginatedData } from '@/types/pagination';
+import { calculatePaginationInfo } from '@/utils/paginationUtils';
 
 interface UseListIdentitiesParams {
   pageSize: number;
   cursor?: string;
+  currentStartIndex: number;
 }
 
 export function useListIdentities({
   pageSize,
   cursor,
-}: UseListIdentitiesParams): UseQueryResult<IdentityListResult, Error> {
+  currentStartIndex,
+}: UseListIdentitiesParams): UseQueryResult<PaginatedData<Identity>, Error> {
   const { graphQlClient } = usePolymeshSdkService();
   const identityService = useMemo(() => {
     if (!graphQlClient) return null;
-
     return new IdentityGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
   return useQuery<
-    IdentityListResult,
+    PaginatedData<Identity>,
     Error,
-    IdentityListResult,
-    [string, number, string | undefined]
+    PaginatedData<Identity>,
+    [string, number, string | undefined, number]
   >({
-    queryKey: ['identities', pageSize, cursor],
+    queryKey: ['identities', pageSize, cursor, currentStartIndex],
     queryFn: async () => {
       if (!identityService) throw new Error('Identity service not initialized');
 
-      return identityService.getIdentityList(pageSize, cursor);
+      const result = await identityService.getIdentityList(pageSize, cursor);
+      const paginationInfo = calculatePaginationInfo({
+        totalCount: result.totalCount,
+        pageSize,
+        hasNextPage: result.hasNextPage,
+        endCursor: result.endCursor,
+        currentStartIndex,
+      });
+
+      return {
+        data: result.identities,
+        paginationInfo,
+      };
     },
   });
 }
