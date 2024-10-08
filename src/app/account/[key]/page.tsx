@@ -2,14 +2,26 @@
 
 import React from 'react';
 import { Box, Container, Typography } from '@mui/material';
-import { useParams } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { AccountCard } from '@/components/account/AccountCard';
 import { JsonViewer } from '@/components/shared/JsonViewer';
 import { useGetAccount } from '@/hooks/account/useGetAccount';
 
 export default function AccountDetailPage() {
   const { key } = useParams();
-  const { data: account, isLoading } = useGetAccount({ key: key as string });
+  const {
+    data: account,
+    isLoading,
+    error,
+  } = useGetAccount({ key: key as string });
+
+  if (error) {
+    return <Typography color="error">Error: {error.message}</Typography>;
+  }
+
+  if (!isLoading && account === null) {
+    notFound();
+  }
 
   return (
     <Container maxWidth="lg">

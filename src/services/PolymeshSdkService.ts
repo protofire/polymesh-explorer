@@ -1,5 +1,10 @@
 /* eslint-disable no-console */
-import { Polymesh } from '@polymeshassociation/polymesh-sdk';
+import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
+import {
+  ExtrinsicData,
+  ExtrinsicsOrderBy,
+  ResultSet,
+} from '@polymeshassociation/polymesh-sdk/types';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =
@@ -42,5 +47,29 @@ export class PolymeshSdkService {
       await this.getInstance(newNodeUrl);
     }
     return this.instances.get(newNodeUrl)!;
+  }
+
+  public async getAccountsTransactionHistory(
+    addresses: string[],
+    params: {
+      orderBy?: ExtrinsicsOrderBy;
+      size?: BigNumber;
+      start?: BigNumber;
+    },
+  ): Promise<ResultSet<ExtrinsicData>[]> {
+    if (!this.polymeshSdk) {
+      throw new Error('Polymesh SDK not initialized');
+    }
+
+    const histories = await Promise.all(
+      addresses.map(async (address) => {
+        const account = await this.polymeshSdk.accountManagement.getAccount({
+          address,
+        });
+        return account.getTransactionHistory(params);
+      }),
+    );
+
+    return histories;
   }
 }

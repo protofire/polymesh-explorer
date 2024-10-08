@@ -60,6 +60,7 @@ export function IdentityTable({
               <TableCell>Primary Account</TableCell>
               <TableCell>Portfolios</TableCell>
               <TableCell>Claims</TableCell>
+              <TableCell>Created At</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -77,6 +78,7 @@ export function IdentityTable({
                 </TableCell>
                 <TableCell>{identity.portfoliosCount}</TableCell>
                 <TableCell>{identity.claimsCount}</TableCell>
+                <TableCell>{identity.createdAt.toLocaleDateString()}</TableCell>
               </TableRow>
             ))}
           </TableBody>
