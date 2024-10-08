@@ -27,7 +27,7 @@
     "nextjs-toploader": "^3.6.15",
     "react": "^18",
     "react-dom": "^18",
-    "recharts": "^2.12.7",
+    "recharts": "2.13.0-alpha.5",
     "sharp": "^0.33.5"
   },
   "devDependencies": {

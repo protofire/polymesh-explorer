@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
+import { customReportError } from '@/utils/customReportError';
 
 export const useIdentityCreationCountByMonth = (months: number = 6) => {
   const { graphQlClient } = usePolymeshSdkService();
@@ -18,13 +19,17 @@ export const useIdentityCreationCountByMonth = (months: number = 6) => {
       try {
         const result =
           await identityService.getIdentityCreationCountByMonth(months);
-        console.log('Chart data obtained:', result);
-        return result;
+
+        // Sort the data chronologically
+        const sortedResult = result.sort((a, b) => {
+          const dateA = new Date(a.date);
+          const dateB = new Date(b.date);
+          return dateA.getTime() - dateB.getTime();
+        });
+
+        return sortedResult;
       } catch (error) {
-        console.error('Error obtaining identity creation count:', error);
-        if (error instanceof Error) {
-          console.error('Error details:', error.message);
-        }
+        customReportError(error);
         throw error; // Re-throw the error so React Query can handle it
       }
     },
