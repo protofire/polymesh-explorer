@@ -7,11 +7,11 @@ import React, {
 } from 'react';
 import { NetworkType, NetworkConfig } from '@/domain/services/NetworkType';
 import { LocalStorageNetworkRepository } from '@/services/localstorage/LocalStorageNetworkRepository';
-import { NETWORK_MAP } from '@/config/constant';
+import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
 
 interface NetworkContextType {
   currentNetwork: NetworkType | undefined;
-  currentNetworkConfig: NetworkConfig | undefined;
+  currentNetworkConfig: NetworkConfig;
   setNetwork: (network: NetworkType) => void;
 }
 
@@ -21,7 +21,7 @@ const networkRepository = new LocalStorageNetworkRepository();
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const [currentNetwork, setCurrentNetworkState] = useState<NetworkType>();
   const [currentNetworkConfig, setCurrentNetworkConfig] =
-    useState<NetworkConfig>();
+    useState<NetworkConfig>(NETWORK_MAP[DEFAULT_NETWORK]);
 
   const setNetwork = useCallback((newNetwork: NetworkType) => {
     setCurrentNetworkState(newNetwork);

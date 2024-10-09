@@ -13,7 +13,6 @@ import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
 import { truncateAddress } from '@/services/polymesh/address';
 import { SecondaryKeys } from './SecondaryKeys';
-import { AssetTabs } from './AssetTabs';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -33,8 +32,6 @@ export function IdentityCard({
     portfoliosCount,
     secondaryAccounts,
     primaryAccount,
-    ownedAssets,
-    heldAssets,
   } = identity;
 
   const renderValue = (value: string | number | undefined) =>
@@ -101,12 +98,6 @@ export function IdentityCard({
           <Button variant="contained" color="primary">
             Custodian
           </Button>
-        </Box>
-        <Box mt={3}>
-          <Typography variant="h6" gutterBottom>
-            Assets
-          </Typography>
-          <AssetTabs ownedAssets={ownedAssets} heldAssets={heldAssets} />
         </Box>
       </CardContent>
     </Card>
