@@ -28,13 +28,6 @@ const theme = createTheme({
         },
       },
     },
-    /* MuiTableHead: {
-      styleOverrides: {
-        root: {
-          color: 'red',
-        },
-      },
-    }, */
   },
 });
 
