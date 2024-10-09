@@ -1,18 +1,18 @@
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import {IconButton, SvgIcon, Tooltip} from "@mui/material";
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { IconButton, SvgIcon, Tooltip } from '@mui/material';
 import {
   ReactElement,
   ReactNode,
   SyntheticEvent,
   useCallback,
   useState,
-} from "react";
+} from 'react';
 
-const CopyButton = ({
+function CopyButton({
   text,
   className,
   children,
-  initialToolTipText = "Copy to clipboard",
+  initialToolTipText = 'Copy to clipboard',
   onCopy,
   disabled,
 }: {
@@ -20,10 +20,11 @@ const CopyButton = ({
   className?: string;
   children?: ReactNode;
   initialToolTipText?: string;
+  // eslint-disable-next-line react/no-unused-prop-types
   ariaLabel?: string;
   onCopy?: () => void;
   disabled?: boolean;
-}): ReactElement => {
+}): ReactElement {
   const [tooltipText, setTooltipText] = useState(initialToolTipText);
   const [isCopyEnabled, setIsCopyEnabled] = useState(true);
 
@@ -34,14 +35,14 @@ const CopyButton = ({
       try {
         navigator.clipboard
           .writeText(text)
-          .then(() => setTooltipText("Copied"));
+          .then(() => setTooltipText('Copied'));
         onCopy?.();
       } catch (err) {
         setIsCopyEnabled(false);
-        setTooltipText("Copying is disabled in your browser");
+        setTooltipText('Copying is disabled in your browser');
       }
     },
-    [text, onCopy]
+    [text, onCopy],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -58,7 +59,7 @@ const CopyButton = ({
       placement="top"
       onMouseLeave={handleMouseLeave}
       sx={{
-        marginTop: "-4px"
+        marginTop: '-4px',
       }}
     >
       <IconButton
@@ -72,12 +73,12 @@ const CopyButton = ({
           <SvgIcon
             component={ContentCopyIcon}
             inheritViewBox
-            sx={{fontSize: "1.1rem", color: "#3d3d3d"}}
+            sx={{ fontSize: '1.1rem', color: '#3d3d3d' }}
           />
         )}
       </IconButton>
     </Tooltip>
   );
-};
+}
 
 export default CopyButton;
