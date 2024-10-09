@@ -33,14 +33,26 @@ export function SkeletonIdentityTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {[...Array(SKELETON_ROWS)].map((_, index) => (
-              <TableRow key={index}>
-                <TableCell><Skeleton width={100} /></TableCell>
-                <TableCell><Skeleton width={100} /></TableCell>
-                <TableCell><Skeleton width={50} /></TableCell>
-                <TableCell><Skeleton width={50} /></TableCell>
-                <TableCell><Skeleton width={100} /></TableCell>
-                <TableCell><Skeleton width={150} /></TableCell>
+            {Array.from({ length: SKELETON_ROWS }, (key) => (
+              <TableRow key={`skeleton-row-${key}`}>
+                <TableCell>
+                  <Skeleton width={100} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={100} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={50} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={50} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={100} />
+                </TableCell>
+                <TableCell>
+                  <Skeleton width={150} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
