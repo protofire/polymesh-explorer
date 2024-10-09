@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { AccountGraphRepository } from '@/services/repositories/AccountGraphRepository';
 import { Account } from '@/domain/entities/Account';
+import { customReportError } from '@/utils/customReportError';
 
 interface Props {
   key: Account['key'];
@@ -25,8 +26,8 @@ export const useGetAccount = ({ key }: Props) => {
       try {
         return await accountService.findByKey(key);
       } catch (e) {
-        console.error('Error with account:', e);
-        return null;
+        customReportError(e);
+        throw e;
       }
     },
     enabled: !!key && !!accountService,

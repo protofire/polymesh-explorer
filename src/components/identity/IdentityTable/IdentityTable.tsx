@@ -12,7 +12,6 @@ import {
   TableRow,
   Paper,
   Button,
-  CircularProgress,
   Tooltip,
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
