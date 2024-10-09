@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
 import { truncateAddress } from '@/services/polymesh/address';
 import { SecondaryKeys } from './SecondaryKeys';
+import CopyButton from '@/components/shared/CopyButton';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -42,7 +43,10 @@ export function IdentityCard({
           <Typography variant="body1" color="textSecondary">
             DID:
           </Typography>
-          <Typography variant="body1">{identityDid}</Typography>
+          <Box display="flex" gap={1}>
+            <Typography variant="body1">{identityDid}</Typography>
+            <CopyButton text={identityDid || ''} />
+          </Box>
         </Box>
       </Box>
       <Box display="flex" alignItems="center" justifyContent="space-between">
