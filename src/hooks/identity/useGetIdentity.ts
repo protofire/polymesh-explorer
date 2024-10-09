@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
+import { customReportError } from '@/utils/customReportError';
 
 interface Props {
   did: Identity['did'];
@@ -23,8 +24,8 @@ export const useGetIdentity = ({ did }: Props) => {
       try {
         return await identityService.findByIdentifier(did);
       } catch (e) {
-        console.error('Error with identity:', e);
-        return null;
+        customReportError(e);
+        throw e;
       }
     },
     enabled: !!did || !!identityService,

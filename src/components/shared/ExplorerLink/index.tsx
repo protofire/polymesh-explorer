@@ -41,4 +41,4 @@ export function ExplorerLink({
       </IconButton>
     </Link>
   );
-};
+}
