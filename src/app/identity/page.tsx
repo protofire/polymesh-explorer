@@ -1,11 +1,13 @@
 'use client';
 
 import React from 'react';
+import { Typography } from '@mui/material';
 import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
 import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCreationCountByMonth';
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 const PAGE_SIZE = 10;
 
@@ -41,7 +43,10 @@ export default function IdentityPage() {
   };
 
   return (
-    <>
+    <MainWrapper>
+      <Typography variant="h4" mb={2}>
+        Identities overview
+      </Typography>
       <SummaryIdentitiesCard
         chartData={chartData}
         isLoading={isChartLoading || !isChartFetched}
@@ -61,6 +66,6 @@ export default function IdentityPage() {
           transactionHistory={dataHistory}
         />
       )}
-    </>
+    </MainWrapper>
   );
 }

@@ -41,7 +41,7 @@ function CustomTooltip({
         sx={{
           bgcolor: 'background.paper',
           p: 1,
-          border: '1px solid #ccc',
+          border: '1px solid #ffffff55',
           borderRadius: '4px',
         }}
       >
@@ -81,11 +81,8 @@ const renderChart = (chartData: ChartData[]) => {
           domain={[0, yAxisMax]}
           tickFormatter={(value: number) => value.toLocaleString()}
         />
-        <Tooltip
-          content={<CustomTooltip />}
-          cursor={{ fill: 'rgba(136, 132, 216, 0.3)' }}
-        />
-        <Bar dataKey="count" fill="#8884d8" maxBarSize={40} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: '#ff2e7471' }} />
+        <Bar dataKey="count" fill="#FF2E72" maxBarSize={30} />
       </BarChart>
     </ResponsiveContainer>
   );
