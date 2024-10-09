@@ -20,7 +20,6 @@ interface SummaryIdentitiesCardProps {
   chartData: ChartData[] | undefined;
   isLoading: boolean;
   error: unknown;
-  totalCreatedIdentities: number;
   totalVerifiedIdentities: number;
 }
 
@@ -96,7 +95,6 @@ export function SummaryIdentitiesCard({
   chartData,
   isLoading,
   error,
-  totalCreatedIdentities,
   totalVerifiedIdentities,
 }: SummaryIdentitiesCardProps) {
   const renderChartContent = () => {
@@ -106,24 +104,13 @@ export function SummaryIdentitiesCard({
     return renderChart(chartData);
   };
 
-  const renderTotalVerifiedIdentities = () => {
+  const renderTotalCreatedIdentities = () => {
     if (isLoading || totalVerifiedIdentities === 0) {
       return <Skeleton variant="text" width="60%" height={60} />;
     }
     return (
       <Typography variant="h3">
         {totalVerifiedIdentities.toLocaleString()}
-      </Typography>
-    );
-  };
-
-  const renderTotalCreatedIdentities = () => {
-    if (isLoading || totalCreatedIdentities === 0) {
-      return <Skeleton variant="text" width="60%" height={60} />;
-    }
-    return (
-      <Typography variant="h3">
-        {totalCreatedIdentities.toLocaleString()}
       </Typography>
     );
   };
@@ -145,26 +132,10 @@ export function SummaryIdentitiesCard({
           {renderChartContent()}
         </CardContent>
       </Card>
-      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2 }}>
+      <Box sx={{ flexDirection: 'column', flex: 1, gap: 2 }}>
         <Card sx={{ flex: 1 }}>
           <CardContent
             sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography variant="h6" gutterBottom>
-              Total Verified Identities
-            </Typography>
-            {renderTotalVerifiedIdentities()}
-          </CardContent>
-        </Card>
-        <Card sx={{ flex: 1 }}>
-          <CardContent
-            sx={{
-              height: '100%',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',

@@ -5,6 +5,7 @@ import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
 import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCreationCountByMonth';
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
+import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 
 const PAGE_SIZE = 10;
 
@@ -15,6 +16,9 @@ export default function IdentityPage() {
     pageSize: PAGE_SIZE,
     cursor,
     currentStartIndex,
+  });
+  const { data: dataHistory } = useTransactionHistoryAccounts(data?.data, {
+    size: 1,
   });
 
   const {
@@ -42,7 +46,6 @@ export default function IdentityPage() {
         chartData={chartData}
         isLoading={isChartLoading || !isChartFetched}
         error={chartError}
-        totalCreatedIdentities={data?.paginationInfo.totalCount || 0}
         totalVerifiedIdentities={
           chartData?.reduce((sum, item) => sum + Number(item.count), 0) || 0
         }
@@ -55,6 +58,7 @@ export default function IdentityPage() {
           isPreviousData={isFetching}
           onFirstPage={handleFirstPage}
           onNextPage={handleNextPage}
+          transactionHistory={dataHistory}
         />
       )}
     </>

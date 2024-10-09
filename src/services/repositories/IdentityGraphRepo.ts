@@ -103,7 +103,7 @@ export class IdentityGraphRepo {
     const query = gql`
       ${assetFragment}
       query ($first: Int!, $after: Cursor) {
-        identities(first: $first, after: $after) {
+        identities(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
           pageInfo {
             hasNextPage
@@ -182,6 +182,10 @@ export class IdentityGraphRepo {
         endDate.getFullYear(),
         endDate.getMonth() - i + 1,
         0,
+        23,
+        59,
+        59,
+        999,
       );
 
       queries.push(`
@@ -189,7 +193,7 @@ export class IdentityGraphRepo {
                               lessThanOrEqualTo: "${monthEnd.toISOString()}"}}) {
           aggregates {
             distinctCount {
-              createdAt
+              did 
             }
           }
         }
@@ -204,7 +208,7 @@ export class IdentityGraphRepo {
 
     const response =
       await this.client.request<
-        Record<string, { aggregates: { distinctCount: { createdAt: number } } }>
+        Record<string, { aggregates: { distinctCount: { did: number } } }>
       >(query);
 
     const result = Object.entries(response).map(([key, value]) => {
@@ -219,7 +223,7 @@ export class IdentityGraphRepo {
           month: 'short',
           year: 'numeric',
         }),
-        count: value.aggregates.distinctCount.createdAt,
+        count: value.aggregates.distinctCount.did,
       };
     });
 
