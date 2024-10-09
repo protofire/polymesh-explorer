@@ -18,19 +18,24 @@ export class PolymeshSdkService {
 
   public static async getInstance(
     nodeUrl: string,
+    graphQlNode: string,
   ): Promise<PolymeshSdkService> {
     const url = nodeUrl;
     if (!this.instances.has(url)) {
-      this.instances.set(url, this.initialize(url));
+      this.instances.set(url, this.initialize(url, graphQlNode));
     }
     return this.instances.get(url)!;
   }
 
   private static async initialize(
     nodeUrl: string,
+    graphQlNode: string,
   ): Promise<PolymeshSdkService> {
     try {
-      const polymesh = await Polymesh.connect({ nodeUrl });
+      const polymesh = await Polymesh.connect({
+        nodeUrl,
+        middlewareV2: { link: graphQlNode, key: '' },
+      });
       return new PolymeshSdkService(polymesh);
     } catch (error) {
       console.error('Failed to connect to Polymesh: ', error);
@@ -42,9 +47,10 @@ export class PolymeshSdkService {
 
   public static async switchInstance(
     newNodeUrl: string,
+    graphQlNode: string,
   ): Promise<PolymeshSdkService> {
     if (!this.instances.has(newNodeUrl)) {
-      await this.getInstance(newNodeUrl);
+      await this.getInstance(newNodeUrl, graphQlNode);
     }
     return this.instances.get(newNodeUrl)!;
   }

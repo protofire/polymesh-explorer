@@ -13,12 +13,18 @@ import {
   Paper,
   Button,
   CircularProgress,
+  Tooltip,
 } from '@mui/material';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Link from 'next/link';
+import { format, formatDistanceToNow } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
 import { PaginatedData } from '@/types/pagination';
+import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { SkeletonIdentityTable } from './SkeletonIdentityTable';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity>;
@@ -27,6 +33,7 @@ interface IdentityTableProps {
   isPreviousData: boolean;
   onFirstPage: () => void;
   onNextPage: () => void;
+  transactionHistory?: UseTransactionHistoryAccountsResult;
 }
 
 export function IdentityTable({
@@ -36,13 +43,14 @@ export function IdentityTable({
   isPreviousData,
   onFirstPage,
   onNextPage,
+  transactionHistory,
 }: IdentityTableProps) {
-  const { data: identities, paginationInfo } = paginatedIdentities;
-  const { totalCount, hasNextPage, currentStartIndex } = paginationInfo;
-
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <SkeletonIdentityTable />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
+
+  const { data: identities, paginationInfo } = paginatedIdentities;
+  const { totalCount, hasNextPage, currentStartIndex } = paginationInfo;
 
   const startIndex = currentStartIndex;
   const endIndex = Math.min(startIndex + identities.length - 1, totalCount);
@@ -61,6 +69,7 @@ export function IdentityTable({
               <TableCell>Portfolios</TableCell>
               <TableCell>Claims</TableCell>
               <TableCell>Created At</TableCell>
+              <TableCell>Recent Activity</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,7 +87,47 @@ export function IdentityTable({
                 </TableCell>
                 <TableCell>{identity.portfoliosCount}</TableCell>
                 <TableCell>{identity.claimsCount}</TableCell>
-                <TableCell>{identity.createdAt.toLocaleDateString()}</TableCell>
+                <TableCell>
+                  {formatDistanceToNow(identity.createdAt, { addSuffix: true })}
+                </TableCell>
+                <TableCell>
+                  {transactionHistory &&
+                    transactionHistory[identity.did]?.extrinsics?.[0] && (
+                      <Tooltip
+                        title={format(
+                          new Date(
+                            transactionHistory[
+                              identity.did
+                            ].extrinsics[0].block.datetime,
+                          ),
+                          'PPpp',
+                        )}
+                      >
+                        <Box display="flex" alignItems="center">
+                          <Typography>
+                            {
+                              transactionHistory[identity.did].extrinsics[0]
+                                .moduleId
+                            }
+                          </Typography>
+                          {transactionHistory[identity.did].extrinsics[0]
+                            .success ? (
+                            <CheckCircleIcon
+                              color="success"
+                              fontSize="small"
+                              sx={{ ml: 1 }}
+                            />
+                          ) : (
+                            <CancelIcon
+                              color="error"
+                              fontSize="small"
+                              sx={{ ml: 1 }}
+                            />
+                          )}
+                        </Box>
+                      </Tooltip>
+                    )}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

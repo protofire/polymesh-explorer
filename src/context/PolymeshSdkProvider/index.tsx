@@ -25,21 +25,25 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
   const [polymeshService, setPolymeshSdk] = useState<PolymeshSdkService | null>(
     null,
   );
+  const [graphQlClient, setGraphQlClient] = useState<GraphQLClient | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const { currentNetworkConfig } = useNetworkProvider();
   // const [currentNodeUrl] = useState<string>(POLYMESH_NODE_URL);
 
   useEffect(() => {
-    const rpc = currentNetworkConfig
-      ? currentNetworkConfig.rpc
-      : NETWORK_MAP[DEFAULT_NETWORK].rpc;
+    const { rpc, graphQlNode } = currentNetworkConfig || {
+      rpc: NETWORK_MAP[DEFAULT_NETWORK].rpc,
+      graphQlNode: NETWORK_MAP[DEFAULT_NETWORK].graphQlNode,
+    };
 
     setIsLoading(true);
     setError(null);
 
-    PolymeshSdkService.getInstance(rpc)
-
+    setGraphQlClient(new GraphQLClient(graphQlNode));
+    PolymeshSdkService.getInstance(rpc, graphQlNode)
       .then((service) => {
         setPolymeshSdk(service);
       })
@@ -54,13 +58,13 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
       .finally(() => setIsLoading(false));
   }, [currentNetworkConfig]);
 
-  const graphQlClient = useMemo(() => {
-    if (!currentNetworkConfig?.graphQlNode) {
-      return null;
-    }
+  // const graphQlClient = useMemo(() => {
+  //   if (!currentNetworkConfig?.graphQlNode) {
+  //     return null;
+  //   }
 
-    return new GraphQLClient(currentNetworkConfig.graphQlNode);
-  }, [currentNetworkConfig?.graphQlNode]);
+  //   return new GraphQLClient(currentNetworkConfig.graphQlNode);
+  // }, [currentNetworkConfig?.graphQlNode]);
 
   const contextValue = useMemo(
     () => ({

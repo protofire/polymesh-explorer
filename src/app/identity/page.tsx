@@ -5,7 +5,7 @@ import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
 import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCreationCountByMonth';
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
-import { useAccountsTransactionHistory } from '@/hooks/identity/useAccountsTransactionHistory';
+import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 
 const PAGE_SIZE = 10;
 
@@ -17,11 +17,9 @@ export default function IdentityPage() {
     cursor,
     currentStartIndex,
   });
-  const { data: dataHistory } = useAccountsTransactionHistory([
-    '5DyQ8VtwyEKhN3ptTQdjbWjQnkhcNNTcGAnft8jJ3RaiVaG4',
-  ]);
-
-  console.log('__queries', dataHistory);
+  const { data: dataHistory } = useTransactionHistoryAccounts(data?.data, {
+    size: 1,
+  });
 
   const {
     data: chartData,
@@ -60,6 +58,7 @@ export default function IdentityPage() {
           isPreviousData={isFetching}
           onFirstPage={handleFirstPage}
           onNextPage={handleNextPage}
+          transactionHistory={dataHistory}
         />
       )}
     </>

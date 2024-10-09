@@ -1,47 +1,88 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import {
-  ExtrinsicData,
-  ExtrinsicsOrderBy,
-  ResultSet,
-} from '@polymeshassociation/polymesh-sdk/types';
-import { BigNumber } from '@polymeshassociation/polymesh-sdk';
+import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { customReportError } from '@/utils/customReportError';
+import { ExtrinsicGraphRepo } from '@/services/repositories/ExtrinsicGraphRepo';
+import { Identity } from '@/domain/entities/Identity';
+
+export interface Transaction {
+  blockId: string;
+  extrinsicIdx: number;
+  address: string;
+  nonce: number;
+  moduleId: string;
+  callId: string;
+  paramsTxt: string;
+  success: boolean;
+  specVersionId: number;
+  extrinsicHash: string;
+  block: {
+    hash: string;
+    datetime: string;
+  };
+}
 
 interface TransactionHistoryParams {
-  orderBy?: ExtrinsicsOrderBy;
-  size?: BigNumber;
-  start?: BigNumber;
+  size?: number;
+  start?: number;
+}
+
+export interface UseTransactionHistoryAccountsResult {
+  [key: string]: {
+    extrinsics: Transaction[];
+    totalCount: number;
+  };
 }
 
 const DEFAULT_PARAMS: TransactionHistoryParams = {
-  orderBy: ExtrinsicsOrderBy.CreatedAtDesc,
-  size: new BigNumber(10),
-  start: new BigNumber(0),
+  size: 10,
+  start: 0,
 };
 
 export function useTransactionHistoryAccounts(
-  addresses: string[],
-  params: TransactionHistoryParams = DEFAULT_PARAMS,
-): UseQueryResult<ResultSet<ExtrinsicData>[], Error> {
-  const { polymeshService } = usePolymeshSdkService();
+  identities: Identity[] | undefined,
+  params?: TransactionHistoryParams,
+): UseQueryResult<UseTransactionHistoryAccountsResult, Error> {
+  const { graphQlClient } = usePolymeshSdkService();
 
-  return useQuery<ResultSet<ExtrinsicData>[], Error>({
-    queryKey: ['accountsTransactionHistory', addresses, params],
+  const extrinsicsService = useMemo(() => {
+    if (!graphQlClient) return null;
+
+    return new ExtrinsicGraphRepo(graphQlClient);
+  }, [graphQlClient]);
+
+  const groupedIdentities = useMemo(() => {
+    return identities?.reduce(
+      (acc, i) => {
+        acc[i.did] = [i.primaryAccount, ...i.secondaryAccounts];
+        return acc;
+      },
+      {} as Record<string, string[]>,
+    );
+  }, [identities]);
+
+  return useQuery<UseTransactionHistoryAccountsResult, Error>({
+    queryKey: ['useTransactionHistoryAccounts', groupedIdentities, params],
     queryFn: async () => {
+      if (!extrinsicsService)
+        throw new Error('Extrinsic service not initialized');
+
       try {
-        if (!polymeshService?.polymeshSdk) {
-          throw new Error('Polymesh SDK not initialized');
-        }
-        return await polymeshService.getAccountsTransactionHistory(
-          addresses,
-          params,
+        const { size, start } = { ...DEFAULT_PARAMS, ...params };
+        return await extrinsicsService?.getTransactionsByDid(
+          groupedIdentities as Record<string, string[]>,
+          start,
+          size,
         );
       } catch (error) {
         customReportError(error);
         throw error;
       }
     },
-    enabled: !!polymeshService?.polymeshSdk && addresses.length > 0,
+    enabled:
+      !!graphQlClient &&
+      !!groupedIdentities &&
+      identities &&
+      identities?.length > 0,
   });
 }
