@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Box } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useListVenues } from '@/hooks/venue/useListVenues';
 import { VenueTable } from '@/components/venue/VenueTable/VenueTable';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 const PAGE_SIZE = 10;
 
@@ -18,7 +19,10 @@ export default function VenuePage() {
   const handleNextPage = () => setCursor(data?.endCursor);
 
   return (
-    <Box>
+    <MainWrapper>
+      <Typography variant="h4" mb={2}>
+        Venues overview
+      </Typography>
       <VenueTable
         venues={data?.venues || []}
         isLoading={isLoading}
@@ -29,6 +33,6 @@ export default function VenuePage() {
         onNextPage={handleNextPage}
         cursor={cursor}
       />
-    </Box>
+    </MainWrapper>
   );
 }

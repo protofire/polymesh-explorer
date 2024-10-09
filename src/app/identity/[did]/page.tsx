@@ -7,6 +7,7 @@ import { IdentityCard } from '@/components/identity/details/IdentityCard';
 import { useGetIdentity } from '@/hooks/identity/useGetIdentity';
 import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetailsTabs.tsx';
 import { useNetworkProvider } from '@/context/NetworkProvider';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 export default function IdentityPage() {
   const { did } = useParams();
@@ -16,7 +17,7 @@ export default function IdentityPage() {
   } = useNetworkProvider();
 
   return (
-    <Box>
+    <MainWrapper>
       {data && (
         <>
           <IdentityCard
@@ -34,6 +35,6 @@ export default function IdentityPage() {
           </Box>
         </>
       )}
-    </Box>
+    </MainWrapper>
   );
 }

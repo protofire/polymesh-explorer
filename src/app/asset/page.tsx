@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { Box } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useListAssets } from '@/hooks/asset/useListAssets';
 import { AssetTable } from '@/components/asset/AssetTable/AssetTable';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 const PAGE_SIZE = 10;
 
@@ -18,7 +19,10 @@ export default function AssetPage() {
   const handleNextPage = () => setCursor(data?.endCursor);
 
   return (
-    <Box>
+    <MainWrapper>
+      <Typography variant="h4" mb={2}>
+        Assets overview
+      </Typography>
       <AssetTable
         assets={data?.assets || []}
         isLoading={isLoading}
@@ -29,6 +33,6 @@ export default function AssetPage() {
         onNextPage={handleNextPage}
         cursor={cursor}
       />
-    </Box>
+    </MainWrapper>
   );
 }

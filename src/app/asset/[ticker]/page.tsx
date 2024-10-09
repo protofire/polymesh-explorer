@@ -2,9 +2,10 @@
 
 import React from 'react';
 import { useParams, notFound } from 'next/navigation';
-import { Typography, Box } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useGetAsset } from '@/hooks/asset/useGetAsset';
 import { AssetCard } from '@/components/asset/AssetCard';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 export default function AssetPage() {
   const { ticker } = useParams();
@@ -19,8 +20,8 @@ export default function AssetPage() {
   }
 
   return (
-    <Box>
+    <MainWrapper>
       <AssetCard asset={asset} isLoading={isLoading} />
-    </Box>
+    </MainWrapper>
   );
 }

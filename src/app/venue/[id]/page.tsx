@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { useParams, notFound } from 'next/navigation';
-import { Typography, Box } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useGetVenue } from '@/hooks/venue/useGetVenue';
 import { VenueCard } from '@/components/venue/VenueCard/VenueCard';
 import { LoadingSkeletonCard } from '@/components/shared/LoadingSkeletonCard/LoadingSkeletonCard';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 export default function VenueDetailPage() {
   const { id } = useParams();
@@ -20,12 +21,12 @@ export default function VenueDetailPage() {
   }
 
   return (
-    <Box>
+    <MainWrapper>
       {isLoading || venue === undefined ? (
         <LoadingSkeletonCard />
       ) : (
         <VenueCard venue={venue} />
       )}
-    </Box>
+    </MainWrapper>
   );
 }
