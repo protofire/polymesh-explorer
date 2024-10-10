@@ -3,6 +3,7 @@ import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import {
   ExtrinsicData,
   ExtrinsicsOrderBy,
+  NumberedPortfolio,
   ResultSet,
 } from '@polymeshassociation/polymesh-sdk/types';
 
@@ -77,5 +78,45 @@ export class PolymeshSdkService {
     );
 
     return histories;
+  }
+
+  public async getIdentityPortfolios(did: string) {
+    if (!this.polymeshSdk) {
+      throw new Error('Polymesh SDK not initialized');
+    }
+
+    try {
+      const polymeshIdentity = await this.polymeshSdk.identities.getIdentity({
+        did,
+      });
+
+      const portfolios = await polymeshIdentity.portfolios.getPortfolios();
+
+      return await Promise.all(
+        portfolios.map(async (portfolio, index) => {
+          const assetBalances = await portfolio.getAssetBalances();
+          const assets = assetBalances
+            .filter(({ total }) => total.toNumber() > 0)
+            .map((balance) => ({
+              name: balance.asset.toHuman(),
+              ticker: balance.asset.ticker,
+              balance: balance.total.toString(),
+              type: 'Default', // Assumes a Default type
+            }));
+
+          return {
+            id: index === 0 ? '0' : (portfolio.toHuman().id as string),
+            name:
+              index === 0
+                ? 'Default'
+                : await (portfolio as NumberedPortfolio).getName(),
+            assets,
+          };
+        }),
+      );
+    } catch (error) {
+      console.error('Error fetching identity portfolios:', error);
+      throw error;
+    }
   }
 }

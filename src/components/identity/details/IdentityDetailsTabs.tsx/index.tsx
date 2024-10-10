@@ -5,11 +5,14 @@ import { TransactionsTab } from '@/components/identity/TransactionsTab';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfoliosTab } from './PortfoliosTab';
+import { Portfolio } from '@/domain/entities/Portfolio';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
   identityDid: string;
   subscanUrl: string;
+  portfolios: Portfolio[];
+  isLoadingPortfolios: boolean;
 }
 
 interface TabPanelProps {
@@ -39,6 +42,8 @@ export function IdentityDetailsTabs({
   identity,
   identityDid,
   subscanUrl,
+  portfolios,
+  isLoadingPortfolios,
 }: IdentityDetailsTabsProps) {
   const [value, setValue] = useState(0);
   const { ownedAssets, heldAssets } = identity;
@@ -49,26 +54,6 @@ export function IdentityDetailsTabs({
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-
-  // Sample portfolios for testing
-  const samplePortfolios = [
-    {
-      id: '1',
-      name: 'Portfolio 1',
-      assets: [
-        { ticker: 'ASSET1', name: 'Asset One', type: 'Equity' },
-        { ticker: 'ASSET2', name: 'Asset Two', type: 'Bond' },
-      ],
-    },
-    {
-      id: '2',
-      name: 'Portfolio 2',
-      assets: [
-        { ticker: 'ASSET3', name: 'Asset Three', type: 'Commodity' },
-        { ticker: 'ASSET4', name: 'Asset Four', type: 'Currency' },
-      ],
-    },
-  ];
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -82,17 +67,6 @@ export function IdentityDetailsTabs({
           <Tab label="Transactions" />
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
-        <AssetTable assets={heldAssets} />
-      </TabPanel>
-      {isAssetIssuer && (
-        <TabPanel value={value} index={1}>
-          <AssetTable assets={ownedAssets} />
-        </TabPanel>
-      )}
-      <TabPanel value={value} index={isAssetIssuer ? 2 : 1}>
-        <PortfoliosTab portfolios={samplePortfolios} />
-      </TabPanel>
       <TabPanel value={value} index={isAssetIssuer ? 3 : 2}>
         {transactionData && transactionData[identityDid] && (
           <TransactionsTab
@@ -101,6 +75,20 @@ export function IdentityDetailsTabs({
           />
         )}
       </TabPanel>
+      <TabPanel value={value} index={0}>
+        <AssetTable assets={heldAssets} />
+      </TabPanel>
+      <TabPanel value={value} index={isAssetIssuer ? 2 : 1}>
+        <PortfoliosTab
+          portfolios={portfolios}
+          isLoading={isLoadingPortfolios}
+        />
+      </TabPanel>
+      {isAssetIssuer && (
+        <TabPanel value={value} index={1}>
+          <AssetTable assets={ownedAssets} />
+        </TabPanel>
+      )}
     </Box>
   );
 }

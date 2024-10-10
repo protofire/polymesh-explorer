@@ -27,37 +27,11 @@ export const useGetIdentity = ({ did }: Props) => {
         return identity;
       } catch (e) {
         customReportError(e);
-        console.error('__', e);
         throw e;
       }
     },
     enabled: !!did || !!identityService,
   });
-
-  // useEffect(() => {
-  //   if (queryResult.data && polymeshService?.polymeshSdk) {
-  //     const fetchPolymeshData = async () => {
-  //       try {
-  //         const polymeshAccount =
-  //           await polymeshService.polymeshSdk.accountManagement.getAccount({
-  //             address: queryResult.data?.primaryAccount,
-  //           });
-
-  //         const did = await polymeshAccount.getIdentity();
-  //         console.log('__did', did)
-  //         const port = await did?.portfolios.getPortfolios();
-  //         console.log('__port', port)
-
-  //         debugger;
-  //       } catch (e) {
-  //         debugger;
-  //         customReportError(e);
-  //       }
-  //     };
-
-  //     fetchPolymeshData();
-  //   }
-  // }, [queryResult.data, polymeshService, did]);
 
   return queryResult;
 };

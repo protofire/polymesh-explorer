@@ -17,9 +17,11 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Portfolio } from '@/domain/entities/Portfolio';
+import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 
 interface PortfoliosTabProps {
   portfolios: Portfolio[];
+  isLoading?: boolean;
 }
 
 interface TabPanelProps {
@@ -45,7 +47,7 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export function PortfoliosTab({ portfolios }: PortfoliosTabProps) {
+export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(
     portfolios[0] || null,
@@ -58,6 +60,10 @@ export function PortfoliosTab({ portfolios }: PortfoliosTabProps) {
   const handlePortfolioSelect = (portfolio: Portfolio) => {
     setSelectedPortfolio(portfolio);
   };
+
+  if (isLoading) {
+    return <PortfoliosTabSkeleton />;
+  }
 
   return (
     <Box sx={{ display: 'flex', width: '100%' }}>
@@ -108,7 +114,7 @@ export function PortfoliosTab({ portfolios }: PortfoliosTabProps) {
                       <TableRow key={asset.ticker}>
                         <TableCell>{asset.name}</TableCell>
                         <TableCell>{asset.ticker}</TableCell>
-                        <TableCell>{asset.totalSupply}</TableCell>
+                        <TableCell>{asset.balance}</TableCell>
                         <TableCell>{asset.type}</TableCell>
                       </TableRow>
                     ))}
