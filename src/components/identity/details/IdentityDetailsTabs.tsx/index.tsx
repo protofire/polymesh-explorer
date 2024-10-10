@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
-import { AssetTable } from '@/components/identity/AssetTabs';
 import { TransactionsTab } from '@/components/identity/TransactionsTab';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfoliosTab } from './PortfoliosTab';
 import { Portfolio } from '@/domain/entities/Portfolio';
+import { AssetTabTable } from './AssetTabTable';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -76,7 +76,7 @@ export function IdentityDetailsTabs({
         )}
       </TabPanel>
       <TabPanel value={value} index={0}>
-        <AssetTable assets={heldAssets} />
+        <AssetTabTable assets={heldAssets} />
       </TabPanel>
       <TabPanel value={value} index={isAssetIssuer ? 2 : 1}>
         <PortfoliosTab
@@ -86,7 +86,7 @@ export function IdentityDetailsTabs({
       </TabPanel>
       {isAssetIssuer && (
         <TabPanel value={value} index={1}>
-          <AssetTable assets={ownedAssets} />
+          <AssetTabTable assets={ownedAssets} />
         </TabPanel>
       )}
     </Box>

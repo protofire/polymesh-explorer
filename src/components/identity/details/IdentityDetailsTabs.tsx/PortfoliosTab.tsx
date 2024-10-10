@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
+import { NoDataAvailable } from '@/components/common/NoDataAvailable';
 
 interface PortfoliosTabProps {
   portfolios: Portfolio[];
@@ -99,8 +100,8 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
               <Tab label="Movements" />
             </Tabs>
             <TabPanel value={selectedTab} index={0}>
-              <TableContainer component={Paper}>
-                <Table>
+              <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
+                <Table size="small">
                   <TableHead>
                     <TableRow>
                       <TableCell>Name</TableCell>
@@ -110,14 +111,21 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {selectedPortfolio.assets.map((asset) => (
-                      <TableRow key={asset.ticker}>
-                        <TableCell>{asset.name}</TableCell>
-                        <TableCell>{asset.ticker}</TableCell>
-                        <TableCell>{asset.balance}</TableCell>
-                        <TableCell>{asset.type}</TableCell>
-                      </TableRow>
-                    ))}
+                    {selectedPortfolio.assets.length > 0 ? (
+                      selectedPortfolio.assets.map((asset) => (
+                        <TableRow key={asset.ticker}>
+                          <TableCell>{asset.name}</TableCell>
+                          <TableCell>{asset.ticker}</TableCell>
+                          <TableCell>{asset.balance}</TableCell>
+                          <TableCell>{asset.type}</TableCell>
+                        </TableRow>
+                      ))
+                    ) : (
+                      <NoDataAvailable
+                        colSpan={4}
+                        message="No assets available for this portfolio"
+                      />
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>

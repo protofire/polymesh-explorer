@@ -19,6 +19,7 @@ import Link from 'next/link';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
+import { NoDataAvailable } from '@/components/common/NoDataAvailable';
 
 interface AssetTableProps {
   assets: Asset[];
@@ -84,25 +85,29 @@ export function AssetTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {assets.map((asset) => (
-              <TableRow key={asset.ticker}>
-                <TableCell>
-                  <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
-                    {asset.ticker}
-                  </Link>
-                </TableCell>
-                <TableCell>{renderAssetName(asset.name)}</TableCell>
-                <TableCell>{asset.type}</TableCell>
-                <TableCell>{asset.totalSupply}</TableCell>
-                <TableCell>
-                  <Link href={`${ROUTES.Identity}/${asset.ownerDid}`}>
-                    {truncateAddress(asset.ownerDid)}
-                  </Link>
-                </TableCell>
-                <TableCell>{asset.documents}</TableCell>
-                <TableCell>{asset.createdAt.toLocaleString()}</TableCell>
-              </TableRow>
-            ))}
+            {assets.length > 0 ? (
+              assets.map((asset) => (
+                <TableRow key={asset.ticker}>
+                  <TableCell>
+                    <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
+                      {asset.ticker}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{renderAssetName(asset.name)}</TableCell>
+                  <TableCell>{asset.type}</TableCell>
+                  <TableCell>{asset.totalSupply}</TableCell>
+                  <TableCell>
+                    <Link href={`${ROUTES.Identity}/${asset.ownerDid}`}>
+                      {truncateAddress(asset.ownerDid)}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{asset.documents}</TableCell>
+                  <TableCell>{asset.createdAt.toLocaleString()}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <NoDataAvailable colSpan={3} />
+            )}
           </TableBody>
         </Table>
       </TableContainer>

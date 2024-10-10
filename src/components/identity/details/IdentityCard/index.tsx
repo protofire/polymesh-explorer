@@ -1,5 +1,13 @@
 import React from 'react';
-import { Box, Typography, Button, Stack } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Tooltip,
+  IconButton,
+} from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
@@ -83,7 +91,14 @@ export function IdentityCard({
           <Typography variant="h4">{venuesCount}</Typography>
         </Box>
         <Box width="25%">
-          <Typography variant="body2">Portfolios</Typography>
+          <Box display="flex" alignItems="center">
+            <Typography variant="body2">Portfolios</Typography>
+            <Tooltip title="Each entity has a Default portfolio" arrow>
+              <IconButton size="small">
+                <HelpOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Typography variant="h4">{portfoliosCount}</Typography>
         </Box>
       </Stack>
