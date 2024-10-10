@@ -1,10 +1,10 @@
-/* eslint-disable react/jsx-props-no-spreading */
 import React, { useState } from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { AssetTable } from '@/components/identity/AssetTabs';
 import { TransactionsTab } from '@/components/identity/TransactionsTab';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
+import { PortfoliosTab } from './PortfoliosTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -27,6 +27,7 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`asset-tabpanel-${index}`}
       aria-labelledby={`asset-tab-${index}`}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -49,6 +50,26 @@ export function IdentityDetailsTabs({
     setValue(newValue);
   };
 
+  // Sample portfolios for testing
+  const samplePortfolios = [
+    {
+      id: '1',
+      name: 'Portfolio 1',
+      assets: [
+        { ticker: 'ASSET1', name: 'Asset One', type: 'Equity' },
+        { ticker: 'ASSET2', name: 'Asset Two', type: 'Bond' },
+      ],
+    },
+    {
+      id: '2',
+      name: 'Portfolio 2',
+      assets: [
+        { ticker: 'ASSET3', name: 'Asset Three', type: 'Commodity' },
+        { ticker: 'ASSET4', name: 'Asset Four', type: 'Currency' },
+      ],
+    },
+  ];
+
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -57,6 +78,7 @@ export function IdentityDetailsTabs({
           {isAssetIssuer && (
             <Tab label={`Issued Assets ${ownedAssets.length}`} />
           )}
+          <Tab label="Portfolios" />
           <Tab label="Transactions" />
         </Tabs>
       </Box>
@@ -69,6 +91,9 @@ export function IdentityDetailsTabs({
         </TabPanel>
       )}
       <TabPanel value={value} index={isAssetIssuer ? 2 : 1}>
+        <PortfoliosTab portfolios={samplePortfolios} />
+      </TabPanel>
+      <TabPanel value={value} index={isAssetIssuer ? 3 : 2}>
         {transactionData && transactionData[identityDid] && (
           <TransactionsTab
             transactions={transactionData[identityDid].extrinsics}

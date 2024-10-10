@@ -19,7 +19,7 @@ export default function NotFound() {
         Page Not Found
       </Typography>
       <Typography variant="body1" gutterBottom>
-        We're sorry, the asset you're looking for doesn't exist or couldn't be
+        We're sorry, the entity you're looking for doesn't exist or couldn't be
         found.
       </Typography>
       <Button
