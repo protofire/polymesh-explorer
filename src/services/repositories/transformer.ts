@@ -1,4 +1,5 @@
 import { balanceToBigNumber } from '@polymeshassociation/polymesh-sdk/utils/conversion';
+import { Balance } from '@polkadot/types/interfaces';
 import { Asset } from '@/domain/entities/Asset';
 import {
   AssetNode,
@@ -73,7 +74,8 @@ export function portfolioMovementNodeToPortfolioMovement(
     to: getPortfolioParty(node.to),
     assetId: node.assetId,
     amount:
-      node.amount && balanceToBigNumber(node.amount as Balance).toString(),
+      node.amount &&
+      balanceToBigNumber(node.amount as unknown as Balance).toString(),
     nftIds: node.nftIds,
     address: node.address,
     memo: node.memo,
