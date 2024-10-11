@@ -9,10 +9,13 @@ import {
   Paper,
   TablePagination,
   CircularProgress,
+  Tooltip,
 } from '@mui/material';
+import { formatDistanceToNow } from 'date-fns';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { PaginatedData } from '@/types/pagination';
-import { NoDataAvailable } from '@/components/common/NoDataAvailable';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement> | undefined;
@@ -31,14 +34,8 @@ export function TabTokenMovementsTable({
   pageSize,
   onPageChange,
 }: TabTokenMovementsTableProps) {
-  if (isLoadingMovements || isFetchingMovements) {
+  if (isLoadingMovements || isFetchingMovements || !portfolioMovements) {
     return <CircularProgress />;
-  }
-
-  if (!portfolioMovements?.data.length) {
-    return (
-      <NoDataAvailable message="No portfolio movements available" colSpan={5} />
-    );
   }
 
   return (
@@ -55,17 +52,24 @@ export function TabTokenMovementsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {portfolioMovements.data.map((movement) => (
-              <TableRow key={movement.id}>
-                <TableCell>{movement.from.name}</TableCell>
-                <TableCell>{movement.to.name}</TableCell>
-                <TableCell>{movement.assetId}</TableCell>
-                <TableCell>{movement.amount}</TableCell>
-                <TableCell>
-                  {new Date(movement.createdAt).toLocaleString()}
-                </TableCell>
-              </TableRow>
-            ))}
+            {portfolioMovements?.data.length < 1 ? (
+              <NoDataAvailableTBody
+                message="No portfolio movements available"
+                colSpan={5}
+              />
+            ) : (
+              portfolioMovements.data.map((movement) => (
+                <TableRow key={movement.id}>
+                  <TableCell>{movement.from.name}</TableCell>
+                  <TableCell>{movement.to.name}</TableCell>
+                  <TableCell>{movement.assetId}</TableCell>
+                  <TableCell>{movement.amount}</TableCell>
+                  <TableCell>
+                    <FormattedDate date={movement.createdAt} />
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
         </Table>
       </TableContainer>

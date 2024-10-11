@@ -1,59 +1,9 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import {
-  PortfolioMovement,
-  PortfolioParty,
-} from '@/domain/entities/PortfolioMovement';
+import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
+import { portfolioMovementNodeToPortfolioMovement } from './transformer';
+import { PortfolioMovementsResponse } from './types';
 
 export type PortfolioMovementType = 'Fungible' | 'NonFungible';
-
-interface PortfolioMovementRaw {
-  id: string;
-  fromId: string;
-  from: PortfolioParty;
-  toId: string;
-  to: PortfolioParty;
-  assetId: string;
-  amount?: string;
-  nftIds?: string[];
-  address: string;
-  memo?: string;
-  createdBlock: {
-    blockId: string;
-    datetime: string;
-  };
-}
-
-interface PortfolioMovementsResponse {
-  portfolioMovements: {
-    totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string;
-      endCursor: string;
-    };
-    nodes: PortfolioMovementRaw[];
-  };
-}
-
-function transformToPortfolioMovement(
-  node: PortfolioMovementRaw,
-): PortfolioMovement {
-  return {
-    id: node.id,
-    fromId: node.fromId,
-    from: node.from,
-    toId: node.toId,
-    to: node.to,
-    assetId: node.assetId,
-    amount: node.amount,
-    nftIds: node.nftIds,
-    address: node.address,
-    memo: node.memo,
-    createdAt: node.createdBlock.datetime,
-    blockId: node.createdBlock.blockId,
-  };
-}
 
 export class PortfolioMovementsGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -135,7 +85,9 @@ export class PortfolioMovementsGraphRepo {
     const { portfolioMovements } = response;
 
     return {
-      movements: portfolioMovements.nodes.map(transformToPortfolioMovement),
+      movements: portfolioMovements.nodes.map(
+        portfolioMovementNodeToPortfolioMovement,
+      ),
       totalCount: portfolioMovements.totalCount,
       hasNextPage: portfolioMovements.pageInfo.hasNextPage,
       hasPreviousPage: portfolioMovements.pageInfo.hasPreviousPage,

@@ -1,5 +1,8 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { PortfolioMovementsGraphRepo, PortfolioMovementType } from '@/services/repositories/PortfolioMovementsGraphRepo';
+import {
+  PortfolioMovementsGraphRepo,
+  PortfolioMovementType,
+} from '@/services/repositories/PortfolioMovementsGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { PaginatedData } from '@/types/pagination';
 import { calculatePaginationInfo } from '@/utils/paginationUtils';

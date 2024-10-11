@@ -17,10 +17,10 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Portfolio } from '@/domain/entities/Portfolio';
-import { NoDataAvailable } from '@/components/common/NoDataAvailable';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { TabTokenMovementsTable } from './TabTokenMovementsTable';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 
 interface PortfoliosTabProps {
   portfolios: Portfolio[];
@@ -126,7 +126,7 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
                     <TableRow>
                       <TableCell>Name</TableCell>
                       <TableCell>Ticker</TableCell>
-                      <TableCell>Total Supply</TableCell>
+                      <TableCell>Balance</TableCell>
                       <TableCell>Asset Type</TableCell>
                     </TableRow>
                   </TableHead>
@@ -141,7 +141,7 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
                         </TableRow>
                       ))
                     ) : (
-                      <NoDataAvailable
+                      <NoDataAvailableTBody
                         colSpan={4}
                         message="No assets available for this portfolio"
                       />

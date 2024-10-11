@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
-import { NoDataAvailable } from '@/components/common/NoDataAvailable';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 
 interface AssetTableProps {
   assets: Asset[];
@@ -106,7 +106,7 @@ export function AssetTable({
                 </TableRow>
               ))
             ) : (
-              <NoDataAvailable colSpan={3} />
+              <NoDataAvailableTBody colSpan={3} />
             )}
           </TableBody>
         </Table>

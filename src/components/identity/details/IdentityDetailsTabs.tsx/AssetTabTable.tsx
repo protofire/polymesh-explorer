@@ -11,7 +11,7 @@ import {
 import Link from 'next/link';
 import { Asset } from '@/domain/entities/Asset';
 import { ROUTES } from '@/config/routes';
-import { NoDataAvailable } from '@/components/common/NoDataAvailable';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 
 interface AssetTabTableProps {
   assets: Asset[];
@@ -42,7 +42,7 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
               </TableRow>
             ))
           ) : (
-            <NoDataAvailable colSpan={3} />
+            <NoDataAvailableTBody colSpan={3} />
           )}
         </TableBody>
       </Table>

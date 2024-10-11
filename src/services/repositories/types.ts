@@ -1,3 +1,5 @@
+import { PortfolioParty } from '@/domain/entities/PortfolioMovement';
+
 export interface AssetNode {
   ticker: string;
   name: string;
@@ -103,5 +105,36 @@ export interface VenueListResponse {
       endCursor: string;
     };
     nodes: VenueNode[];
+  };
+}
+
+// Portfolio
+export interface PortfolioMovementNode {
+  id: string;
+  fromId: string;
+  from: PortfolioParty;
+  toId: string;
+  to: PortfolioParty;
+  assetId: string;
+  amount?: string;
+  nftIds?: string[];
+  address: string;
+  memo?: string;
+  createdBlock: {
+    blockId: string;
+    datetime: string;
+  };
+}
+
+export interface PortfolioMovementsResponse {
+  portfolioMovements: {
+    totalCount: number;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor: string;
+      endCursor: string;
+    };
+    nodes: PortfolioMovementNode[];
   };
 }

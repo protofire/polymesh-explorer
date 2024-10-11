@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
-import { transformAssetNodeToAsset } from './transformer';
+import { assetNodeToAsset } from './transformer';
 import { assetFragment } from './fragments';
 import { AssetListResponse, AssetResponse } from './types';
 
@@ -28,7 +28,7 @@ export class AssetGraphRepo {
 
     if (assets.length === 0) return null;
 
-    return transformAssetNodeToAsset(assets[0]);
+    return assetNodeToAsset(assets[0]);
   }
 
   async getAssetList(
@@ -68,7 +68,7 @@ export class AssetGraphRepo {
     const { assets } = response;
 
     return {
-      assets: assets.nodes.map(transformAssetNodeToAsset),
+      assets: assets.nodes.map(assetNodeToAsset),
       totalCount: assets.totalCount,
       hasNextPage: assets.pageInfo.hasNextPage,
       endCursor: assets.pageInfo.endCursor,

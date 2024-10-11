@@ -2,7 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
 import { assetFragment } from './fragments';
 import { IdentityListResponse, IdentityResponse } from './types';
-import { transformToIdentity } from './transformer';
+import { identityNodeToIdentity } from './transformer';
 
 export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -64,7 +64,7 @@ export class IdentityGraphRepo {
 
     const identity = identities[0];
 
-    return transformToIdentity(identity);
+    return identityNodeToIdentity(identity);
   }
 
   async existsByIdentifier(did: string): Promise<boolean> {
@@ -159,7 +159,7 @@ export class IdentityGraphRepo {
     const { identities } = response;
 
     return {
-      identities: identities.nodes.map((node) => transformToIdentity(node)),
+      identities: identities.nodes.map((node) => identityNodeToIdentity(node)),
       totalCount: identities.totalCount,
       hasNextPage: identities.pageInfo.hasNextPage,
       endCursor: identities.pageInfo.endCursor,

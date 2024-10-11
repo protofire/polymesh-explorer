@@ -7,7 +7,7 @@ interface NoDataAvailableProps {
   colSpan: number;
 }
 
-export function NoDataAvailable({
+export function NoDataAvailableTBody({
   colSpan,
   message = 'No data available',
 }: NoDataAvailableProps) {
