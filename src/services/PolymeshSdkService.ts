@@ -104,8 +104,10 @@ export class PolymeshSdkService {
               type: 'Default', // Assumes a Default type
             }));
 
+          const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
           return {
-            id: index === 0 ? '0' : (portfolio.toHuman().id as string),
+            id: `${did}/${number}`,
+            number,
             name:
               index === 0
                 ? 'Default'

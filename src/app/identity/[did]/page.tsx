@@ -27,7 +27,6 @@ export default function IdentityPage() {
     notFound();
   }
 
-  console.log('__portfolios', portfolios);
   return (
     <MainWrapper>
       <>

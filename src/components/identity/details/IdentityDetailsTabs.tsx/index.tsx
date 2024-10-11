@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Tabs, Tab, Box } from '@mui/material';
+import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { TransactionsTab } from '@/components/identity/TransactionsTab';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
-import { PortfoliosTab } from './PortfoliosTab';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTabTable } from './AssetTabTable';
+import { PortfoliosTab } from './PortfoliosTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -63,7 +63,16 @@ export function IdentityDetailsTabs({
           {isAssetIssuer && (
             <Tab label={`Issued Assets ${ownedAssets.length}`} />
           )}
-          <Tab label="Portfolios" />
+          <Tab
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                Portfolios
+                {isLoadingPortfolios && (
+                  <CircularProgress size="1rem" sx={{ ml: 1 }} />
+                )}
+              </Box>
+            }
+          />
           <Tab label="Transactions" />
         </Tabs>
       </Box>

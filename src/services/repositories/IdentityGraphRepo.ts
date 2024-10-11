@@ -28,7 +28,7 @@ export class IdentityGraphRepo {
             venuesByOwnerId {
               totalCount
             }
-            portfolios {
+            portfolios(filter: { deletedAt: { isNull: true } }) {
               totalCount
             }
             heldAssets {

@@ -17,8 +17,10 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Portfolio } from '@/domain/entities/Portfolio';
-import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { NoDataAvailable } from '@/components/common/NoDataAvailable';
+import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
+import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
+import { TabTokenMovementsTable } from './TabTokenMovementsTable';
 
 interface PortfoliosTabProps {
   portfolios: Portfolio[];
@@ -53,6 +55,20 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
   const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(
     portfolios[0] || null,
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  const {
+    data: portfolioMovements,
+    isLoading: isLoadingMovements,
+    isFetching: isFetchingMovements,
+  } = useListPortfolioMovements({
+    pageSize,
+    portfolioNumber: selectedPortfolio?.id || '',
+    type: 'Fungible',
+    offset: (currentPage - 1) * pageSize,
+    currentStartIndex: (currentPage - 1) * pageSize,
+  });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -60,6 +76,10 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
 
   const handlePortfolioSelect = (portfolio: Portfolio) => {
     setSelectedPortfolio(portfolio);
+  };
+
+  const handlePageChange = (event: unknown, newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   if (isLoading) {
@@ -131,7 +151,14 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
               </TableContainer>
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
-              <Typography>Portfolio Movements (To be implemented)</Typography>
+              <TabTokenMovementsTable
+                portfolioMovements={portfolioMovements}
+                isLoadingMovements={isLoadingMovements}
+                isFetchingMovements={isFetchingMovements}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+              />
             </TabPanel>
           </>
         ) : (
