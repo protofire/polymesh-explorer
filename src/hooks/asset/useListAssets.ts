@@ -20,20 +20,15 @@ export function useListAssets({
   pageSize,
   cursor,
 }: UseListAssetsParams): UseQueryResult<AssetListResponse, Error> {
-  const { graphQlClient } = usePolymeshSdkService();
+  const { graphQlClient, networkConfig } = usePolymeshSdkService();
   const assetService = useMemo(() => {
     if (!graphQlClient) return null;
 
     return new AssetGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  return useQuery<
-    AssetListResponse,
-    Error,
-    AssetListResponse,
-    [string, number, string | undefined]
-  >({
-    queryKey: ['assets', pageSize, cursor],
+  return useQuery<AssetListResponse, Error, AssetListResponse>({
+    queryKey: ['assets', networkConfig, pageSize, cursor],
     queryFn: async () => {
       if (!assetService) throw new Error('Asset service not initialized');
 

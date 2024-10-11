@@ -2,7 +2,7 @@
 
 import { MenuItem, SelectChangeEvent } from '@mui/material';
 import { NetworkSelect, NetworkSelectLoading } from './styled';
-import { useNetworkProvider } from '@/context/NetworkProvider';
+import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { NETWORK_TYPES, NetworkType } from '@/domain/services/NetworkType';
 import { capitalizeFirstLetter } from '@/utils/formatString';
 import { SpinnerLoading } from '../../common/SpinnerLoading';
