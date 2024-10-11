@@ -17,12 +17,14 @@ export const useGetIdentity = ({ did }: Props) => {
     return new IdentityGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: ['useGetIdentity', identityService, did],
     queryFn: async () => {
       if (!identityService) return null;
       try {
-        return await identityService.findByIdentifier(did);
+        const identity = await identityService.findByIdentifier(did);
+
+        return identity;
       } catch (e) {
         customReportError(e);
         throw e;
@@ -30,4 +32,6 @@ export const useGetIdentity = ({ did }: Props) => {
     },
     enabled: !!did || !!identityService,
   });
+
+  return queryResult;
 };

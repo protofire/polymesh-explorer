@@ -13,9 +13,11 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import Link from 'next/link';
 import { Transaction } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { truncateAddress } from '@/services/polymesh/address';
-import { PolymeshExplorerLink } from '../shared/ExplorerLink/PolymeshExplorerLink';
+import { PolymeshExplorerLink } from '../../../shared/ExplorerLink/PolymeshExplorerLink';
+import { ROUTES } from '@/config/routes';
 
 interface TransactionsTabProps {
   transactions: Transaction[];
@@ -34,7 +36,8 @@ export function TransactionsTab({
             <TableCell>Date</TableCell>
             <TableCell>Module</TableCell>
             <TableCell>Call</TableCell>
-            <TableCell>Hash</TableCell>
+            <TableCell>Signer</TableCell>
+            <TableCell>Identifier</TableCell>
             <TableCell>Status</TableCell>
           </TableRow>
         </TableHead>
@@ -55,8 +58,13 @@ export function TransactionsTab({
               <TableCell>{transaction.moduleId}</TableCell>
               <TableCell>{transaction.callId}</TableCell>
               <TableCell>
+                <Link href={`${ROUTES.Account}/${transaction.address}`}>
+                  {truncateAddress(transaction.address, 5)}
+                </Link>
+              </TableCell>
+              <TableCell>
                 <>
-                  {truncateAddress(transaction.extrinsicHash)}
+                  {truncateAddress(transaction.extrinsicHash, 5)}
                   <PolymeshExplorerLink
                     baseUrl={subscanUrl}
                     hash={transaction.extrinsicHash}

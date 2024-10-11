@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Venue } from '@/domain/entities/Venue';
-import { transformVenueNodeToVenue } from './transformer';
+import { venueNodeToVenue } from './transformer';
 import { venueFragment } from './fragments';
 import { VenueListResponse, VenueResponse } from './types';
 
@@ -28,7 +28,7 @@ export class VenueGraphRepo {
 
     if (venues.length === 0) return null;
 
-    return transformVenueNodeToVenue(venues[0]);
+    return venueNodeToVenue(venues[0]);
   }
 
   async getVenueList(
@@ -68,7 +68,7 @@ export class VenueGraphRepo {
     const { venues } = response;
 
     return {
-      venues: venues.nodes.map(transformVenueNodeToVenue),
+      venues: venues.nodes.map(venueNodeToVenue),
       totalCount: venues.totalCount,
       hasNextPage: venues.pageInfo.hasNextPage,
       endCursor: venues.pageInfo.endCursor,

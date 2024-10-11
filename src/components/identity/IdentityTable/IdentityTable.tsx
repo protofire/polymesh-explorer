@@ -17,13 +17,14 @@ import {
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import Link from 'next/link';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
 import { PaginatedData } from '@/types/pagination';
 import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { SkeletonIdentityTable } from './SkeletonIdentityTable';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity>;
@@ -87,7 +88,7 @@ export function IdentityTable({
                 <TableCell>{identity.portfoliosCount}</TableCell>
                 <TableCell>{identity.claimsCount}</TableCell>
                 <TableCell>
-                  {formatDistanceToNow(identity.createdAt, { addSuffix: true })}
+                  <FormattedDate date={identity.createdAt} />
                 </TableCell>
                 <TableCell>
                   {transactionHistory &&

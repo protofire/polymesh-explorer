@@ -1,15 +1,24 @@
 import React from 'react';
-import { Box, Typography, Button, Stack, Skeleton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Button,
+  Stack,
+  Tooltip,
+  IconButton,
+} from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
 import { truncateAddress } from '@/services/polymesh/address';
 import { SecondaryKeys } from './SecondaryKeys';
-import CopyButton from '@/components/shared/CopyButton';
+import CopyButton from '@/components/shared/common/CopyButton';
+import { IdentityCardSkeleton } from './IdentityCardSkeleton';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
-  identity: Identity;
+  identity?: Identity | null;
   isLoading?: boolean;
 }
 
@@ -18,6 +27,10 @@ export function IdentityCard({
   identity,
   isLoading,
 }: IdentityCardProps): React.ReactElement {
+  if (isLoading || !identity) {
+    return <IdentityCardSkeleton />;
+  }
+
   const {
     claimsCount,
     assetsCount,
@@ -26,9 +39,6 @@ export function IdentityCard({
     secondaryAccounts,
     primaryAccount,
   } = identity;
-
-  const renderValue = (value: string | number | undefined) =>
-    value === undefined || isLoading ? <Skeleton /> : value;
 
   return (
     <>
@@ -70,18 +80,25 @@ export function IdentityCard({
       <Stack direction="row" spacing={2} mt={4} mb={2}>
         <Box width="25%">
           <Typography variant="body2">Claims</Typography>
-          <Typography variant="h4">{renderValue(claimsCount)}</Typography>
+          <Typography variant="h4">{claimsCount}</Typography>
         </Box>
         <Box width="25%">
           <Typography variant="body2">Assets</Typography>
-          <Typography variant="h4">{renderValue(assetsCount)}</Typography>
+          <Typography variant="h4">{assetsCount}</Typography>
         </Box>
         <Box width="25%">
           <Typography variant="body2">Venue</Typography>
           <Typography variant="h4">{venuesCount}</Typography>
         </Box>
         <Box width="25%">
-          <Typography variant="body2">Portfolios</Typography>
+          <Box display="flex" alignItems="center">
+            <Typography variant="body2">Portfolios</Typography>
+            <Tooltip title="Each entity has a Default portfolio" arrow>
+              <IconButton size="small">
+                <HelpOutlineIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
           <Typography variant="h4">{portfoliosCount}</Typography>
         </Box>
       </Stack>
