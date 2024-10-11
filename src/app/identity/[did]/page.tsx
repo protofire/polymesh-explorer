@@ -7,7 +7,7 @@ import { IdentityCard } from '@/components/identity/details/IdentityCard';
 import { useGetIdentity } from '@/hooks/identity/useGetIdentity';
 import { useGetIdentityDetails } from '@/hooks/identity/useGetIdentityDetails';
 import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetailsTabs.tsx';
-import { useNetworkProvider } from '@/context/NetworkProvider';
+import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 export default function IdentityPage() {

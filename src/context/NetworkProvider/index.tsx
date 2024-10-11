@@ -1,13 +1,8 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-} from 'react';
+import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { NetworkType, NetworkConfig } from '@/domain/services/NetworkType';
 import { LocalStorageNetworkRepository } from '@/services/localstorage/LocalStorageNetworkRepository';
 import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
+import { NetworkProviderEvents } from '@/domain/events/NetworkProviderEvents';
 
 interface NetworkContextType {
   currentNetwork: NetworkType | undefined;
@@ -15,7 +10,9 @@ interface NetworkContextType {
   setNetwork: (network: NetworkType) => void;
 }
 
-const NetworkContext = createContext<NetworkContextType | undefined>(undefined);
+export const NetworkContext = createContext<NetworkContextType | undefined>(
+  undefined,
+);
 const networkRepository = new LocalStorageNetworkRepository();
 
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
@@ -24,8 +21,8 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     useState<NetworkConfig>(NETWORK_MAP[DEFAULT_NETWORK]);
 
   const setNetwork = useCallback((newNetwork: NetworkType) => {
-    setCurrentNetworkState(newNetwork);
     networkRepository.setNetworkSelected(newNetwork);
+    document.dispatchEvent(new Event(NetworkProviderEvents.networkChanged));
   }, []);
 
   const initCurrentNetworkConfig = useCallback(
@@ -33,18 +30,33 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
       if (networkSelected === 'custom') {
         const customChainConfig = networkRepository.getCustomChain();
         setCurrentNetworkConfig(customChainConfig);
+      } else {
+        setCurrentNetworkConfig(NETWORK_MAP[networkSelected]);
       }
-
-      setCurrentNetworkConfig(NETWORK_MAP[networkSelected]);
+      setCurrentNetworkState(networkSelected);
     },
     [],
   );
 
   useEffect(() => {
-    const networkSelected = networkRepository.getNetworkSelected();
+    const handleNetworkChange = () => {
+      const networkSelected = networkRepository.getNetworkSelected();
+      initCurrentNetworkConfig(networkSelected);
+    };
 
-    setCurrentNetworkState(networkSelected);
-    initCurrentNetworkConfig(networkSelected);
+    handleNetworkChange();
+
+    document.addEventListener(
+      NetworkProviderEvents.networkChanged,
+      handleNetworkChange,
+    );
+
+    return () => {
+      document.removeEventListener(
+        NetworkProviderEvents.networkChanged,
+        handleNetworkChange,
+      );
+    };
   }, [initCurrentNetworkConfig]);
 
   const memoizedValue = React.useMemo(
@@ -63,11 +75,3 @@ export function NetworkProvider({ children }: { children: React.ReactNode }) {
     </NetworkContext.Provider>
   );
 }
-
-export const useNetworkProvider = () => {
-  const context = useContext(NetworkContext);
-  if (context === undefined) {
-    throw new Error('useNetworkProvider must be used inside NetworkProvider');
-  }
-  return context;
-};

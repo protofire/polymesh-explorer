@@ -17,11 +17,17 @@ export function useListIdentities({
   cursor,
   currentStartIndex,
 }: UseListIdentitiesParams): UseQueryResult<PaginatedData<Identity>, Error> {
-  const { graphQlClient } = usePolymeshSdkService();
+  const { graphQlClient, networkConfig } = usePolymeshSdkService();
   const identityService = new IdentityGraphRepo(graphQlClient);
 
   return useQuery<PaginatedData<Identity>, Error>({
-    queryKey: ['identities', pageSize, cursor, currentStartIndex],
+    queryKey: [
+      'useListIdentities',
+      networkConfig,
+      pageSize,
+      cursor,
+      currentStartIndex,
+    ],
     queryFn: async () => {
       try {
         const result = await identityService.getIdentityList(pageSize, cursor);

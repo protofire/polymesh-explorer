@@ -20,24 +20,20 @@ export function useListVenues({
   pageSize,
   cursor,
 }: UseListVenuesParams): UseQueryResult<VenueListResponse, Error> {
-  const { graphQlClient } = usePolymeshSdkService();
+  const { graphQlClient, networkConfig } = usePolymeshSdkService();
   const venueService = useMemo(() => {
     if (!graphQlClient) return null;
 
     return new VenueGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  return useQuery<
-    VenueListResponse,
-    Error,
-    VenueListResponse,
-    [string, number, string | undefined]
-  >({
-    queryKey: ['venues', pageSize, cursor],
+  return useQuery<VenueListResponse, Error, VenueListResponse>({
+    queryKey: ['venues', networkConfig, pageSize, cursor],
     queryFn: async () => {
       if (!venueService) throw new Error('Venue service not initialized');
 
       return venueService.getVenueList(pageSize, cursor);
     },
+    enabled: !!graphQlClient,
   });
 }
