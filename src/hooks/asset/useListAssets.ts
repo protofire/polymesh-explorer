@@ -34,5 +34,6 @@ export function useListAssets({
 
       return assetService.getAssetList(pageSize, cursor);
     },
+    enabled: !!graphQlClient,
   });
 }
