@@ -16,7 +16,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Link from 'next/link';
 import { Transaction } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { truncateAddress } from '@/services/polymesh/address';
-import { PolymeshExplorerLink } from '../shared/ExplorerLink/PolymeshExplorerLink';
+import { PolymeshExplorerLink } from '../../../shared/ExplorerLink/PolymeshExplorerLink';
 import { ROUTES } from '@/config/routes';
 
 interface TransactionsTabProps {

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
-import { TransactionsTab } from '@/components/identity/TransactionsTab';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTabTable } from './AssetTabTable';
 import { PortfoliosTab } from './PortfoliosTab';
+import { TransactionsTab } from './TransactionsTab';
+import { CounterBadge } from '@/components/shared/common/CounterBadge';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -61,7 +62,15 @@ export function IdentityDetailsTabs({
         <Tabs value={value} onChange={handleChange} aria-label="asset tabs">
           <Tab label="Assets" />
           {isAssetIssuer && (
-            <Tab label={`Issued Assets ${ownedAssets.length}`} />
+            <Tab
+              label={
+                <Box sx={{ paddingRight: '20px' }}>
+                  <CounterBadge count={ownedAssets.length}>
+                    Issued Assets
+                  </CounterBadge>
+                </Box>
+              }
+            />
           )}
           <Tab
             label={
