@@ -9,9 +9,7 @@ import {
   Paper,
   TablePagination,
   CircularProgress,
-  Tooltip,
 } from '@mui/material';
-import { formatDistanceToNow } from 'date-fns';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { PaginatedData } from '@/types/pagination';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
