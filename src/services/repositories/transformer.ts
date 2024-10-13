@@ -21,6 +21,7 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     type: assetNode.type,
     totalSupply: assetNode.totalSupply,
     ownerDid: assetNode.owner.did,
+    isNftCollection: assetNode.isNftCollection,
     holders: assetNode.holders.totalCount.toString(),
     createdAt: new Date(assetNode.createdAt),
     documents: assetNode.documents.totalCount.toString(),

@@ -7,6 +7,7 @@ export const assetFragment = gql`
     type
     totalSupply
     createdAt
+    isNftCollection
     owner {
       did
     }

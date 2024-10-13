@@ -136,6 +136,14 @@ export class IdentityGraphRepo {
                 }
               }
             }
+            heldNfts {
+              totalCount
+              nodes {
+                asset {
+                  ...AssetFields
+                }
+              }
+            }
             assetsByOwnerId {
               totalCount
               nodes {

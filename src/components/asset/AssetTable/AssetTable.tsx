@@ -16,6 +16,8 @@ import {
   Tooltip,
 } from '@mui/material';
 import Link from 'next/link';
+import CollectionsIcon from '@mui/icons-material/Collections';
+import TokenIcon from '@mui/icons-material/Token';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
@@ -78,6 +80,7 @@ export function AssetTable({
               <TableCell>Ticker</TableCell>
               <TableCell style={{ width: '200px' }}>Name</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>Token Type</TableCell>
               <TableCell>Total Supply</TableCell>
               <TableCell>Owner</TableCell>
               <TableCell>Documents</TableCell>
@@ -95,6 +98,21 @@ export function AssetTable({
                   </TableCell>
                   <TableCell>{renderAssetName(asset.name)}</TableCell>
                   <TableCell>{asset.type}</TableCell>
+                  <TableCell>
+                    <Tooltip
+                      title={
+                        asset.isNftCollection
+                          ? 'NFT Collection'
+                          : 'Fungible Token'
+                      }
+                    >
+                      {asset.isNftCollection ? (
+                        <CollectionsIcon color="primary" />
+                      ) : (
+                        <TokenIcon color="secondary" />
+                      )}
+                    </Tooltip>
+                  </TableCell>
                   <TableCell>{asset.totalSupply}</TableCell>
                   <TableCell>
                     <Link href={`${ROUTES.Identity}/${asset.ownerDid}`}>
@@ -106,7 +124,7 @@ export function AssetTable({
                 </TableRow>
               ))
             ) : (
-              <NoDataAvailableTBody colSpan={3} />
+              <NoDataAvailableTBody colSpan={8} />
             )}
           </TableBody>
         </Table>

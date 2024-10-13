@@ -104,15 +104,25 @@ export class PolymeshSdkService {
               type: 'Default', // Assumes a Default type
             }));
 
+          // Get and count Nfts
+          const collections = await portfolio.getCollections();
+          const nftCount = collections.reduce(
+            (total, collection) => total + collection.total.toNumber(),
+            0,
+          );
+
           const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
+          const name =
+            index === 0
+              ? 'Default'
+              : await (portfolio as NumberedPortfolio).getName();
+
           return {
             id: `${did}/${number}`,
             number,
-            name:
-              index === 0
-                ? 'Default'
-                : await (portfolio as NumberedPortfolio).getName(),
+            name,
             assets,
+            nftCount,
           };
         }),
       );
