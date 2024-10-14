@@ -1,4 +1,4 @@
-import { Portfolio } from "@/domain/entities/Portfolio";
+import { Portfolio } from '@/domain/entities/Portfolio';
 
 export interface AssetNode {
   ticker: string;
