@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { assetFragment } from './fragments';
+import { identityFragment } from './fragments';
 import { IdentityListResponse, IdentityResponse } from './types';
 import { identityNodeToIdentity } from './transformer';
 
@@ -9,42 +9,11 @@ export class IdentityGraphRepo {
 
   async findByIdentifier(did: string): Promise<Identity | null> {
     const query = gql`
-      ${assetFragment}
+      ${identityFragment}
       query ($filter: IdentityFilter!) {
         identities(filter: $filter, first: 1) {
           nodes {
-            did
-            primaryAccount
-            createdAt
-            secondaryAccounts {
-              totalCount
-              nodes {
-                address
-              }
-            }
-            claimsByTargetId {
-              totalCount
-            }
-            venuesByOwnerId {
-              totalCount
-            }
-            portfolios(filter: { deletedAt: { isNull: true } }) {
-              totalCount
-            }
-            heldAssets {
-              totalCount
-              nodes {
-                asset {
-                  ...AssetFields
-                }
-              }
-            }
-            assetsByOwnerId {
-              totalCount
-              nodes {
-                ...AssetFields
-              }
-            }
+            ...IdentityFields
           }
         }
       }
@@ -101,7 +70,7 @@ export class IdentityGraphRepo {
     endCursor: string;
   }> {
     const query = gql`
-      ${assetFragment}
+      ${identityFragment}
       query ($first: Int!, $after: Cursor) {
         identities(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
@@ -110,46 +79,7 @@ export class IdentityGraphRepo {
             endCursor
           }
           nodes {
-            did
-            primaryAccount
-            createdAt
-            secondaryAccounts {
-              totalCount
-              nodes {
-                address
-              }
-            }
-            claimsByTargetId {
-              totalCount
-            }
-            venuesByOwnerId {
-              totalCount
-            }
-            portfolios {
-              totalCount
-            }
-            heldAssets {
-              totalCount
-              nodes {
-                asset {
-                  ...AssetFields
-                }
-              }
-            }
-            heldNfts {
-              totalCount
-              nodes {
-                asset {
-                  ...AssetFields
-                }
-              }
-            }
-            assetsByOwnerId {
-              totalCount
-              nodes {
-                ...AssetFields
-              }
-            }
+            ...IdentityFields
           }
         }
       }

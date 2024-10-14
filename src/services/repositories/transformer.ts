@@ -46,6 +46,10 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     heldAssets: node.heldAssets.nodes.map((heldAsset) =>
       assetNodeToAsset(heldAsset.asset),
     ),
+    isCustodian: node.portfoliosByCustodianId.totalCount > 0,
+    custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
+    isChildIdentity: node.parentChildIdentities.totalCount > 0,
+    parentIdentityDid: node.parentChildIdentities.nodes[0]?.parentId,
   };
 }
 

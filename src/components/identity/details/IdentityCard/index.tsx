@@ -2,12 +2,14 @@ import React from 'react';
 import {
   Box,
   Typography,
-  Button,
   Stack,
   Tooltip,
   IconButton,
+  Chip,
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
@@ -38,6 +40,10 @@ export function IdentityCard({
     portfoliosCount,
     secondaryAccounts,
     primaryAccount,
+    isCustodian,
+    custodiedPortfoliosCount,
+    isChildIdentity,
+    parentIdentityDid,
   } = identity;
 
   return (
@@ -72,9 +78,31 @@ export function IdentityCard({
           <SecondaryKeys secondaryAccounts={secondaryAccounts} />
         )}
         <Box mt={2}>
-          <Button variant="contained" color="primary">
-            Custodian
-          </Button>
+          <Stack direction="row" spacing={1}>
+            {isCustodian && (
+              <Tooltip title={`Custodian of ${custodiedPortfoliosCount} portfolios`}>
+                <Chip
+                  icon={<AccountBalanceWalletIcon />}
+                  label={`Custodian (${custodiedPortfoliosCount})`}
+                  color="primary"
+                  variant="outlined"
+                />
+              </Tooltip>
+            )}
+            {isChildIdentity && parentIdentityDid && (
+              <Tooltip title="Click to view parent identity">
+                <Chip
+                  icon={<FamilyRestroomIcon />}
+                  label="Child Identity"
+                  color="secondary"
+                  variant="outlined"
+                  component={Link}
+                  href={`/identity/${parentIdentityDid}`}
+                  clickable
+                />
+              </Tooltip>
+            )}
+          </Stack>
         </Box>
       </Box>
       <Stack direction="row" spacing={2} mt={4} mb={2}>

@@ -19,9 +19,10 @@ export default function IdentityPage() {
     cursor,
     currentStartIndex,
   });
-  const { data: dataHistory } = useTransactionHistoryAccounts(data?.data, {
-    size: 1,
-  });
+  const { data: dataHistory, isFetched: isDataHistoryFetched } =
+    useTransactionHistoryAccounts(data?.data, {
+      size: 1,
+    });
 
   const {
     data: chartData,
@@ -64,6 +65,7 @@ export default function IdentityPage() {
           onFirstPage={handleFirstPage}
           onNextPage={handleNextPage}
           transactionHistory={dataHistory}
+          isTransactionHistoryFetched={isDataHistoryFetched}
         />
       )}
     </MainWrapper>
