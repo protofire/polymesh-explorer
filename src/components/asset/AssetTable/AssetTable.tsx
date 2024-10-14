@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import CollectionsIcon from '@mui/icons-material/Collections';
-import TokenIcon from '@mui/icons-material/Token';
+import TokenIcon from '@mui/icons-material/Toll';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
