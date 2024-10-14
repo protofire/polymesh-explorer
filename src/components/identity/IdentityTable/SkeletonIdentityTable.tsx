@@ -33,8 +33,8 @@ export function SkeletonIdentityTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Array.from({ length: SKELETON_ROWS }, (key) => (
-              <TableRow key={`skeleton-row-${key}`}>
+            {Array.from({ length: SKELETON_ROWS }, (_, index) => (
+              <TableRow key={`skeleton-row-${index}-${SKELETON_ROWS}`}>
                 <TableCell>
                   <Skeleton width={100} />
                 </TableCell>

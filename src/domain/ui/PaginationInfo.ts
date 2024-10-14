@@ -8,17 +8,21 @@ export type PageInfo = {
 export interface PaginationInfo extends PageInfo {
   totalCount: number;
   pageSize: number;
-  currentStartIndex: number;
   cursor: string | null;
+  currentPage: number;
+  firstCursor: string | null; // Añadimos esta propiedad
 }
 
 export interface PaginationController {
   paginationInfo: PaginationInfo;
-  setPageInfo: (pageInfo: Partial<PaginationInfo>) => void;
-  goToNextPage: () => void;
+  setPageInfo: (
+    pageInfo: PageInfo & Pick<PaginationInfo, 'totalCount'>,
+  ) => void;
+  goToNextPage: (event: unknown, newPage: number) => void;
   goToPreviousPage: () => void;
+  goToFirstPage: () => void; // Añadimos esta función
   resetPagination: () => void;
-  changePageSize: (newPageSize: number) => void;
+  changePageSize: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export interface PaginatedData<T> {

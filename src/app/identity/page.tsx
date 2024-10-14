@@ -8,11 +8,11 @@ import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCre
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
-
-const PAGE_SIZE = 10;
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { SkeletonIdentityTable } from '@/components/identity/IdentityTable/SkeletonIdentityTable';
 
 export default function IdentityPage() {
-  const { data, isLoading, error } = useListIdentities(PAGE_SIZE);
+  const { data, isLoading, error } = useListIdentities();
   const { data: dataHistory, isFetched: isDataHistoryFetched } =
     useTransactionHistoryAccounts(data?.data, {
       size: 1,
@@ -38,14 +38,17 @@ export default function IdentityPage() {
           chartData?.reduce((sum, item) => sum + Number(item.count), 0) || 0
         }
       />
-      {data && (
-        <IdentityTable
-          paginatedIdentities={data}
-          isLoading={isLoading}
-          error={error}
-          transactionHistory={dataHistory}
-          isTransactionHistoryFetched={isDataHistoryFetched}
-        />
+      {isLoading || dataHistory === undefined ? (
+        <SkeletonIdentityTable />
+      ) : (
+        data && (
+          <IdentityTable
+            paginatedIdentities={data}
+            error={error}
+            transactionHistory={dataHistory}
+            isTransactionHistoryFetched={isDataHistoryFetched}
+          />
+        )
       )}
     </MainWrapper>
   );

@@ -89,3 +89,12 @@ export const identityFragment = gql`
   }
   ${assetFragment}
 `;
+
+export const pageInfoFragment = gql`
+  fragment PageInfoFields on PageInfo {
+    hasNextPage
+    hasPreviousPage
+    startCursor
+    endCursor
+  }
+`;

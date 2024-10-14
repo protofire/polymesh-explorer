@@ -2,17 +2,14 @@ import { useState, useCallback, useMemo } from 'react';
 import {
   PaginationInfo,
   PaginationController,
+  PageInfo,
 } from '@/domain/ui/PaginationInfo';
-
-interface UsePaginationControllerGraphQlProps {
-  initialPageSize?: number;
-}
 
 export const DEFAULT_PAGE_SIZE = 10;
 
-export function usePaginationControllerGraphQl({
+export function usePaginationControllerGraphQl(
   initialPageSize = DEFAULT_PAGE_SIZE,
-}: UsePaginationControllerGraphQlProps): PaginationController {
+): PaginationController {
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
     hasNextPage: false,
     hasPreviousPage: false,
@@ -20,54 +17,69 @@ export function usePaginationControllerGraphQl({
     endCursor: null,
     totalCount: 0,
     pageSize: initialPageSize,
-    currentStartIndex: 1,
     cursor: null,
+    currentPage: 1,
+    firstCursor: null,
   });
 
-  const setPageInfo = useCallback((pageInfo: Partial<PaginationInfo>) => {
-    setPaginationInfo((prev) => ({
-      ...prev,
-      ...pageInfo,
-      cursor: pageInfo.endCursor ?? prev.cursor,
-    }));
-  }, []);
-
-  const goToNextPage = useCallback(() => {
-    if (paginationInfo.hasNextPage) {
+  const setPageInfo = useCallback(
+    (pageInfo: PageInfo & Pick<PaginationInfo, 'totalCount'>) => {
       setPaginationInfo((prev) => ({
         ...prev,
-        cursor: prev.endCursor,
-        currentStartIndex: prev.currentStartIndex + prev.pageSize,
+        ...pageInfo,
+        firstCursor: prev.firstCursor || prev.startCursor,
       }));
-    }
-  }, [paginationInfo]);
+    },
+    [],
+  );
+
+  const goToNextPage = useCallback((event: unknown, newPage: number) => {
+    setPaginationInfo((prev) => ({
+      ...prev,
+      cursor: prev.endCursor,
+      currentPage: newPage + 1,
+    }));
+  }, []);
 
   const goToPreviousPage = useCallback(() => {
     if (paginationInfo.hasPreviousPage) {
       setPaginationInfo((prev) => ({
         ...prev,
         cursor: prev.startCursor,
-        currentStartIndex: Math.max(1, prev.currentStartIndex - prev.pageSize),
+        currentPage: prev.currentPage - 1,
       }));
     }
-  }, [paginationInfo]);
+  }, [paginationInfo.hasPreviousPage]);
+
+  const goToFirstPage = useCallback(() => {
+    setPaginationInfo((prev) => ({
+      ...prev,
+      cursor: prev.firstCursor,
+      currentPage: 1,
+    }));
+  }, []);
 
   const resetPagination = useCallback(() => {
     setPaginationInfo((prev) => ({
       ...prev,
       cursor: null,
-      currentStartIndex: 1,
+      currentPage: 1,
+      firstCursor: null,
     }));
   }, []);
 
-  const changePageSize = useCallback((newPageSize: number) => {
-    setPaginationInfo((prev) => ({
-      ...prev,
-      pageSize: newPageSize,
-      cursor: null,
-      currentStartIndex: 1,
-    }));
-  }, []);
+  const changePageSize = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const newPageSize = parseInt(event.target.value, 10);
+      setPaginationInfo((prev) => ({
+        ...prev,
+        pageSize: newPageSize,
+        currentPage: 1,
+        cursor: null,
+      }));
+    },
+    [],
+  );
 
   return useMemo(
     () => ({
@@ -75,6 +87,7 @@ export function usePaginationControllerGraphQl({
       setPageInfo,
       goToNextPage,
       goToPreviousPage,
+      goToFirstPage,
       resetPagination,
       changePageSize,
     }),
@@ -83,6 +96,7 @@ export function usePaginationControllerGraphQl({
       setPageInfo,
       goToNextPage,
       goToPreviousPage,
+      goToFirstPage,
       resetPagination,
       changePageSize,
     ],

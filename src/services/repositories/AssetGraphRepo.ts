@@ -1,7 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
 import { assetNodeToAsset } from './transformer';
-import { assetFragment } from './fragments';
+import { assetFragment, pageInfoFragment } from './fragments';
 import { AssetListResponse, AssetResponse, PageInfo } from './types';
 
 export class AssetGraphRepo {
@@ -41,12 +41,12 @@ export class AssetGraphRepo {
   }> {
     const query = gql`
       ${assetFragment}
+      ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
         assets(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
           pageInfo {
-            hasNextPage
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             ...AssetFields

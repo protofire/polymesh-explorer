@@ -5,23 +5,21 @@ import { Typography } from '@mui/material';
 import { useListAssets } from '@/hooks/asset/useListAssets';
 import { AssetTable } from '@/components/asset/AssetTable/AssetTable';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
-
-const PAGE_SIZE = 10;
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 
 export default function AssetPage() {
-  const { data, isLoading, error } = useListAssets(PAGE_SIZE);
+  const { data, isFetched, error } = useListAssets();
+  const isLoading = !isFetched || data === undefined;
 
   return (
     <MainWrapper>
       <Typography variant="h4" mb={2}>
         Assets overview
       </Typography>
-      {data && (
-        <AssetTable
-          paginatedAssets={data}
-          isLoading={isLoading}
-          error={error}
-        />
+      {isLoading ? (
+        <GenericTableSkeleton columnCount={8} rowCount={10} />
+      ) : (
+        <AssetTable paginatedAssets={data} error={error} />
       )}
     </MainWrapper>
   );

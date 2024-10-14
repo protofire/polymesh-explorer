@@ -1,56 +1,58 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMemo, useCallback } from 'react';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
-import { customReportError } from '@/utils/customReportError';
-import {
-  DEFAULT_PAGE_SIZE,
-  usePaginationControllerGraphQl,
-} from '@/hooks/usePaginationControllerGraphQl';
+import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
 export type UseListIdentitiesReturn = PaginatedData<Identity[]>;
 
-export function useListIdentities(
-  initialPageSize: number = DEFAULT_PAGE_SIZE,
-): UseQueryResult<UseListIdentitiesReturn> {
+export function useListIdentities(): UseQueryResult<UseListIdentitiesReturn> {
   const { graphQlClient } = usePolymeshSdkService();
-  const identityService = new IdentityGraphRepo(graphQlClient);
-  const paginationController = usePaginationControllerGraphQl({
-    initialPageSize,
-  });
+  const identityService = useMemo(() => {
+    if (!graphQlClient) return null;
+    return new IdentityGraphRepo(graphQlClient);
+  }, [graphQlClient]);
 
-  return useQuery<UseListIdentitiesReturn, Error>({
+  const paginationController = usePaginationControllerGraphQl();
+
+  const fetchIdentities = useCallback(async () => {
+    if (!identityService) {
+      throw new Error('IdentityService is not initialized');
+    }
+
+    const result = await identityService.getIdentityList(
+      paginationController.paginationInfo.pageSize,
+      paginationController.paginationInfo.cursor ?? undefined,
+    );
+
+    paginationController.setPageInfo({
+      hasNextPage: result.pageInfo.hasNextPage,
+      hasPreviousPage: result.pageInfo.hasPreviousPage,
+      startCursor: result.pageInfo.startCursor,
+      endCursor: result.pageInfo.endCursor,
+      totalCount: result.totalCount,
+    });
+
+    return result.identities;
+  }, [identityService, paginationController]);
+
+  return useQuery<Identity[], Error, UseListIdentitiesReturn>({
     queryKey: [
       'useListIdentities',
       graphQlClient,
       paginationController.paginationInfo.pageSize,
       paginationController.paginationInfo.cursor,
     ],
-    queryFn: async () => {
-      try {
-        const result = await identityService.getIdentityList(
-          paginationController.paginationInfo.pageSize,
-          paginationController.paginationInfo.cursor ?? undefined,
-        );
-
-        paginationController.setPageInfo({
-          ...result.pageInfo,
-          totalCount: result.totalCount,
-          pageSize: paginationController.paginationInfo.pageSize,
-          currentStartIndex:
-            paginationController.paginationInfo.currentStartIndex,
-        });
-
-        return {
-          data: result.identities,
-          paginationController,
-        };
-      } catch (e) {
-        customReportError(e);
-        throw e;
-      }
-    },
-    enabled: !!graphQlClient,
+    queryFn: fetchIdentities,
+    select: useCallback(
+      (data: Identity[]) => ({
+        data,
+        paginationController,
+      }),
+      [paginationController],
+    ),
+    enabled: !!graphQlClient && !!identityService,
   });
 }

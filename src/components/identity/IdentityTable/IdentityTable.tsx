@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Tooltip,
   Skeleton,
 } from '@mui/material';
@@ -22,14 +21,13 @@ import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
 import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { SkeletonIdentityTable } from './SkeletonIdentityTable';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity[]>;
-  isLoading: boolean;
   error: Error | null;
   transactionHistory?: UseTransactionHistoryAccountsResult;
   isTransactionHistoryFetched?: boolean;
@@ -37,13 +35,10 @@ interface IdentityTableProps {
 
 export function IdentityTable({
   paginatedIdentities,
-  isLoading,
   error,
   transactionHistory,
   isTransactionHistoryFetched,
 }: IdentityTableProps) {
-  if (isLoading || transactionHistory === undefined)
-    return <SkeletonIdentityTable />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
@@ -96,13 +91,12 @@ export function IdentityTable({
                   {!isTransactionHistoryFetched ? (
                     <Skeleton variant="text" width={100} animation="wave" />
                   ) : (
-                    transactionHistory[identity.did]?.extrinsics?.[0] && (
+                    transactionHistory?.[identity.did]?.extrinsics?.[0] && (
                       <Tooltip
                         title={format(
                           new Date(
-                            transactionHistory[
-                              identity.did
-                            ].extrinsics[0].block.datetime,
+                            transactionHistory[identity.did].extrinsics[0].block
+                              .datetime,
                           ),
                           'PPpp',
                         )}
@@ -138,31 +132,7 @@ export function IdentityTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        mt={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Button
-          onClick={paginationController.resetPagination}
-          disabled={paginationController.paginationInfo.currentStartIndex === 1}
-        >
-          First page
-        </Button>
-        <Button
-          onClick={paginationController.goToNextPage}
-          disabled={
-            !paginationController.paginationInfo.hasNextPage ||
-            paginationController.paginationInfo.hasPreviousPage
-          }
-        >
-          Next page
-        </Button>
-      </Box>
-      <Typography variant="body2" align="center" mt={1}>
-        Showing records {startIndex} - {endIndex} of {totalCount}
-      </Typography>
+      <PaginationFooter paginationController={paginationController} />
     </Box>
   );
 }

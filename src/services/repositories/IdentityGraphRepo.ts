@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { identityFragment } from './fragments';
+import { identityFragment, pageInfoFragment } from './fragments';
 import { IdentityListResponse, IdentityResponse, PageInfo } from './types';
 import { identityNodeToIdentity } from './transformer';
 
@@ -70,14 +70,12 @@ export class IdentityGraphRepo {
   }> {
     const query = gql`
       ${identityFragment}
+      ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
         identities(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
           pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             ...IdentityFields
