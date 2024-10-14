@@ -21,19 +21,16 @@ import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
-import { PaginatedData } from '@/types/pagination';
 import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { SkeletonIdentityTable } from './SkeletonIdentityTable';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
 interface IdentityTableProps {
-  paginatedIdentities: PaginatedData<Identity>;
+  paginatedIdentities: PaginatedData<Identity[]>;
   isLoading: boolean;
   error: Error | null;
-  isPreviousData: boolean;
-  onFirstPage: () => void;
-  onNextPage: () => void;
   transactionHistory?: UseTransactionHistoryAccountsResult;
   isTransactionHistoryFetched?: boolean;
 }
@@ -42,9 +39,6 @@ export function IdentityTable({
   paginatedIdentities,
   isLoading,
   error,
-  isPreviousData,
-  onFirstPage,
-  onNextPage,
   transactionHistory,
   isTransactionHistoryFetched,
 }: IdentityTableProps) {
@@ -53,11 +47,7 @@ export function IdentityTable({
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
-  const { data: identities, paginationInfo } = paginatedIdentities;
-  const { totalCount, hasNextPage, currentStartIndex } = paginationInfo;
-
-  const startIndex = currentStartIndex;
-  const endIndex = Math.min(startIndex + identities.length - 1, totalCount);
+  const { data: identities, paginationController } = paginatedIdentities;
 
   return (
     <Box>
@@ -154,10 +144,19 @@ export function IdentityTable({
         justifyContent="space-between"
         alignItems="center"
       >
-        <Button onClick={onFirstPage} disabled={currentStartIndex === 1}>
+        <Button
+          onClick={paginationController.resetPagination}
+          disabled={paginationController.paginationInfo.currentStartIndex === 1}
+        >
           First page
         </Button>
-        <Button onClick={onNextPage} disabled={!hasNextPage || isPreviousData}>
+        <Button
+          onClick={paginationController.goToNextPage}
+          disabled={
+            !paginationController.paginationInfo.hasNextPage ||
+            paginationController.paginationInfo.hasPreviousPage
+          }
+        >
           Next page
         </Button>
       </Box>

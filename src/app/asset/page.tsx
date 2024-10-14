@@ -9,30 +9,20 @@ import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 const PAGE_SIZE = 10;
 
 export default function AssetPage() {
-  const [cursor, setCursor] = React.useState<string | undefined>(undefined);
-  const { data, isLoading, error, isFetching } = useListAssets({
-    pageSize: PAGE_SIZE,
-    cursor,
-  });
-
-  const handleFirstPage = () => setCursor(undefined);
-  const handleNextPage = () => setCursor(data?.endCursor);
+  const { data, isLoading, error } = useListAssets(PAGE_SIZE);
 
   return (
     <MainWrapper>
       <Typography variant="h4" mb={2}>
         Assets overview
       </Typography>
-      <AssetTable
-        assets={data?.assets || []}
-        isLoading={isLoading}
-        error={error}
-        hasNextPage={data?.hasNextPage || false}
-        isPreviousData={isFetching}
-        onFirstPage={handleFirstPage}
-        onNextPage={handleNextPage}
-        cursor={cursor}
-      />
+      {data && (
+        <AssetTable
+          paginatedAssets={data}
+          isLoading={isLoading}
+          error={error}
+        />
+      )}
     </MainWrapper>
   );
 }

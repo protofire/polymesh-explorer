@@ -12,13 +12,7 @@ import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 const PAGE_SIZE = 10;
 
 export default function IdentityPage() {
-  const [cursor, setCursor] = React.useState<string | undefined>(undefined);
-  const [currentStartIndex, setCurrentStartIndex] = React.useState(1);
-  const { data, isFetched, error, isFetching } = useListIdentities({
-    pageSize: PAGE_SIZE,
-    cursor,
-    currentStartIndex,
-  });
+  const { data, isLoading, error } = useListIdentities(PAGE_SIZE);
   const { data: dataHistory, isFetched: isDataHistoryFetched } =
     useTransactionHistoryAccounts(data?.data, {
       size: 1,
@@ -30,18 +24,6 @@ export default function IdentityPage() {
     isFetched: isChartFetched,
     error: chartError,
   } = useIdentityCreationCountByMonth();
-
-  const handleFirstPage = () => {
-    setCursor(undefined);
-    setCurrentStartIndex(1);
-  };
-
-  const handleNextPage = () => {
-    if (data?.paginationInfo.hasNextPage) {
-      setCursor(data.paginationInfo.endCursor);
-      setCurrentStartIndex(currentStartIndex + PAGE_SIZE);
-    }
-  };
 
   return (
     <MainWrapper>
@@ -59,11 +41,8 @@ export default function IdentityPage() {
       {data && (
         <IdentityTable
           paginatedIdentities={data}
-          isLoading={!isFetched}
+          isLoading={isLoading}
           error={error}
-          isPreviousData={isFetching}
-          onFirstPage={handleFirstPage}
-          onNextPage={handleNextPage}
           transactionHistory={dataHistory}
           isTransactionHistoryFetched={isDataHistoryFetched}
         />

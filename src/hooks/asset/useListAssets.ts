@@ -1,38 +1,55 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { useMemo } from 'react';
 import { AssetGraphRepo } from '@/services/repositories/AssetGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Asset } from '@/domain/entities/Asset';
+import { customReportError } from '@/utils/customReportError';
+import {
+  DEFAULT_PAGE_SIZE,
+  usePaginationControllerGraphQl,
+} from '@/hooks/usePaginationControllerGraphQl';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
-interface AssetListResponse {
-  assets: Asset[];
-  totalCount: number;
-  hasNextPage: boolean;
-  endCursor: string;
-}
+export type UseListAssetsReturn = PaginatedData<Asset[]>;
 
-interface UseListAssetsParams {
-  pageSize: number;
-  cursor?: string;
-}
-
-export function useListAssets({
-  pageSize,
-  cursor,
-}: UseListAssetsParams): UseQueryResult<AssetListResponse, Error> {
+export function useListAssets(
+  initialPageSize: number = DEFAULT_PAGE_SIZE,
+): UseQueryResult<UseListAssetsReturn> {
   const { graphQlClient, networkConfig } = usePolymeshSdkService();
-  const assetService = useMemo(() => {
-    if (!graphQlClient) return null;
+  const assetService = new AssetGraphRepo(graphQlClient);
+  const paginationController = usePaginationControllerGraphQl({
+    initialPageSize,
+  });
 
-    return new AssetGraphRepo(graphQlClient);
-  }, [graphQlClient]);
-
-  return useQuery<AssetListResponse, Error, AssetListResponse>({
-    queryKey: ['assets', networkConfig, pageSize, cursor],
+  return useQuery<UseListAssetsReturn, Error>({
+    queryKey: [
+      'useListAssets',
+      networkConfig,
+      paginationController.paginationInfo.pageSize,
+      paginationController.paginationInfo.cursor,
+    ],
     queryFn: async () => {
-      if (!assetService) throw new Error('Asset service not initialized');
+      try {
+        const result = await assetService.getAssetList(
+          paginationController.paginationInfo.pageSize,
+          paginationController.paginationInfo.cursor ?? undefined,
+        );
 
-      return assetService.getAssetList(pageSize, cursor);
+        paginationController.setPageInfo({
+          ...result.pageInfo,
+          totalCount: result.totalCount,
+          pageSize: paginationController.paginationInfo.pageSize,
+          currentStartIndex:
+            paginationController.paginationInfo.currentStartIndex,
+        });
+
+        return {
+          data: result.assets,
+          paginationController,
+        };
+      } catch (e) {
+        customReportError(e);
+        throw e;
+      }
     },
     enabled: !!graphQlClient,
   });

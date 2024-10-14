@@ -1,7 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
 import { identityFragment } from './fragments';
-import { IdentityListResponse, IdentityResponse } from './types';
+import { IdentityListResponse, IdentityResponse, PageInfo } from './types';
 import { identityNodeToIdentity } from './transformer';
 
 export class IdentityGraphRepo {
@@ -66,8 +66,7 @@ export class IdentityGraphRepo {
   ): Promise<{
     identities: Identity[];
     totalCount: number;
-    hasNextPage: boolean;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const query = gql`
       ${identityFragment}
@@ -76,6 +75,8 @@ export class IdentityGraphRepo {
           totalCount
           pageInfo {
             hasNextPage
+            hasPreviousPage
+            startCursor
             endCursor
           }
           nodes {
@@ -99,8 +100,7 @@ export class IdentityGraphRepo {
     return {
       identities: identities.nodes.map((node) => identityNodeToIdentity(node)),
       totalCount: identities.totalCount,
-      hasNextPage: identities.pageInfo.hasNextPage,
-      endCursor: identities.pageInfo.endCursor,
+      pageInfo: identities.pageInfo,
     };
   }
 

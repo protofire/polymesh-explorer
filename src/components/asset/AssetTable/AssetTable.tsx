@@ -11,9 +11,9 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   CircularProgress,
   Tooltip,
+  TablePagination,
 } from '@mui/material';
 import Link from 'next/link';
 import CollectionsIcon from '@mui/icons-material/Collections';
@@ -23,29 +23,20 @@ import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
 interface AssetTableProps {
-  assets: Asset[];
+  paginatedAssets: PaginatedData<Asset[]>;
   isLoading: boolean;
   error: Error | null;
-  hasNextPage: boolean;
-  isPreviousData: boolean;
-  onFirstPage: () => void;
-  onNextPage: () => void;
-  cursor: string | undefined;
 }
 
 const MAX_NAME_LENGTH = 20;
 
 export function AssetTable({
-  assets,
+  paginatedAssets,
   isLoading,
   error,
-  hasNextPage,
-  isPreviousData,
-  onFirstPage,
-  onNextPage,
-  cursor,
 }: AssetTableProps) {
   if (isLoading) return <CircularProgress />;
   if (error)
@@ -72,6 +63,22 @@ export function AssetTable({
     );
   };
 
+  const handlePageChange = (event: unknown, newPage: number) => {
+    goToPage(newPage + 1);
+    if (newPage === 0) {
+      onFirstPage();
+    } else {
+      onNextPage();
+    }
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    changePageSize(parseInt(event.target.value, 10));
+    onFirstPage();
+  };
+
   return (
     <Box>
       <TableContainer component={Paper}>
@@ -89,8 +96,8 @@ export function AssetTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {assets.length > 0 ? (
-              assets.map((asset) => (
+            {paginatedAssets.length > 0 ? (
+              paginatedAssets.map((asset) => (
                 <TableRow key={asset.ticker}>
                   <TableCell>
                     <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
@@ -121,7 +128,6 @@ export function AssetTable({
                     </Link>
                   </TableCell>
                   <TableCell>{asset.documents}</TableCell>
-
                   <TableCell>
                     <FormattedDate date={asset.createdAt} />
                   </TableCell>
@@ -133,14 +139,15 @@ export function AssetTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box mt={2} display="flex" justifyContent="space-between">
-        <Button onClick={onFirstPage} disabled={!cursor}>
-          First page
-        </Button>
-        <Button onClick={onNextPage} disabled={!hasNextPage || isPreviousData}>
-          Next page
-        </Button>
-      </Box>
+      <TablePagination
+        component="div"
+        count={paginationInfo.totalCount}
+        page={paginationInfo.currentPage - 1}
+        onPageChange={handlePageChange}
+        rowsPerPage={paginationInfo.pageSize}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={[10, 30, 50]}
+      />
     </Box>
   );
 }

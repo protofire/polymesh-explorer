@@ -2,7 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
 import { assetNodeToAsset } from './transformer';
 import { assetFragment } from './fragments';
-import { AssetListResponse, AssetResponse } from './types';
+import { AssetListResponse, AssetResponse, PageInfo } from './types';
 
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -37,8 +37,7 @@ export class AssetGraphRepo {
   ): Promise<{
     assets: Asset[];
     totalCount: number;
-    hasNextPage: boolean;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const query = gql`
       ${assetFragment}
@@ -70,8 +69,7 @@ export class AssetGraphRepo {
     return {
       assets: assets.nodes.map(assetNodeToAsset),
       totalCount: assets.totalCount,
-      hasNextPage: assets.pageInfo.hasNextPage,
-      endCursor: assets.pageInfo.endCursor,
+      pageInfo: assets.pageInfo,
     };
   }
 }

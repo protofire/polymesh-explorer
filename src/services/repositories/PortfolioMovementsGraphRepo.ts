@@ -4,7 +4,11 @@ import {
   assetTransactionNodeToAssetTransaction,
   portfolioMovementNodeToPortfolioMovement,
 } from './transformer';
-import { PortfolioMovementsResponse, AssetTransactionsResponse } from './types';
+import {
+  PortfolioMovementsResponse,
+  AssetTransactionsResponse,
+  PageInfo,
+} from './types';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 export type PortfolioMovementType = 'Fungible' | 'NonFungible';
@@ -20,10 +24,7 @@ export class PortfolioMovementsGraphRepo {
   ): Promise<{
     movements: PortfolioMovement[];
     totalCount: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor: string;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const assetDetail = type === 'Fungible' ? 'amount' : 'nftIds';
 
@@ -93,10 +94,7 @@ export class PortfolioMovementsGraphRepo {
         portfolioMovementNodeToPortfolioMovement,
       ),
       totalCount: portfolioMovements.totalCount,
-      hasNextPage: portfolioMovements.pageInfo.hasNextPage,
-      hasPreviousPage: portfolioMovements.pageInfo.hasPreviousPage,
-      startCursor: portfolioMovements.pageInfo.startCursor,
-      endCursor: portfolioMovements.pageInfo.endCursor,
+      pageInfo: portfolioMovements.pageInfo,
     };
   }
 
@@ -108,10 +106,7 @@ export class PortfolioMovementsGraphRepo {
   ): Promise<{
     transactions: AssetTransaction[];
     totalCount: number;
-    hasNextPage: boolean;
-    hasPreviousPage: boolean;
-    startCursor: string;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const query = gql`
       query ($pageSize: Int!, $offset: Int!) {
@@ -171,10 +166,7 @@ export class PortfolioMovementsGraphRepo {
         assetTransactionNodeToAssetTransaction,
       ),
       totalCount: assetTransactions.totalCount,
-      hasNextPage: assetTransactions.pageInfo.hasNextPage,
-      hasPreviousPage: assetTransactions.pageInfo.hasPreviousPage,
-      startCursor: assetTransactions.pageInfo.startCursor,
-      endCursor: assetTransactions.pageInfo.endCursor,
+      pageInfo: assetTransactions.pageInfo,
     };
   }
 }
