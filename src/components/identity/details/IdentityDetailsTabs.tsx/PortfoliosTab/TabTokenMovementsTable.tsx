@@ -8,12 +8,15 @@ import {
   TableRow,
   Paper,
   TablePagination,
-  CircularProgress,
 } from '@mui/material';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { PaginatedData } from '@/types/pagination';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement> | undefined;
@@ -22,6 +25,7 @@ interface TabTokenMovementsTableProps {
   currentPage: number;
   pageSize: number;
   onPageChange: (event: unknown, newPage: number) => void;
+  subscanUrl: string;
 }
 
 export function TabTokenMovementsTable({
@@ -31,9 +35,10 @@ export function TabTokenMovementsTable({
   currentPage,
   pageSize,
   onPageChange,
+  subscanUrl,
 }: TabTokenMovementsTableProps) {
   if (isLoadingMovements || isFetchingMovements || !portfolioMovements) {
-    return <CircularProgress />;
+    return <GenericTableSkeleton columnCount={7} rowCount={3} />;
   }
 
   return (
@@ -42,29 +47,43 @@ export function TabTokenMovementsTable({
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Date</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
               <TableCell>Asset</TableCell>
               <TableCell>Amount</TableCell>
-              <TableCell>Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {portfolioMovements?.data.length < 1 ? (
               <NoDataAvailableTBody
                 message="No portfolio movements available"
-                colSpan={5}
+                colSpan={6}
               />
             ) : (
               portfolioMovements.data.map((movement) => (
                 <TableRow key={movement.id}>
-                  <TableCell>{movement.from.name}</TableCell>
-                  <TableCell>{movement.to.name}</TableCell>
-                  <TableCell>{movement.assetId}</TableCell>
-                  <TableCell>{movement.amount}</TableCell>
+                  <TableCell>
+                    <GenericLink
+                      href={`${subscanUrl}/extrinsic/${movement.id.replace('/', '-')}`}
+                      tooltipText="See on subscan"
+                      isExternal
+                    >
+                      {movement.id}
+                    </GenericLink>
+                  </TableCell>
                   <TableCell>
                     <FormattedDate date={movement.createdAt} />
                   </TableCell>
+                  <TableCell>{movement.from.name}</TableCell>
+                  <TableCell>{movement.to.name}</TableCell>
+                  <TableCell>
+                    <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
+                      {movement.assetId}
+                    </GenericLink>
+                  </TableCell>
+                  <TableCell>{movement.amount}</TableCell>
                 </TableRow>
               ))
             )}

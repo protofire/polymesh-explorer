@@ -6,6 +6,7 @@ import {
   NumberedPortfolio,
   ResultSet,
 } from '@polymeshassociation/polymesh-sdk/types';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =
@@ -80,7 +81,9 @@ export class PolymeshSdkService {
     return histories;
   }
 
-  public async getIdentityPortfolios(did: string) {
+  public async getIdentityPortfolios(
+    did: string,
+  ): Promise<PortfolioWithAssets[]> {
     if (!this.polymeshSdk) {
       throw new Error('Polymesh SDK not initialized');
     }
@@ -111,7 +114,7 @@ export class PolymeshSdkService {
             0,
           );
 
-          const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
+          const number = index === 0 ? '0' : portfolio.toHuman().id;
           const name =
             index === 0
               ? 'Default'

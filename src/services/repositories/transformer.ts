@@ -3,6 +3,7 @@ import { Balance } from '@polkadot/types/interfaces';
 import { Asset } from '@/domain/entities/Asset';
 import {
   AssetNode,
+  AssetTransactionNode,
   IdentityNode,
   PortfolioMovementNode,
   VenueNode,
@@ -82,5 +83,29 @@ export function portfolioMovementNodeToPortfolioMovement(
     memo: node.memo,
     createdAt: node.createdBlock.datetime,
     blockId: node.createdBlock.blockId,
+  };
+}
+
+export function assetTransactionNodeToPortfolioMovement(
+  node: AssetTransactionNode,
+): PortfolioMovement {
+  return {
+    id: node.id,
+    assetId: node.assetId,
+    fromId: node.fromPortfolioId,
+    toId: node.toPortfolioId,
+    amount:
+      node.amount &&
+      balanceToBigNumber(node.amount as unknown as Balance).toString(),
+    nftIds: node.nftIds || undefined,
+    createdBlock: {
+      blockId: node.createdBlockId,
+      datetime: new Date(node.datetime),
+    },
+    extrinsicIdx: node.extrinsicIdx,
+    eventIdx: node.eventIdx,
+    eventId: node.eventId,
+    instructionId: node.instructionId || undefined,
+    memo: node.instructionMemo || undefined,
   };
 }

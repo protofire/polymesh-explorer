@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
-import { Portfolio } from '@/domain/entities/Portfolio';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { AssetTabTable } from './AssetTabTable';
 import { PortfoliosTab } from './PortfoliosTab';
 import { TransactionsTab } from './TransactionsTab';
@@ -12,7 +12,7 @@ interface IdentityDetailsTabsProps {
   identity: Identity;
   identityDid: string;
   subscanUrl: string;
-  portfolios: Portfolio[];
+  portfolios: PortfolioWithAssets[];
   isLoadingPortfolios: boolean;
 }
 
@@ -82,7 +82,7 @@ export function IdentityDetailsTabs({
               </Box>
             }
           />
-          <Tab label="Transactions" />
+          <Tab label="History" />
         </Tabs>
       </Box>
       <TabPanel value={value} index={isAssetIssuer ? 3 : 2}>
@@ -100,6 +100,7 @@ export function IdentityDetailsTabs({
         <PortfoliosTab
           portfolios={portfolios}
           isLoading={isLoadingPortfolios}
+          subscanUrl={subscanUrl}
         />
       </TabPanel>
       {isAssetIssuer && (

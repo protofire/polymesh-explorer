@@ -139,3 +139,32 @@ export interface PortfolioMovementsResponse {
     nodes: PortfolioMovementNode[];
   };
 }
+
+export interface AssetTransactionNode {
+  amount: string | null;
+  assetId: string;
+  nftIds: string[] | null;
+  datetime: string;
+  id: string;
+  createdBlockId: string;
+  extrinsicIdx: number;
+  eventIdx: number;
+  eventId: string;
+  toPortfolioId: string;
+  fromPortfolioId: string;
+  instructionId: string | null;
+  instructionMemo: string | null;
+}
+
+export interface AssetTransactionsResponse {
+  assetTransactions: {
+    totalCount: number;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor: string;
+      endCursor: string;
+    };
+    nodes: AssetTransactionNode[];
+  };
+}
