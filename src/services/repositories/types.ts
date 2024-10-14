@@ -40,12 +40,18 @@ export interface AssetListResponse {
 export interface IdentityNode {
   did: string;
   primaryAccount: string;
+  createdAt: string;
   secondaryAccounts: {
     totalCount: number;
     nodes: { address: string }[];
   };
-  createdAt: string;
   claimsByTargetId: {
+    totalCount: number;
+  };
+  venuesByOwnerId: {
+    totalCount: number;
+  };
+  portfolios: {
     totalCount: number;
   };
   heldAssets: {
@@ -54,15 +60,27 @@ export interface IdentityNode {
       asset: AssetNode;
     }[];
   };
-  venuesByOwnerId: {
-    totalCount: number;
-  };
-  portfolios: {
-    totalCount: number;
-  };
   assetsByOwnerId: {
     totalCount: number;
     nodes: AssetNode[];
+  };
+  heldNfts: {
+    totalCount: number;
+    nodes: {
+      asset: AssetNode;
+    }[];
+  };
+  portfoliosByCustodianId: {
+    totalCount: number;
+    nodes: {
+      id: string;
+    }[];
+  };
+  parentChildIdentities: {
+    totalCount: number;
+    nodes: {
+      parentId: string;
+    }[];
   };
 }
 

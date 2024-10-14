@@ -31,3 +31,61 @@ export const venueFragment = gql`
     type
   }
 `;
+
+export const identityFragment = gql`
+  fragment IdentityFields on Identity {
+    did
+    primaryAccount
+    createdAt
+    secondaryAccounts {
+      totalCount
+      nodes {
+        address
+      }
+    }
+    claimsByTargetId {
+      totalCount
+    }
+    venuesByOwnerId {
+      totalCount
+    }
+    portfolios(filter: { deletedAt: { isNull: true } }) {
+      totalCount
+    }
+    heldAssets {
+      totalCount
+      nodes {
+        asset {
+          ...AssetFields
+        }
+      }
+    }
+    assetsByOwnerId {
+      totalCount
+      nodes {
+        ...AssetFields
+      }
+    }
+    heldNfts {
+      totalCount
+      nodes {
+        asset {
+          ...AssetFields
+        }
+      }
+    }
+    portfoliosByCustodianId {
+      totalCount
+      nodes {
+        id
+      }
+    }
+    parentChildIdentities {
+      totalCount
+      nodes {
+        parentId
+      }
+    }
+  }
+  ${assetFragment}
+`;

@@ -11,4 +11,8 @@ export interface Identity {
   portfoliosCount: number;
   ownedAssets: Asset[];
   heldAssets: Asset[];
+  isCustodian: boolean;
+  custodiedPortfoliosCount: number;
+  isChildIdentity: boolean;
+  parentIdentityDid?: string;
 }

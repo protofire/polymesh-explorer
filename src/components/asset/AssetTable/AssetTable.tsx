@@ -22,6 +22,7 @@ import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Asset } from '@/domain/entities/Asset';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 
 interface AssetTableProps {
   assets: Asset[];
@@ -74,7 +75,7 @@ export function AssetTable({
   return (
     <Box>
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>Ticker</TableCell>
@@ -120,7 +121,10 @@ export function AssetTable({
                     </Link>
                   </TableCell>
                   <TableCell>{asset.documents}</TableCell>
-                  <TableCell>{asset.createdAt.toLocaleString()}</TableCell>
+
+                  <TableCell>
+                    <FormattedDate date={asset.createdAt} />
+                  </TableCell>
                 </TableRow>
               ))
             ) : (

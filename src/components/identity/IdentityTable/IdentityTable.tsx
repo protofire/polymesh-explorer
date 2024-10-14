@@ -13,10 +13,10 @@ import {
   Paper,
   Button,
   Tooltip,
+  Skeleton,
 } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import Link from 'next/link';
 import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
@@ -25,6 +25,7 @@ import { PaginatedData } from '@/types/pagination';
 import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { SkeletonIdentityTable } from './SkeletonIdentityTable';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { GenericLink } from '@/components/shared/common/GenericLink';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity>;
@@ -34,6 +35,7 @@ interface IdentityTableProps {
   onFirstPage: () => void;
   onNextPage: () => void;
   transactionHistory?: UseTransactionHistoryAccountsResult;
+  isTransactionHistoryFetched?: boolean;
 }
 
 export function IdentityTable({
@@ -44,8 +46,10 @@ export function IdentityTable({
   onFirstPage,
   onNextPage,
   transactionHistory,
+  isTransactionHistoryFetched,
 }: IdentityTableProps) {
-  if (isLoading) return <SkeletonIdentityTable />;
+  if (isLoading || transactionHistory === undefined)
+    return <SkeletonIdentityTable />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
@@ -61,37 +65,47 @@ export function IdentityTable({
         Identities
       </Typography>
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>DID</TableCell>
-              <TableCell>Primary Account</TableCell>
-              <TableCell>Portfolios</TableCell>
-              <TableCell>Claims</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell>Recent Activity</TableCell>
+              <TableCell width="15%">DID</TableCell>
+              <TableCell width="15%">Primary Account</TableCell>
+              <TableCell width="10%">Portfolios</TableCell>
+              <TableCell width="10%">Claims</TableCell>
+              <TableCell width="10%">Custodied Portfolios</TableCell>
+              <TableCell width="15%">Created At</TableCell>
+              <TableCell width="25%">Recent Activity</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {identities.map((identity) => (
               <TableRow key={identity.did}>
                 <TableCell>
-                  <Link href={`${ROUTES.Identity}/${identity.did}`}>
-                    {truncateAddress(identity.did)}
-                  </Link>
+                  <GenericLink
+                    href={`${ROUTES.Identity}/${identity.did}`}
+                    tooltipText="Go to Identity"
+                  >
+                    {truncateAddress(identity.did, 5)}
+                  </GenericLink>
                 </TableCell>
                 <TableCell>
-                  <Link href={`${ROUTES.Account}/${identity.primaryAccount}`}>
-                    {truncateAddress(identity.primaryAccount)}
-                  </Link>
+                  <GenericLink
+                    href={`${ROUTES.Account}/${identity.primaryAccount}`}
+                    tooltipText="Go to Account"
+                  >
+                    {truncateAddress(identity.primaryAccount, 5)}
+                  </GenericLink>
                 </TableCell>
                 <TableCell>{identity.portfoliosCount}</TableCell>
                 <TableCell>{identity.claimsCount}</TableCell>
+                <TableCell>{identity.custodiedPortfoliosCount}</TableCell>
                 <TableCell>
                   <FormattedDate date={identity.createdAt} />
                 </TableCell>
                 <TableCell>
-                  {transactionHistory &&
+                  {!isTransactionHistoryFetched ? (
+                    <Skeleton variant="text" width={100} animation="wave" />
+                  ) : (
                     transactionHistory[identity.did]?.extrinsics?.[0] && (
                       <Tooltip
                         title={format(
@@ -104,7 +118,7 @@ export function IdentityTable({
                         )}
                       >
                         <Box display="flex" alignItems="center">
-                          <Typography>
+                          <Typography noWrap>
                             {
                               transactionHistory[identity.did].extrinsics[0]
                                 .moduleId
@@ -126,7 +140,8 @@ export function IdentityTable({
                           )}
                         </Box>
                       </Tooltip>
-                    )}
+                    )
+                  )}
                 </TableCell>
               </TableRow>
             ))}
