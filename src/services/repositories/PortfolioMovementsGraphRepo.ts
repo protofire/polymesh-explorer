@@ -1,7 +1,11 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { portfolioMovementNodeToPortfolioMovement } from './transformer';
-import { PortfolioMovementsResponse } from './types';
+import {
+  assetTransactionNodeToAssetTransaction,
+  portfolioMovementNodeToPortfolioMovement,
+} from './transformer';
+import { PortfolioMovementsResponse, AssetTransactionsResponse } from './types';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 export type PortfolioMovementType = 'Fungible' | 'NonFungible';
 
@@ -93,6 +97,84 @@ export class PortfolioMovementsGraphRepo {
       hasPreviousPage: portfolioMovements.pageInfo.hasPreviousPage,
       startCursor: portfolioMovements.pageInfo.startCursor,
       endCursor: portfolioMovements.pageInfo.endCursor,
+    };
+  }
+
+  async getAssetTransactions(
+    portfolioId: string,
+    pageSize: number,
+    offset: number = 0,
+    nonFungible: boolean = false,
+  ): Promise<{
+    transactions: AssetTransaction[];
+    totalCount: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    startCursor: string;
+    endCursor: string;
+  }> {
+    const query = gql`
+      query ($pageSize: Int!, $offset: Int!) {
+        assetTransactions(
+          first: $pageSize
+          offset: $offset
+          orderBy: CREATED_AT_DESC
+          filter: {
+            or: [
+              {fromPortfolioId: {equalTo: "${portfolioId}"}}
+              {toPortfolioId: {equalTo: "${portfolioId}"}}
+            ]
+            amount: {
+              isNull: ${nonFungible}
+            }
+          }
+        ) {
+          totalCount
+          pageInfo {
+            hasNextPage
+            hasPreviousPage
+            startCursor
+            endCursor
+          }
+          nodes {
+            amount
+            assetId
+            nftIds
+            datetime
+            id
+            createdBlockId
+            extrinsicIdx
+            eventIdx
+            eventId
+            toPortfolioId
+            fromPortfolioId
+            instructionId
+            instructionMemo
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      pageSize,
+      offset,
+    };
+
+    const response = await this.client.request<AssetTransactionsResponse>(
+      query,
+      variables,
+    );
+    const { assetTransactions } = response;
+
+    return {
+      transactions: assetTransactions.nodes.map(
+        assetTransactionNodeToAssetTransaction,
+      ),
+      totalCount: assetTransactions.totalCount,
+      hasNextPage: assetTransactions.pageInfo.hasNextPage,
+      hasPreviousPage: assetTransactions.pageInfo.hasPreviousPage,
+      startCursor: assetTransactions.pageInfo.startCursor,
+      endCursor: assetTransactions.pageInfo.endCursor,
     };
   }
 }

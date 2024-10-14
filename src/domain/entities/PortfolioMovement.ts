@@ -1,15 +1,11 @@
-export interface PortfolioParty {
-  identityId: string;
-  number: string;
-  name: string;
-}
+import { Portfolio } from '@/domain/entities/Portfolio';
 
 export interface PortfolioMovement {
   id: string;
   fromId: string;
-  from: PortfolioParty;
+  from: Portfolio;
   toId: string;
-  to: PortfolioParty;
+  to: Portfolio;
   assetId: string;
   amount?: string;
   nftIds?: string[];

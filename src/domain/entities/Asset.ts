@@ -4,6 +4,7 @@ export interface Asset {
   type: string;
   totalSupply: string;
   ownerDid: string;
+  isNftCollection: boolean;
   holders: string;
   createdAt: Date;
   documents: string;

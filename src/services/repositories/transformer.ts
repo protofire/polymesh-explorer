@@ -3,16 +3,16 @@ import { Balance } from '@polkadot/types/interfaces';
 import { Asset } from '@/domain/entities/Asset';
 import {
   AssetNode,
+  AssetTransactionNode,
   IdentityNode,
   PortfolioMovementNode,
   VenueNode,
 } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
-import {
-  PortfolioMovement,
-  PortfolioParty,
-} from '@/domain/entities/PortfolioMovement';
+import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
+import { Portfolio } from '@/domain/entities/Portfolio';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 export function assetNodeToAsset(assetNode: AssetNode): Asset {
   return {
@@ -21,6 +21,7 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     type: assetNode.type,
     totalSupply: assetNode.totalSupply,
     ownerDid: assetNode.owner.did,
+    isNftCollection: assetNode.isNftCollection,
     holders: assetNode.holders.totalCount.toString(),
     createdAt: new Date(assetNode.createdAt),
     documents: assetNode.documents.totalCount.toString(),
@@ -61,7 +62,7 @@ export function venueNodeToVenue(node: VenueNode): Venue {
 export function portfolioMovementNodeToPortfolioMovement(
   node: PortfolioMovementNode,
 ): PortfolioMovement {
-  const getPortfolioParty = (party: PortfolioParty): PortfolioParty => ({
+  const getPortfolioParty = (party: Portfolio): Portfolio => ({
     ...party,
     name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
   });
@@ -81,5 +82,29 @@ export function portfolioMovementNodeToPortfolioMovement(
     memo: node.memo,
     createdAt: node.createdBlock.datetime,
     blockId: node.createdBlock.blockId,
+  };
+}
+
+export function assetTransactionNodeToAssetTransaction(
+  node: AssetTransactionNode,
+): AssetTransaction {
+  return {
+    id: node.id,
+    assetId: node.assetId,
+    fromId: node.fromPortfolioId,
+    toId: node.toPortfolioId,
+    amount:
+      node.amount &&
+      balanceToBigNumber(node.amount as unknown as Balance).toString(),
+    nftIds: node.nftIds || undefined,
+    createdBlock: {
+      blockId: node.createdBlockId,
+      datetime: new Date(node.datetime),
+    },
+    extrinsicIdx: node.extrinsicIdx,
+    eventIdx: node.eventIdx,
+    eventId: node.eventId,
+    instructionId: node.instructionId || undefined,
+    memo: node.instructionMemo || undefined,
   };
 }

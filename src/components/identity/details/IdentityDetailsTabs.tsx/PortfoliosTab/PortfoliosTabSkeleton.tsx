@@ -1,17 +1,5 @@
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemButton,
-  Paper,
-  Skeleton,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-} from '@mui/material';
+import { Box, List, ListItem, ListItemButton, Skeleton } from '@mui/material';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 
 export function PortfoliosTabSkeleton() {
   return (
@@ -36,30 +24,7 @@ export function PortfoliosTabSkeleton() {
           height={48}
           sx={{ mb: 2 }}
         />
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                {Array.from({ length: 4 }, (_, index) => (
-                  <TableCell key={`skeleton-cell-${index}`}>
-                    <Skeleton variant="text" width="100%" />
-                  </TableCell>
-                ))}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.from({ length: 5 }, (_, rowIndex) => (
-                <TableRow key={`row-${rowIndex}`}>
-                  {Array.from({ length: 4 }, (__, cellIndex) => (
-                    <TableCell key={`cell-${rowIndex}-${cellIndex}`}>
-                      <Skeleton variant="text" width="100%" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <GenericTableSkeleton columnCount={4} rowCount={3} />
       </Box>
     </Box>
   );

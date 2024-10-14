@@ -17,13 +17,13 @@ export function useListIdentities({
   cursor,
   currentStartIndex,
 }: UseListIdentitiesParams): UseQueryResult<PaginatedData<Identity>, Error> {
-  const { graphQlClient, networkConfig } = usePolymeshSdkService();
+  const { graphQlClient } = usePolymeshSdkService();
   const identityService = new IdentityGraphRepo(graphQlClient);
 
   return useQuery<PaginatedData<Identity>, Error>({
     queryKey: [
       'useListIdentities',
-      networkConfig,
+      graphQlClient,
       pageSize,
       cursor,
       currentStartIndex,

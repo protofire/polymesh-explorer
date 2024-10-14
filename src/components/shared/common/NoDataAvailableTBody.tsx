@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
-import TollIcon from '@mui/icons-material/Toll';
+import DataObjectIcon from '@mui/icons-material/DataObject';
 
 interface NoDataAvailableProps {
   message?: string;
@@ -22,7 +22,7 @@ export function NoDataAvailableTBody({
           height="10rem"
           py="10%"
         >
-          <TollIcon
+          <DataObjectIcon
             sx={{ fontSize: '2rem', color: 'action.disabled', mb: '5%' }}
           />
           <Typography variant="body1" color="text.secondary">

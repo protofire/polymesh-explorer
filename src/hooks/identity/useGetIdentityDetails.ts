@@ -2,15 +2,16 @@ import { useQuery } from '@tanstack/react-query';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
 import { customReportError } from '@/utils/customReportError';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 
 interface Props {
   identity?: Identity | null;
 }
 
-export const useGetIdentityDetails = ({ identity }: Props) => {
+export const useGetIdentityPortfolios = ({ identity }: Props) => {
   const { polymeshService } = usePolymeshSdkService();
 
-  const queryResult = useQuery({
+  const queryResult = useQuery<PortfolioWithAssets[] | null, Error>({
     queryKey: ['useGetIdentityDetails', identity?.did],
     queryFn: async () => {
       if (!identity || !polymeshService) return null;

@@ -16,15 +16,18 @@ import {
   ListItemButton,
   ListItemText,
 } from '@mui/material';
-import { Portfolio } from '@/domain/entities/Portfolio';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
+import { useListAssetTransactions } from '@/hooks/portfolio/useListAssetTransactions';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { TabTokenMovementsTable } from './TabTokenMovementsTable';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
 
 interface PortfoliosTabProps {
-  portfolios: Portfolio[];
+  portfolios: PortfolioWithAssets[];
   isLoading?: boolean;
+  subscanUrl: string;
 }
 
 interface TabPanelProps {
@@ -50,11 +53,14 @@ function TabPanel(props: TabPanelProps) {
   );
 }
 
-export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
+export function PortfoliosTab({
+  portfolios,
+  isLoading,
+  subscanUrl,
+}: PortfoliosTabProps) {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<Portfolio | null>(
-    portfolios[0] || null,
-  );
+  const [selectedPortfolio, setSelectedPortfolio] =
+    useState<PortfolioWithAssets | null>(portfolios[0] || null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -70,11 +76,24 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
     currentStartIndex: (currentPage - 1) * pageSize,
   });
 
+  const {
+    data: assetTransactions,
+    isLoading: isLoadingTransactions,
+    isFetching: isFetchingTransactions,
+  } = useListAssetTransactions({
+    portfolios,
+    pageSize,
+    portfolioId: selectedPortfolio?.id || null,
+    offset: (currentPage - 1) * pageSize,
+    currentStartIndex: (currentPage - 1) * pageSize,
+    nonFungible: false,
+  });
+
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
   };
 
-  const handlePortfolioSelect = (portfolio: Portfolio) => {
+  const handlePortfolioSelect = (portfolio: PortfolioWithAssets) => {
     setSelectedPortfolio(portfolio);
   };
 
@@ -118,6 +137,7 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
             >
               <Tab label="Assets" />
               <Tab label="Movements" />
+              <Tab label="Transactions" />
             </Tabs>
             <TabPanel value={selectedTab} index={0}>
               <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
@@ -152,9 +172,21 @@ export function PortfoliosTab({ portfolios, isLoading }: PortfoliosTabProps) {
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <TabTokenMovementsTable
+                subscanUrl={subscanUrl}
                 portfolioMovements={portfolioMovements}
                 isLoadingMovements={isLoadingMovements}
                 isFetchingMovements={isFetchingMovements}
+                currentPage={currentPage}
+                pageSize={pageSize}
+                onPageChange={handlePageChange}
+              />
+            </TabPanel>
+            <TabPanel value={selectedTab} index={2}>
+              <TabAssetTransactionsTable
+                subscanUrl={subscanUrl}
+                assetTransactions={assetTransactions}
+                isLoadingTransactions={isLoadingTransactions}
+                isFetchingTransactions={isFetchingTransactions}
                 currentPage={currentPage}
                 pageSize={pageSize}
                 onPageChange={handlePageChange}

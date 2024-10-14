@@ -18,7 +18,7 @@ export function ExplorerLink({
   explorerConfig,
   txHash,
   sx,
-  toolTipText = 'See in explorer',
+  toolTipText = 'See in subscan',
 }: ExplorerLinkProps) {
   const linkDisabled = !txHash;
   const fullPath = `${explorerConfig.baseUrl}${explorerConfig.path}/${txHash}`;

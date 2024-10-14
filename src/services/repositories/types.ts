@@ -1,4 +1,4 @@
-import { PortfolioParty } from '@/domain/entities/PortfolioMovement';
+import { Portfolio } from '@/domain/entities/Portfolio';
 
 export interface AssetNode {
   ticker: string;
@@ -7,6 +7,7 @@ export interface AssetNode {
   totalSupply: string;
   divisible: boolean;
   createdAt: string;
+  isNftCollection: boolean;
   owner: {
     did: string;
   };
@@ -112,9 +113,9 @@ export interface VenueListResponse {
 export interface PortfolioMovementNode {
   id: string;
   fromId: string;
-  from: PortfolioParty;
+  from: Portfolio;
   toId: string;
-  to: PortfolioParty;
+  to: Portfolio;
   assetId: string;
   amount?: string;
   nftIds?: string[];
@@ -136,5 +137,34 @@ export interface PortfolioMovementsResponse {
       endCursor: string;
     };
     nodes: PortfolioMovementNode[];
+  };
+}
+
+export interface AssetTransactionNode {
+  id: string;
+  fromPortfolioId: string;
+  toPortfolioId: string;
+  assetId: string;
+  amount: string;
+  nftIds: string[] | null;
+  datetime: string;
+  createdBlockId: string;
+  extrinsicIdx: number;
+  eventIdx: number;
+  eventId: string;
+  instructionId: string | null;
+  instructionMemo: string | null;
+}
+
+export interface AssetTransactionsResponse {
+  assetTransactions: {
+    totalCount: number;
+    pageInfo: {
+      hasNextPage: boolean;
+      hasPreviousPage: boolean;
+      startCursor: string;
+      endCursor: string;
+    };
+    nodes: AssetTransactionNode[];
   };
 }
