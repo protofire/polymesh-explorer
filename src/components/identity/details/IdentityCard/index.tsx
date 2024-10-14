@@ -80,7 +80,9 @@ export function IdentityCard({
         <Box mt={2}>
           <Stack direction="row" spacing={1}>
             {isCustodian && (
-              <Tooltip title={`Custodian of ${custodiedPortfoliosCount} portfolios`}>
+              <Tooltip
+                title={`Custodian of ${custodiedPortfoliosCount} portfolios`}
+              >
                 <Chip
                   icon={<AccountBalanceWalletIcon />}
                   label={`Custodian (${custodiedPortfoliosCount})`}
