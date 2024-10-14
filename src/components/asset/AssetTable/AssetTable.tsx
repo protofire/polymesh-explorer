@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  CircularProgress,
   Tooltip,
   TablePagination,
 } from '@mui/material';
@@ -24,6 +23,7 @@ import { Asset } from '@/domain/entities/Asset';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 
 interface AssetTableProps {
   paginatedAssets: PaginatedData<Asset[]>;
@@ -38,7 +38,7 @@ export function AssetTable({
   isLoading,
   error,
 }: AssetTableProps) {
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <GenericTableSkeleton columnCount={8} rowCount={10} />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
