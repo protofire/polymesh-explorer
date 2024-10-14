@@ -5,7 +5,6 @@ import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymesh
 import { PaginatedData } from '@/types/pagination';
 import { calculatePaginationInfo } from '@/utils/paginationUtils';
 import { customReportError } from '@/utils/customReportError';
-import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 

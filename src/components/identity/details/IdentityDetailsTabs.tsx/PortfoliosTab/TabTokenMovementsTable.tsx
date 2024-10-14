@@ -14,7 +14,6 @@ import { PaginatedData } from '@/types/pagination';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
-import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 
