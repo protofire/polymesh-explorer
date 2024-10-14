@@ -1,7 +1,11 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { portfolioMovementNodeToPortfolioMovement, assetTransactionNodeToPortfolioMovement } from './transformer';
+import {
+  assetTransactionNodeToAssetTransaction,
+  portfolioMovementNodeToPortfolioMovement,
+} from './transformer';
 import { PortfolioMovementsResponse, AssetTransactionsResponse } from './types';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 export type PortfolioMovementType = 'Fungible' | 'NonFungible';
 
@@ -102,7 +106,7 @@ export class PortfolioMovementsGraphRepo {
     offset: number = 0,
     nonFungible: boolean = false,
   ): Promise<{
-    transactions: PortfolioMovement[];
+    transactions: AssetTransaction[];
     totalCount: number;
     hasNextPage: boolean;
     hasPreviousPage: boolean;
@@ -164,7 +168,7 @@ export class PortfolioMovementsGraphRepo {
 
     return {
       transactions: assetTransactions.nodes.map(
-        assetTransactionNodeToPortfolioMovement,
+        assetTransactionNodeToAssetTransaction,
       ),
       totalCount: assetTransactions.totalCount,
       hasNextPage: assetTransactions.pageInfo.hasNextPage,

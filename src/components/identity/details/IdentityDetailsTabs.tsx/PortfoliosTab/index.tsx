@@ -183,6 +183,7 @@ export function PortfoliosTab({
             </TabPanel>
             <TabPanel value={selectedTab} index={2}>
               <TabAssetTransactionsTable
+                subscanUrl={subscanUrl}
                 assetTransactions={assetTransactions}
                 isLoadingTransactions={isLoadingTransactions}
                 isFetchingTransactions={isFetchingTransactions}

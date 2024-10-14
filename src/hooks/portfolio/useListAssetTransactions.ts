@@ -7,6 +7,7 @@ import { calculatePaginationInfo } from '@/utils/paginationUtils';
 import { customReportError } from '@/utils/customReportError';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { Portfolio } from '@/domain/entities/Portfolio';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 interface UseListAssetTransactionsParams {
   pageSize: number;
@@ -25,7 +26,7 @@ export function useListAssetTransactions({
   currentStartIndex,
   nonFungible,
 }: UseListAssetTransactionsParams): UseQueryResult<
-  PaginatedData<PortfolioMovement>,
+  PaginatedData<AssetTransaction>,
   Error
 > {
   const { graphQlClient } = usePolymeshSdkService();
@@ -44,7 +45,7 @@ export function useListAssetTransactions({
     );
   }, [portfolios]);
 
-  return useQuery<PaginatedData<PortfolioMovement>, Error>({
+  return useQuery<PaginatedData<AssetTransaction>, Error>({
     queryKey: [
       'assetTransactions',
       pageSize,

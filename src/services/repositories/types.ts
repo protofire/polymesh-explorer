@@ -1,4 +1,4 @@
-import { PortfolioParty } from '@/domain/entities/PortfolioMovement';
+import { Portfolio } from "@/domain/entities/Portfolio";
 
 export interface AssetNode {
   ticker: string;
@@ -113,9 +113,9 @@ export interface VenueListResponse {
 export interface PortfolioMovementNode {
   id: string;
   fromId: string;
-  from: PortfolioParty;
+  from: Portfolio;
   toId: string;
-  to: PortfolioParty;
+  to: Portfolio;
   assetId: string;
   amount?: string;
   nftIds?: string[];
@@ -141,17 +141,17 @@ export interface PortfolioMovementsResponse {
 }
 
 export interface AssetTransactionNode {
-  amount: string | null;
+  id: string;
+  fromPortfolioId: string;
+  toPortfolioId: string;
   assetId: string;
+  amount: string;
   nftIds: string[] | null;
   datetime: string;
-  id: string;
   createdBlockId: string;
   extrinsicIdx: number;
   eventIdx: number;
   eventId: string;
-  toPortfolioId: string;
-  fromPortfolioId: string;
   instructionId: string | null;
   instructionMemo: string | null;
 }

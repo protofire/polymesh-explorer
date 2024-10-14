@@ -10,17 +10,22 @@ import {
   TablePagination,
 } from '@mui/material';
 import { PaginatedData } from '@/types/pagination';
-import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { truncateAddress } from '@/services/polymesh/address';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
 
 interface TabAssetTransactionsTableProps {
-  assetTransactions: PaginatedData<PortfolioMovement> | undefined;
+  assetTransactions: PaginatedData<AssetTransaction> | undefined;
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
   currentPage: number;
   pageSize: number;
   onPageChange: (event: unknown, newPage: number) => void;
+  subscanUrl: string;
 }
 
 export function TabAssetTransactionsTable({
@@ -30,6 +35,7 @@ export function TabAssetTransactionsTable({
   currentPage,
   pageSize,
   onPageChange,
+  subscanUrl,
 }: TabAssetTransactionsTableProps) {
   if (isLoadingTransactions || isFetchingTransactions) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
@@ -41,35 +47,62 @@ export function TabAssetTransactionsTable({
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>Instruction</TableCell>
+              <TableCell>Date</TableCell>
               <TableCell>Asset</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
               <TableCell>Amount</TableCell>
-              <TableCell>Date</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {assetTransactions?.data && assetTransactions.data.length > 0 ? (
-              assetTransactions.data.map((transaction) => (
-                <TableRow key={transaction.id}>
-                  <TableCell>{transaction.assetId}</TableCell>
-                  <TableCell>
-                    {transaction.from?.name || transaction.fromId}
-                  </TableCell>
-                  <TableCell>
-                    {transaction.to?.name || transaction.toId}
-                  </TableCell>
-                  <TableCell>{transaction.amount}</TableCell>
-                  <TableCell>
-                    {/* {new Date(
-                      transaction.createdBlock.datetime,
-                    ).toLocaleString()} */}
-                  </TableCell>
-                </TableRow>
-              ))
+              assetTransactions.data.map((transaction) => {
+                const fromDid = transaction.fromId?.split('/')[0] || '';
+                const toDid = transaction.toId?.split('/')[0] || '';
+
+                return (
+                  <TableRow key={transaction.id}>
+                    <TableCell>
+                      <GenericLink
+                        href={`${subscanUrl}/block/${transaction.createdBlock.blockId}?tab=event&event=${transaction.id.replace('/', '-')}`}
+                        tooltipText="See on subscan"
+                        isExternal
+                      >
+                        {transaction.instructionId}
+                      </GenericLink>
+                    </TableCell>
+                    <TableCell>
+                      <FormattedDate date={transaction.createdBlock.datetime} />
+                    </TableCell>
+                    <TableCell>
+                      <GenericLink
+                        href={`${ROUTES.Asset}/${transaction.assetId}`}
+                      >
+                        {transaction.assetId}
+                      </GenericLink>
+                    </TableCell>
+                    <TableCell>
+                      {transaction.from?.name || (
+                        <GenericLink href={`${ROUTES.Identity}/${fromDid}`}>
+                          {truncateAddress(fromDid, 5)}
+                        </GenericLink>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {transaction.to?.name || (
+                        <GenericLink href={`${ROUTES.Identity}/${toDid}`}>
+                          {truncateAddress(toDid, 5)}
+                        </GenericLink>
+                      )}
+                    </TableCell>
+                    <TableCell>{transaction.amount}</TableCell>
+                  </TableRow>
+                );
+              })
             ) : (
               <NoDataAvailableTBody
-                colSpan={5}
+                colSpan={6}
                 message="No transactions available for this portfolio"
               />
             )}

@@ -1,10 +1,4 @@
-import { Portfolio } from './Portfolio';
-
-// export interface PortfolioParty {
-//   identityId: string;
-//   number: string;
-//   name: string;
-// }
+import { Portfolio } from '@/domain/entities/Portfolio';
 
 export interface PortfolioMovement {
   id: string;

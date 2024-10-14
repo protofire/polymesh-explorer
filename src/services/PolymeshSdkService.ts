@@ -114,7 +114,7 @@ export class PolymeshSdkService {
             0,
           );
 
-          const number = index === 0 ? '0' : portfolio.toHuman().id;
+          const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
           const name =
             index === 0
               ? 'Default'
