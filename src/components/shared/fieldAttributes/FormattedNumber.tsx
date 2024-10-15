@@ -1,49 +1,52 @@
 import React from 'react';
 import { Typography, Tooltip } from '@mui/material';
+import { BigNumber } from '@polymeshassociation/polymesh-sdk';
 
 interface FormattedNumberProps {
-  value: number | string;
+  value: number | string | BigNumber;
   decimals?: number;
 }
 
-function formatNumber(num: number | string, decimals: number = 2): string {
-  if (typeof num === 'string') {
-    const match = num.match(/^(\d+(\.\d+)?)([KMBT])?$/);
-    if (match) {
-      const [, numberPart, , suffix] = match;
-      const formattedNumber = Number(numberPart).toLocaleString(undefined, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: decimals,
-      });
-      return `${formattedNumber}${suffix || ''}`;
-    }
-    return num; // Return as is if it doesn't match the expected format
-  }
+function formatNumber(
+  num: number | string | BigNumber,
+  decimals: number = 2,
+): string {
+  const bigNum = BigNumber.isBigNumber(num)
+    ? num
+    : new BigNumber(num.toString());
 
   const lookup = [
-    { value: 1, symbol: '' },
-    { value: 1e3, symbol: 'K' },
-    { value: 1e6, symbol: 'M' },
-    { value: 1e9, symbol: 'B' },
-    { value: 1e12, symbol: 'T' },
+    { value: new BigNumber(1), symbol: '' },
+    { value: new BigNumber(1e3), symbol: 'K' },
+    { value: new BigNumber(1e6), symbol: 'M' },
+    { value: new BigNumber(1e9), symbol: 'B' },
+    { value: new BigNumber(1e12), symbol: 'T' },
   ];
-  const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
-  const item = lookup.slice().reverse().find(function(item) {
-    return num >= item.value;
-  });
-  return item
-    ? (num / item.value).toLocaleString(undefined, {
+
+  const threshold = lookup
+    .slice()
+    .reverse()
+    .find((t) => bigNum.gte(t.value));
+
+  if (threshold) {
+    const scaled = bigNum.div(threshold.value).toNumber();
+    return (
+      scaled.toLocaleString(undefined, {
         minimumFractionDigits: 0,
         maximumFractionDigits: decimals,
-      }).replace(rx, '$1') + item.symbol
-    : '0';
+      }) + threshold.symbol
+    );
+  }
+
+  return '0';
 }
 
 export function FormattedNumber({ value, decimals = 2 }: FormattedNumberProps) {
-  const formattedValue = formatNumber(value, decimals);
-  const fullValue = typeof value === 'number'
-    ? value.toLocaleString(undefined, { maximumFractionDigits: decimals })
-    : value;
+  const bigValue = BigNumber.isBigNumber(value)
+    ? value
+    : new BigNumber(value.toString());
+  const formattedValue = formatNumber(bigValue, decimals);
+  const fullValue = bigValue.toFormat(decimals);
 
   if (formattedValue === fullValue) {
     return <Typography>{formattedValue}</Typography>;

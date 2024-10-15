@@ -46,21 +46,21 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
     <Box sx={{ flexShrink: 0, ml: 2.5 }}>
       <IconButton
         onClick={handleFirstPageButtonClick}
-        disabled={page === 0}
+        disabled={page === 0 || count === 0}
         aria-label="first page"
       >
         <FirstPageIcon />
       </IconButton>
       <IconButton
         onClick={handleBackButtonClick}
-        disabled={page === 0}
+        disabled={page === 0 || count === 0}
         aria-label="previous page"
       >
         <KeyboardArrowLeft />
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
-        disabled={page >= Math.ceil(count / rowsPerPage) - 1}
+        disabled={page >= Math.ceil(count / rowsPerPage) - 1 || count === 0}
         aria-label="next page"
       >
         <KeyboardArrowRight />
@@ -87,6 +87,15 @@ export function PaginationFooter({
     [pagination, paginationInfo.currentPage],
   );
 
+  const handleChangeRowsPerPage = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (paginationInfo.totalCount > 0) {
+        pagination.changePageSize(event);
+      }
+    },
+    [pagination, paginationInfo.totalCount],
+  );
+
   return (
     <TablePagination
       component="div"
@@ -94,9 +103,10 @@ export function PaginationFooter({
       page={paginationInfo.currentPage - 1}
       onPageChange={handleChangePage}
       rowsPerPage={paginationInfo.pageSize}
-      onRowsPerPageChange={pagination.changePageSize}
-      rowsPerPageOptions={[10, 30, 50]}
+      onRowsPerPageChange={handleChangeRowsPerPage}
+      rowsPerPageOptions={paginationInfo.totalCount > 0 ? [10, 30, 50] : []}
       ActionsComponent={TablePaginationActions}
+      disabled={paginationInfo.totalCount <= paginationInfo.pageSize}
     />
   );
 }

@@ -29,9 +29,7 @@ export function TruncatedText({
 
   return (
     <Tooltip title={text} arrow>
-      <Typography style={style}>
-        {text}
-      </Typography>
+      <Typography style={style}>{text}</Typography>
     </Tooltip>
   );
 }

@@ -95,8 +95,9 @@ export function IdentityTable({
                       <Tooltip
                         title={format(
                           new Date(
-                            transactionHistory[identity.did].extrinsics[0].block
-                              .datetime,
+                            transactionHistory[
+                              identity.did
+                            ].extrinsics[0].block.datetime,
                           ),
                           'PPpp',
                         )}

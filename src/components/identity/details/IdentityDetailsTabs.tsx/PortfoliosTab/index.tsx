@@ -23,6 +23,8 @@ import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { TabTokenMovementsTable } from './TabTokenMovementsTable';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -45,6 +47,7 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`portfolio-tabpanel-${index}`}
       aria-labelledby={`portfolio-tab-${index}`}
+      // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -58,7 +61,8 @@ export function PortfoliosTab({
   subscanUrl,
 }: PortfoliosTabProps) {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioWithAssets | null>(portfolios[0] || null);
+  const [selectedPortfolio, setSelectedPortfolio] =
+    useState<PortfolioWithAssets | null>(portfolios[0] || null);
 
   const {
     data: portfolioMovements,
@@ -141,7 +145,13 @@ export function PortfoliosTab({
                       selectedPortfolio.assets.map((asset) => (
                         <TableRow key={asset.ticker}>
                           <TableCell>{asset.name}</TableCell>
-                          <TableCell>{asset.ticker}</TableCell>
+                          <TableCell>
+                            <GenericLink
+                              href={`${ROUTES.Asset}/${asset.ticker}`}
+                            >
+                              {asset.ticker}
+                            </GenericLink>
+                          </TableCell>
                           <TableCell>{asset.balance}</TableCell>
                           <TableCell>{asset.type}</TableCell>
                         </TableRow>

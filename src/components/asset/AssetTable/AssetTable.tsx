@@ -13,7 +13,6 @@ import {
   Paper,
   Tooltip,
 } from '@mui/material';
-import Link from 'next/link';
 import CollectionsIcon from '@mui/icons-material/Collections';
 import TokenIcon from '@mui/icons-material/Toll';
 import { truncateAddress } from '@/services/polymesh/address';

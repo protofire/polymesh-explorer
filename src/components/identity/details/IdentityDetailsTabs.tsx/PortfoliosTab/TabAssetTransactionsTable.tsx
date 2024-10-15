@@ -17,6 +17,7 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
@@ -92,7 +93,11 @@ export function TabAssetTransactionsTable({
                         </GenericLink>
                       )}
                     </TableCell>
-                    <TableCell>{transaction.amount}</TableCell>
+                    <TableCell>
+                      {transaction.amount && (
+                        <FormattedNumber value={transaction.amount} />
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })
