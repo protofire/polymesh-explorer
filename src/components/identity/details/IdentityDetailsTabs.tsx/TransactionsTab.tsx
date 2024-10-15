@@ -15,6 +15,9 @@ import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { ROUTES } from '@/config/routes';
+import { truncateAddress } from '@/services/polymesh/address';
+import { CheckBooleanField } from '@/components/shared/fieldAttributes/CheckBooleanField';
 
 interface TransactionsTabTableProps {
   paginatedTransactions: PaginatedData<ExtrinsicTransaction[]> | undefined;
@@ -39,7 +42,6 @@ export function TransactionsTabTable({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Block</TableCell>
               <TableCell>Date</TableCell>
               <TableCell>From</TableCell>
               <TableCell>Module</TableCell>
@@ -54,28 +56,37 @@ export function TransactionsTabTable({
                 colSpan={6}
               />
             ) : (
-              transactions.map((transaction) => (
-                <TableRow
-                  key={`${transaction.blockId}-${transaction.extrinsicIdx}`}
-                >
-                  <TableCell>
-                    <GenericLink
-                      href={`${subscanUrl}/extrinsic/${transaction.blockId}-${transaction.extrinsicIdx}`}
-                      tooltipText="See on subscan"
-                      isExternal
-                    >
-                      {transaction.blockId}
-                    </GenericLink>
-                  </TableCell>
-                  <TableCell>
-                    <FormattedDate date={transaction.block.datetime} />
-                  </TableCell>
-                  <TableCell>{transaction.address}</TableCell>
-                  <TableCell>{transaction.moduleId}</TableCell>
-                  <TableCell>{transaction.callId}</TableCell>
-                  <TableCell>{transaction.success ? 'Yes' : 'No'}</TableCell>
-                </TableRow>
-              ))
+              transactions.map((transaction) => {
+                const extrinsic = `${transaction.blockId}-${transaction.extrinsicIdx}`;
+
+                return (
+                  <TableRow key={extrinsic}>
+                    <TableCell>
+                      <FormattedDate date={transaction.block.datetime} />
+                    </TableCell>
+                    <TableCell>
+                      <GenericLink
+                        href={`${ROUTES.Account}/${transaction.address}`}
+                      >
+                        {truncateAddress(transaction.address, 5)}
+                      </GenericLink>
+                    </TableCell>
+                    <TableCell>{transaction.moduleId}</TableCell>
+                    <TableCell>
+                      <GenericLink
+                        href={`${subscanUrl}/extrinsic/${extrinsic}`}
+                        tooltipText={`See extrinsic ${extrinsic} on subscan`}
+                        isExternal
+                      >
+                        {transaction.callId}
+                      </GenericLink>
+                    </TableCell>
+                    <TableCell>
+                      <CheckBooleanField value={transaction.success} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
