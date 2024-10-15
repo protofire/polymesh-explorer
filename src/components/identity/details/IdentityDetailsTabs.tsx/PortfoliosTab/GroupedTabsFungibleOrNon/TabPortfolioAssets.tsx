@@ -19,6 +19,10 @@ interface TabPortfolioAssetsProps {
 }
 
 export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
+  //   const filteredAssets = assets.filter((asset) =>
+  //     assetType === 'Fungible' ? asset.isFungible : !asset.isFungible,
+  //   );
+
   return (
     <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
       <Table size="small">

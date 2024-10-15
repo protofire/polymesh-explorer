@@ -8,8 +8,6 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
-import Link from 'next/link';
-import { AssertionError } from 'assert';
 import { Asset } from '@/domain/entities/Asset';
 import { ROUTES } from '@/config/routes';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
