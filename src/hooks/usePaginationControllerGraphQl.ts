@@ -7,9 +7,15 @@ import {
 
 export const DEFAULT_PAGE_SIZE = 10;
 
-export function usePaginationControllerGraphQl(
+interface UsePaginationControllerGraphQlOptions {
+  initialPageSize?: number;
+  useOffset?: boolean;
+}
+
+export function usePaginationControllerGraphQl({
   initialPageSize = DEFAULT_PAGE_SIZE,
-): PaginationController {
+  useOffset = false,
+}: UsePaginationControllerGraphQlOptions = {}): PaginationController {
   const [paginationInfo, setPaginationInfo] = useState<PaginationInfo>({
     hasNextPage: false,
     hasPreviousPage: false,
@@ -20,6 +26,7 @@ export function usePaginationControllerGraphQl(
     cursor: null,
     currentPage: 1,
     firstCursor: null,
+    offset: 0,
   });
 
   const setPageInfo = useCallback(
@@ -33,13 +40,17 @@ export function usePaginationControllerGraphQl(
     [],
   );
 
-  const goToNextPage = useCallback((event: unknown, newPage: number) => {
-    setPaginationInfo((prev) => ({
-      ...prev,
-      cursor: prev.endCursor,
-      currentPage: newPage + 1,
-    }));
-  }, []);
+  const goToNextPage = useCallback(
+    (event: unknown, newPage: number) => {
+      setPaginationInfo((prev) => ({
+        ...prev,
+        cursor: prev.endCursor,
+        currentPage: newPage + 1,
+        offset: useOffset ? prev.offset + prev.pageSize : prev.offset,
+      }));
+    },
+    [useOffset],
+  );
 
   const goToPreviousPage = useCallback(() => {
     if (paginationInfo.hasPreviousPage) {
@@ -65,6 +76,7 @@ export function usePaginationControllerGraphQl(
       cursor: null,
       currentPage: 1,
       firstCursor: null,
+      offset: 0,
     }));
   }, []);
 

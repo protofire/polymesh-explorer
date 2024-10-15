@@ -10,6 +10,7 @@ import {
   PageInfo,
 } from './types';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { pageInfoFragment } from './fragments';
 
 export type PortfolioMovementType = 'Fungible' | 'NonFungible';
 
@@ -29,6 +30,7 @@ export class PortfolioMovementsGraphRepo {
     const assetDetail = type === 'Fungible' ? 'amount' : 'nftIds';
 
     const query = gql`
+      ${pageInfoFragment}
       query ($pageSize: Int!, $offset: Int!, $portfolioNumber: String!, $type: PortfolioMovementTypeEnum!) {
         portfolioMovements(
           first: $pageSize
@@ -44,10 +46,7 @@ export class PortfolioMovementsGraphRepo {
         ) {
           totalCount
           pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             id
@@ -101,14 +100,15 @@ export class PortfolioMovementsGraphRepo {
   async getAssetTransactions(
     portfolioId: string,
     pageSize: number,
-    offset: number = 0,
     nonFungible: boolean = false,
+    offset: number = 0,
   ): Promise<{
     transactions: AssetTransaction[];
     totalCount: number;
     pageInfo: PageInfo;
   }> {
     const query = gql`
+      ${pageInfoFragment}
       query ($pageSize: Int!, $offset: Int!) {
         assetTransactions(
           first: $pageSize
@@ -126,10 +126,7 @@ export class PortfolioMovementsGraphRepo {
         ) {
           totalCount
           pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             amount

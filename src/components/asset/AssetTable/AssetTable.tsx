@@ -23,40 +23,20 @@ import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailable
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
+import { TruncatedText } from '@/components/shared/fieldAttributes/TruncatedText';
 
 interface AssetTableProps {
   paginatedAssets: PaginatedData<Asset[]>;
   error: Error | null;
 }
 
-const MAX_NAME_LENGTH = 20;
-
 export function AssetTable({ paginatedAssets, error }: AssetTableProps) {
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
   const { paginationController, data: assets } = paginatedAssets;
-
-  const renderAssetName = (name: string) => {
-    if (name.length <= MAX_NAME_LENGTH) {
-      return <Typography>{name}</Typography>;
-    }
-
-    return (
-      <Tooltip title={name} arrow>
-        <Typography
-          noWrap
-          style={{
-            maxWidth: '200px',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          {name}
-        </Typography>
-      </Tooltip>
-    );
-  };
 
   return (
     <Box>
@@ -79,11 +59,18 @@ export function AssetTable({ paginatedAssets, error }: AssetTableProps) {
               assets.map((asset) => (
                 <TableRow key={asset.ticker}>
                   <TableCell>
-                    <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
+                    <GenericLink href={`${ROUTES.Asset}/${asset.ticker}`}>
                       {asset.ticker}
-                    </Link>
+                    </GenericLink>
                   </TableCell>
-                  <TableCell>{renderAssetName(asset.name)}</TableCell>
+                  <TableCell>
+                    <TruncatedText
+                      text={asset.name}
+                      maxLines={2}
+                      lineHeight={1.2}
+                      maxWidth="100%"
+                    />
+                  </TableCell>
                   <TableCell>{asset.type}</TableCell>
                   <TableCell>
                     <Tooltip
@@ -100,11 +87,16 @@ export function AssetTable({ paginatedAssets, error }: AssetTableProps) {
                       )}
                     </Tooltip>
                   </TableCell>
-                  <TableCell>{asset.totalSupply}</TableCell>
                   <TableCell>
-                    <Link href={`${ROUTES.Identity}/${asset.ownerDid}`}>
-                      {truncateAddress(asset.ownerDid)}
-                    </Link>
+                    <FormattedNumber value={parseFloat(asset.totalSupply)} />
+                  </TableCell>
+                  <TableCell>
+                    <GenericLink
+                      href={`${ROUTES.Identity}/${asset.ownerDid}`}
+                      tooltipText="Go to Identity"
+                    >
+                      {truncateAddress(asset.ownerDid, 5)}
+                    </GenericLink>
                   </TableCell>
                   <TableCell>{asset.documents}</TableCell>
                   <TableCell>

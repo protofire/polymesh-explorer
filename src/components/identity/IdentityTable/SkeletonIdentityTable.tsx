@@ -21,7 +21,7 @@ export function SkeletonIdentityTable() {
         <Skeleton width={200} />
       </Typography>
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>DID</TableCell>

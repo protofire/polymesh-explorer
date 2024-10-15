@@ -45,7 +45,6 @@ function TabPanel(props: TabPanelProps) {
       hidden={value !== index}
       id={`portfolio-tabpanel-${index}`}
       aria-labelledby={`portfolio-tab-${index}`}
-      // eslint-disable-next-line react/jsx-props-no-spreading
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
@@ -59,21 +58,15 @@ export function PortfoliosTab({
   subscanUrl,
 }: PortfoliosTabProps) {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [selectedPortfolio, setSelectedPortfolio] =
-    useState<PortfolioWithAssets | null>(portfolios[0] || null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
+  const [selectedPortfolio, setSelectedPortfolio] = useState<PortfolioWithAssets | null>(portfolios[0] || null);
 
   const {
     data: portfolioMovements,
     isLoading: isLoadingMovements,
     isFetching: isFetchingMovements,
   } = useListPortfolioMovements({
-    pageSize,
     portfolioNumber: selectedPortfolio?.id || '',
     type: 'Fungible',
-    offset: (currentPage - 1) * pageSize,
-    currentStartIndex: (currentPage - 1) * pageSize,
   });
 
   const {
@@ -82,10 +75,7 @@ export function PortfoliosTab({
     isFetching: isFetchingTransactions,
   } = useListAssetTransactions({
     portfolios,
-    pageSize,
     portfolioId: selectedPortfolio?.id || null,
-    offset: (currentPage - 1) * pageSize,
-    currentStartIndex: (currentPage - 1) * pageSize,
     nonFungible: false,
   });
 
@@ -95,10 +85,6 @@ export function PortfoliosTab({
 
   const handlePortfolioSelect = (portfolio: PortfolioWithAssets) => {
     setSelectedPortfolio(portfolio);
-  };
-
-  const handlePageChange = (event: unknown, newPage: number) => {
-    setCurrentPage(newPage);
   };
 
   if (isLoading) {
@@ -176,9 +162,6 @@ export function PortfoliosTab({
                 portfolioMovements={portfolioMovements}
                 isLoadingMovements={isLoadingMovements}
                 isFetchingMovements={isFetchingMovements}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={2}>
@@ -187,9 +170,6 @@ export function PortfoliosTab({
                 assetTransactions={assetTransactions}
                 isLoadingTransactions={isLoadingTransactions}
                 isFetchingTransactions={isFetchingTransactions}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
               />
             </TabPanel>
           </>

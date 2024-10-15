@@ -10,7 +10,8 @@ export interface PaginationInfo extends PageInfo {
   pageSize: number;
   cursor: string | null;
   currentPage: number;
-  firstCursor: string | null; // Añadimos esta propiedad
+  firstCursor: string | null;
+  offset: number;
 }
 
 export interface PaginationController {
@@ -20,7 +21,7 @@ export interface PaginationController {
   ) => void;
   goToNextPage: (event: unknown, newPage: number) => void;
   goToPreviousPage: () => void;
-  goToFirstPage: () => void; // Añadimos esta función
+  goToFirstPage: () => void;
   resetPagination: () => void;
   changePageSize: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }

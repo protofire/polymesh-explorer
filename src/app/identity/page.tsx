@@ -8,7 +8,6 @@ import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCre
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
-import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { SkeletonIdentityTable } from '@/components/identity/IdentityTable/SkeletonIdentityTable';
 
 export default function IdentityPage() {

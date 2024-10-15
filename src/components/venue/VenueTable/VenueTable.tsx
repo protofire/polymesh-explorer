@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Box,
   Typography,
 } from '@mui/material';
@@ -15,40 +14,30 @@ import Link from 'next/link';
 import { Venue } from '@/domain/entities/Venue';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 
 interface VenueTableProps {
-  venues: Venue[];
-  isLoading: boolean;
+  paginatedVenues: PaginatedData<Venue[]>;
   error: Error | null;
-  hasNextPage: boolean;
-  isPreviousData: boolean;
-  onFirstPage: () => void;
-  onNextPage: () => void;
-  cursor: string | undefined;
 }
 
-export function VenueTable({
-  venues,
-  isLoading,
-  error,
-  hasNextPage,
-  isPreviousData,
-  onFirstPage,
-  onNextPage,
-  cursor,
-}: VenueTableProps) {
-  if (isLoading) return <Typography>Loading</Typography>;
-  if (error) return <Typography>Error: {error.message}</Typography>;
+export function VenueTable({ paginatedVenues, error }: VenueTableProps) {
+  if (error)
+    return <Typography color="error">Error: {error.message}</Typography>;
+
+  const { data: venues, paginationController } = paginatedVenues;
 
   return (
     <Box>
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
-              <TableCell>type</TableCell>
-              <TableCell>details</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Details</TableCell>
               <TableCell>Owner</TableCell>
               <TableCell>Created at</TableCell>
             </TableRow>
@@ -66,20 +55,15 @@ export function VenueTable({
                     {truncateAddress(venue.ownerId)}
                   </Link>
                 </TableCell>
-                <TableCell>{venue.createdAt.toLocaleString()}</TableCell>
+                <TableCell>
+                  <FormattedDate date={venue.createdAt} />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      <Box mt={2} display="flex" justifyContent="space-between">
-        <Button onClick={onFirstPage} disabled={!cursor}>
-          First Page
-        </Button>
-        <Button onClick={onNextPage} disabled={isPreviousData || !hasNextPage}>
-          Next Page
-        </Button>
-      </Box>
+      <PaginationFooter paginationController={paginationController} />
     </Box>
   );
 }

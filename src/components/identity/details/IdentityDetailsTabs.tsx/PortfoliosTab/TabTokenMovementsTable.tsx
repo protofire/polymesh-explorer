@@ -7,23 +7,20 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
 } from '@mui/material';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { PaginatedData } from '@/types/pagination';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface TabTokenMovementsTableProps {
-  portfolioMovements: PaginatedData<PortfolioMovement> | undefined;
+  portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
   isLoadingMovements: boolean;
   isFetchingMovements: boolean;
-  currentPage: number;
-  pageSize: number;
-  onPageChange: (event: unknown, newPage: number) => void;
   subscanUrl: string;
 }
 
@@ -31,14 +28,13 @@ export function TabTokenMovementsTable({
   portfolioMovements,
   isLoadingMovements,
   isFetchingMovements,
-  currentPage,
-  pageSize,
-  onPageChange,
   subscanUrl,
 }: TabTokenMovementsTableProps) {
   if (isLoadingMovements || isFetchingMovements || !portfolioMovements) {
     return <GenericTableSkeleton columnCount={7} rowCount={3} />;
   }
+
+  const { data: movements, paginationController } = portfolioMovements;
 
   return (
     <>
@@ -55,13 +51,13 @@ export function TabTokenMovementsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {portfolioMovements?.data.length < 1 ? (
+            {movements.length < 1 ? (
               <NoDataAvailableTBody
                 message="No portfolio movements available"
                 colSpan={6}
               />
             ) : (
-              portfolioMovements.data.map((movement) => (
+              movements.map((movement) => (
                 <TableRow key={movement.id}>
                   <TableCell>
                     <GenericLink
@@ -89,14 +85,7 @@ export function TabTokenMovementsTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        component="div"
-        count={portfolioMovements.paginationInfo.totalCount}
-        page={currentPage - 1}
-        onPageChange={onPageChange}
-        rowsPerPage={pageSize}
-        rowsPerPageOptions={[pageSize]}
-      />
+      <PaginationFooter paginationController={paginationController} />
     </>
   );
 }

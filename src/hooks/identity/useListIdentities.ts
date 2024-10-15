@@ -3,6 +3,7 @@ import { useMemo, useCallback } from 'react';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
+import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
@@ -22,20 +23,25 @@ export function useListIdentities(): UseQueryResult<UseListIdentitiesReturn> {
       throw new Error('IdentityService is not initialized');
     }
 
-    const result = await identityService.getIdentityList(
-      paginationController.paginationInfo.pageSize,
-      paginationController.paginationInfo.cursor ?? undefined,
-    );
+    try {
+      const result = await identityService.getIdentityList(
+        paginationController.paginationInfo.pageSize,
+        paginationController.paginationInfo.cursor ?? undefined,
+      );
 
-    paginationController.setPageInfo({
-      hasNextPage: result.pageInfo.hasNextPage,
-      hasPreviousPage: result.pageInfo.hasPreviousPage,
-      startCursor: result.pageInfo.startCursor,
-      endCursor: result.pageInfo.endCursor,
-      totalCount: result.totalCount,
-    });
+      paginationController.setPageInfo({
+        hasNextPage: result.pageInfo.hasNextPage,
+        hasPreviousPage: result.pageInfo.hasPreviousPage,
+        startCursor: result.pageInfo.startCursor,
+        endCursor: result.pageInfo.endCursor,
+        totalCount: result.totalCount,
+      });
 
-    return result.identities;
+      return result.identities;
+    } catch (e) {
+      customReportError(e);
+      throw e;
+    }
   }, [identityService, paginationController]);
 
   return useQuery<Identity[], Error, UseListIdentitiesReturn>({

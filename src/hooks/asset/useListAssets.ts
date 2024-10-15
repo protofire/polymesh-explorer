@@ -23,20 +23,25 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
       throw new Error('AssetService is not initialized');
     }
 
-    const result = await assetService.getAssetList(
-      paginationController.paginationInfo.pageSize,
-      paginationController.paginationInfo.cursor ?? undefined,
-    );
+    try {
+      const result = await assetService.getAssetList(
+        paginationController.paginationInfo.pageSize,
+        paginationController.paginationInfo.cursor ?? undefined,
+      );
 
-    paginationController.setPageInfo({
-      hasNextPage: result.pageInfo.hasNextPage,
-      hasPreviousPage: result.pageInfo.hasPreviousPage,
-      startCursor: result.pageInfo.startCursor,
-      endCursor: result.pageInfo.endCursor,
-      totalCount: result.totalCount,
-    });
+      paginationController.setPageInfo({
+        hasNextPage: result.pageInfo.hasNextPage,
+        hasPreviousPage: result.pageInfo.hasPreviousPage,
+        startCursor: result.pageInfo.startCursor,
+        endCursor: result.pageInfo.endCursor,
+        totalCount: result.totalCount,
+      });
 
-    return result.assets;
+      return result.assets;
+    } catch (e) {
+      customReportError(e);
+      throw e;
+    }
   }, [assetService, paginationController]);
 
   return useQuery<Asset[], Error, UseListAssetsReturn>({

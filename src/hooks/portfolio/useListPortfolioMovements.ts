@@ -1,70 +1,83 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { useMemo, useCallback } from 'react';
 import {
   PortfolioMovementsGraphRepo,
   PortfolioMovementType,
 } from '@/services/repositories/PortfolioMovementsGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { PaginatedData } from '@/types/pagination';
-import { calculatePaginationInfo } from '@/utils/paginationUtils';
 import { customReportError } from '@/utils/customReportError';
+import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 
+export type UseListPortfolioMovementsReturn = PaginatedData<
+  PortfolioMovement[]
+>;
+
 interface UseListPortfolioMovementsParams {
-  pageSize: number;
   portfolioNumber: string;
   type: PortfolioMovementType;
-  offset: number;
-  currentStartIndex: number;
 }
 
 export function useListPortfolioMovements({
-  pageSize,
   portfolioNumber,
   type,
-  offset,
-  currentStartIndex,
-}: UseListPortfolioMovementsParams): UseQueryResult<
-  PaginatedData<PortfolioMovement>,
-  Error
-> {
+}: UseListPortfolioMovementsParams): UseQueryResult<UseListPortfolioMovementsReturn> {
   const { graphQlClient } = usePolymeshSdkService();
-  const portfolioMovementsRepo = new PortfolioMovementsGraphRepo(graphQlClient);
+  const portfolioMovementsRepo = useMemo(() => {
+    if (!graphQlClient) return null;
+    return new PortfolioMovementsGraphRepo(graphQlClient);
+  }, [graphQlClient]);
 
-  return useQuery<PaginatedData<PortfolioMovement>, Error>({
+  const paginationController = usePaginationControllerGraphQl({
+    useOffset: true,
+  });
+
+  const fetchPortfolioMovements = useCallback(async () => {
+    if (!portfolioMovementsRepo) {
+      throw new Error('PortfolioMovementsRepo is not initialized');
+    }
+
+    try {
+      const result = await portfolioMovementsRepo.getPortfolioMovements(
+        paginationController.paginationInfo.pageSize,
+        portfolioNumber,
+        type,
+        paginationController.paginationInfo.offset,
+      );
+
+      paginationController.setPageInfo({
+        hasNextPage: result.pageInfo.hasNextPage,
+        hasPreviousPage: result.pageInfo.hasPreviousPage,
+        startCursor: result.pageInfo.startCursor,
+        endCursor: result.pageInfo.endCursor,
+        totalCount: result.totalCount,
+      });
+
+      return result.movements;
+    } catch (e) {
+      customReportError(e);
+      throw e;
+    }
+  }, [portfolioMovementsRepo, paginationController, portfolioNumber, type]);
+
+  return useQuery<PortfolioMovement[], Error, UseListPortfolioMovementsReturn>({
     queryKey: [
-      'portfolioMovements',
-      pageSize,
+      'useListPortfolioMovements',
+      graphQlClient,
       portfolioNumber,
       type,
-      offset,
-      currentStartIndex,
+      paginationController.paginationInfo.pageSize,
+      paginationController.paginationInfo.offset,
     ],
-    queryFn: async () => {
-      try {
-        const result = await portfolioMovementsRepo.getPortfolioMovements(
-          pageSize,
-          portfolioNumber,
-          type,
-          offset,
-        );
-
-        const paginationInfo = calculatePaginationInfo({
-          totalCount: result.totalCount,
-          pageSize,
-          hasNextPage: result.hasNextPage,
-          endCursor: result.endCursor,
-          currentStartIndex,
-        });
-
-        return {
-          data: result.movements,
-          paginationInfo,
-        };
-      } catch (error) {
-        customReportError(error);
-        throw error;
-      }
-    },
-    enabled: !!graphQlClient || !!portfolioNumber,
+    queryFn: fetchPortfolioMovements,
+    select: useCallback(
+      (data: PortfolioMovement[]) => ({
+        data,
+        paginationController,
+      }),
+      [paginationController],
+    ),
+    enabled: !!graphQlClient && !!portfolioMovementsRepo && !!portfolioNumber,
   });
 }
