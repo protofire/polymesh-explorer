@@ -21,7 +21,11 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     ticker: assetNode.ticker,
     name: assetNode.name,
     type: assetNode.type,
-    totalSupply: assetNode.totalSupply,
+    totalSupply:
+      assetNode.totalSupply &&
+      balanceToBigNumber(
+        assetNode.totalSupply as unknown as Balance,
+      ).toString(),
     ownerDid: assetNode.owner.did,
     isNftCollection: assetNode.isNftCollection,
     holders: assetNode.holders.totalCount.toString(),

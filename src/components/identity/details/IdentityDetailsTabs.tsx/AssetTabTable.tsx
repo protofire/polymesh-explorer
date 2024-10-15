@@ -9,9 +9,11 @@ import {
   Paper,
 } from '@mui/material';
 import Link from 'next/link';
+import { AssertionError } from 'assert';
 import { Asset } from '@/domain/entities/Asset';
 import { ROUTES } from '@/config/routes';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import { GenericLink } from '@/components/shared/common/GenericLink';
 
 interface AssetTabTableProps {
   assets: Asset[];
@@ -34,9 +36,9 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
               <TableRow key={asset.ticker}>
                 <TableCell>{asset.name}</TableCell>
                 <TableCell>
-                  <Link href={`${ROUTES.Asset}/${asset.ticker}`}>
+                  <GenericLink href={`${ROUTES.Asset}/${asset.ticker}`}>
                     {asset.ticker}
-                  </Link>
+                  </GenericLink>
                 </TableCell>
                 <TableCell>{asset.type}</TableCell>
               </TableRow>

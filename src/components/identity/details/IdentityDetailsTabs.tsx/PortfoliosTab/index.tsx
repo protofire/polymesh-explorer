@@ -25,6 +25,7 @@ import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailable
 import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -152,7 +153,9 @@ export function PortfoliosTab({
                               {asset.ticker}
                             </GenericLink>
                           </TableCell>
-                          <TableCell>{asset.balance}</TableCell>
+                          <TableCell>
+                            <FormattedNumber value={asset.balance} />
+                          </TableCell>
                           <TableCell>{asset.type}</TableCell>
                         </TableRow>
                       ))
