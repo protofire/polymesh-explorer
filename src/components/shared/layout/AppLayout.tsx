@@ -2,12 +2,12 @@
 
 import { Box, Container, styled } from '@mui/material';
 
-import PolymeshBG from 'public/background.png';
 import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
 import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
+import { APP_BACKGROUD } from '@/config/images';
 
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
@@ -45,7 +45,7 @@ export function AppLayout({
   return (
     <Box
       sx={{
-        backgroundImage: `url(${PolymeshBG.src})`,
+        backgroundImage: `url(${APP_BACKGROUD.src})`,
         backgroundRepeat: 'no-repeat',
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',

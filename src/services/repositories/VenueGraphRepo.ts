@@ -1,8 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Venue } from '@/domain/entities/Venue';
 import { venueNodeToVenue } from './transformer';
-import { venueFragment } from './fragments';
-import { VenueListResponse, VenueResponse } from './types';
+import { pageInfoFragment, venueFragment } from './fragments';
+import { PageInfo, VenueListResponse, VenueResponse } from './types';
 
 export class VenueGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -37,17 +37,16 @@ export class VenueGraphRepo {
   ): Promise<{
     venues: Venue[];
     totalCount: number;
-    hasNextPage: boolean;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const query = gql`
       ${venueFragment}
+      ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
         venues(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
           pageInfo {
-            hasNextPage
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             ...VenueFields
@@ -70,8 +69,7 @@ export class VenueGraphRepo {
     return {
       venues: venues.nodes.map(venueNodeToVenue),
       totalCount: venues.totalCount,
-      hasNextPage: venues.pageInfo.hasNextPage,
-      endCursor: venues.pageInfo.endCursor,
+      pageInfo: venues.pageInfo,
     };
   }
 }

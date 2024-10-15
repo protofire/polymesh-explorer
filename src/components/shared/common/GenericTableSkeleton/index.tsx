@@ -21,7 +21,7 @@ export function GenericTableSkeleton({
 }: GenericTableSkeletonProps) {
   return (
     <TableContainer component={Paper}>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             {Array.from({ length: columnCount }, (_, index) => (

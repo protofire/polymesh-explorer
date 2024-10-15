@@ -8,17 +8,10 @@ import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCre
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
-
-const PAGE_SIZE = 10;
+import { SkeletonIdentityTable } from '@/components/identity/IdentityTable/SkeletonIdentityTable';
 
 export default function IdentityPage() {
-  const [cursor, setCursor] = React.useState<string | undefined>(undefined);
-  const [currentStartIndex, setCurrentStartIndex] = React.useState(1);
-  const { data, isFetched, error, isFetching } = useListIdentities({
-    pageSize: PAGE_SIZE,
-    cursor,
-    currentStartIndex,
-  });
+  const { data, isLoading, error } = useListIdentities();
   const { data: dataHistory, isFetched: isDataHistoryFetched } =
     useTransactionHistoryAccounts(data?.data, {
       size: 1,
@@ -30,18 +23,6 @@ export default function IdentityPage() {
     isFetched: isChartFetched,
     error: chartError,
   } = useIdentityCreationCountByMonth();
-
-  const handleFirstPage = () => {
-    setCursor(undefined);
-    setCurrentStartIndex(1);
-  };
-
-  const handleNextPage = () => {
-    if (data?.paginationInfo.hasNextPage) {
-      setCursor(data.paginationInfo.endCursor);
-      setCurrentStartIndex(currentStartIndex + PAGE_SIZE);
-    }
-  };
 
   return (
     <MainWrapper>
@@ -56,17 +37,17 @@ export default function IdentityPage() {
           chartData?.reduce((sum, item) => sum + Number(item.count), 0) || 0
         }
       />
-      {data && (
-        <IdentityTable
-          paginatedIdentities={data}
-          isLoading={!isFetched}
-          error={error}
-          isPreviousData={isFetching}
-          onFirstPage={handleFirstPage}
-          onNextPage={handleNextPage}
-          transactionHistory={dataHistory}
-          isTransactionHistoryFetched={isDataHistoryFetched}
-        />
+      {isLoading || dataHistory === undefined ? (
+        <SkeletonIdentityTable />
+      ) : (
+        data && (
+          <IdentityTable
+            paginatedIdentities={data}
+            error={error}
+            transactionHistory={dataHistory}
+            isTransactionHistoryFetched={isDataHistoryFetched}
+          />
+        )
       )}
     </MainWrapper>
   );

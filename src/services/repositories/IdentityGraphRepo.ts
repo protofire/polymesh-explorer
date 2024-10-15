@@ -1,7 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
-import { identityFragment } from './fragments';
-import { IdentityListResponse, IdentityResponse } from './types';
+import { identityFragment, pageInfoFragment } from './fragments';
+import { IdentityListResponse, IdentityResponse, PageInfo } from './types';
 import { identityNodeToIdentity } from './transformer';
 
 export class IdentityGraphRepo {
@@ -66,17 +66,16 @@ export class IdentityGraphRepo {
   ): Promise<{
     identities: Identity[];
     totalCount: number;
-    hasNextPage: boolean;
-    endCursor: string;
+    pageInfo: PageInfo;
   }> {
     const query = gql`
       ${identityFragment}
+      ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
         identities(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
           totalCount
           pageInfo {
-            hasNextPage
-            endCursor
+            ...PageInfoFields
           }
           nodes {
             ...IdentityFields
@@ -99,8 +98,7 @@ export class IdentityGraphRepo {
     return {
       identities: identities.nodes.map((node) => identityNodeToIdentity(node)),
       totalCount: identities.totalCount,
-      hasNextPage: identities.pageInfo.hasNextPage,
-      endCursor: identities.pageInfo.endCursor,
+      pageInfo: identities.pageInfo,
     };
   }
 

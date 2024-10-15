@@ -11,7 +11,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Button,
   Tooltip,
   Skeleton,
 } from '@mui/material';
@@ -21,43 +20,29 @@ import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
-import { PaginatedData } from '@/types/pagination';
 import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { SkeletonIdentityTable } from './SkeletonIdentityTable';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface IdentityTableProps {
-  paginatedIdentities: PaginatedData<Identity>;
-  isLoading: boolean;
+  paginatedIdentities: PaginatedData<Identity[]>;
   error: Error | null;
-  isPreviousData: boolean;
-  onFirstPage: () => void;
-  onNextPage: () => void;
   transactionHistory?: UseTransactionHistoryAccountsResult;
   isTransactionHistoryFetched?: boolean;
 }
 
 export function IdentityTable({
   paginatedIdentities,
-  isLoading,
   error,
-  isPreviousData,
-  onFirstPage,
-  onNextPage,
   transactionHistory,
   isTransactionHistoryFetched,
 }: IdentityTableProps) {
-  if (isLoading || transactionHistory === undefined)
-    return <SkeletonIdentityTable />;
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
 
-  const { data: identities, paginationInfo } = paginatedIdentities;
-  const { totalCount, hasNextPage, currentStartIndex } = paginationInfo;
-
-  const startIndex = currentStartIndex;
-  const endIndex = Math.min(startIndex + identities.length - 1, totalCount);
+  const { data: identities, paginationController } = paginatedIdentities;
 
   return (
     <Box>
@@ -106,7 +91,7 @@ export function IdentityTable({
                   {!isTransactionHistoryFetched ? (
                     <Skeleton variant="text" width={100} animation="wave" />
                   ) : (
-                    transactionHistory[identity.did]?.extrinsics?.[0] && (
+                    transactionHistory?.[identity.did]?.extrinsics?.[0] && (
                       <Tooltip
                         title={format(
                           new Date(
@@ -148,22 +133,7 @@ export function IdentityTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box
-        mt={2}
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-      >
-        <Button onClick={onFirstPage} disabled={currentStartIndex === 1}>
-          First page
-        </Button>
-        <Button onClick={onNextPage} disabled={!hasNextPage || isPreviousData}>
-          Next page
-        </Button>
-      </Box>
-      <Typography variant="body2" align="center" mt={1}>
-        Showing records {startIndex} - {endIndex} of {totalCount}
-      </Typography>
+      <PaginationFooter paginationController={paginationController} />
     </Box>
   );
 }

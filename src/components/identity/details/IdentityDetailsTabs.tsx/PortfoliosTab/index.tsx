@@ -23,6 +23,8 @@ import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { TabTokenMovementsTable } from './TabTokenMovementsTable';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -61,19 +63,14 @@ export function PortfoliosTab({
   const [selectedTab, setSelectedTab] = useState(0);
   const [selectedPortfolio, setSelectedPortfolio] =
     useState<PortfolioWithAssets | null>(portfolios[0] || null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10;
 
   const {
     data: portfolioMovements,
     isLoading: isLoadingMovements,
     isFetching: isFetchingMovements,
   } = useListPortfolioMovements({
-    pageSize,
     portfolioNumber: selectedPortfolio?.id || '',
     type: 'Fungible',
-    offset: (currentPage - 1) * pageSize,
-    currentStartIndex: (currentPage - 1) * pageSize,
   });
 
   const {
@@ -82,10 +79,7 @@ export function PortfoliosTab({
     isFetching: isFetchingTransactions,
   } = useListAssetTransactions({
     portfolios,
-    pageSize,
     portfolioId: selectedPortfolio?.id || null,
-    offset: (currentPage - 1) * pageSize,
-    currentStartIndex: (currentPage - 1) * pageSize,
     nonFungible: false,
   });
 
@@ -95,10 +89,6 @@ export function PortfoliosTab({
 
   const handlePortfolioSelect = (portfolio: PortfolioWithAssets) => {
     setSelectedPortfolio(portfolio);
-  };
-
-  const handlePageChange = (event: unknown, newPage: number) => {
-    setCurrentPage(newPage);
   };
 
   if (isLoading) {
@@ -155,7 +145,13 @@ export function PortfoliosTab({
                       selectedPortfolio.assets.map((asset) => (
                         <TableRow key={asset.ticker}>
                           <TableCell>{asset.name}</TableCell>
-                          <TableCell>{asset.ticker}</TableCell>
+                          <TableCell>
+                            <GenericLink
+                              href={`${ROUTES.Asset}/${asset.ticker}`}
+                            >
+                              {asset.ticker}
+                            </GenericLink>
+                          </TableCell>
                           <TableCell>{asset.balance}</TableCell>
                           <TableCell>{asset.type}</TableCell>
                         </TableRow>
@@ -176,9 +172,6 @@ export function PortfoliosTab({
                 portfolioMovements={portfolioMovements}
                 isLoadingMovements={isLoadingMovements}
                 isFetchingMovements={isFetchingMovements}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
               />
             </TabPanel>
             <TabPanel value={selectedTab} index={2}>
@@ -187,9 +180,6 @@ export function PortfoliosTab({
                 assetTransactions={assetTransactions}
                 isLoadingTransactions={isLoadingTransactions}
                 isFetchingTransactions={isFetchingTransactions}
-                currentPage={currentPage}
-                pageSize={pageSize}
-                onPageChange={handlePageChange}
               />
             </TabPanel>
           </>

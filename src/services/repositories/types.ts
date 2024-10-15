@@ -1,5 +1,8 @@
 import { Portfolio } from '@/domain/entities/Portfolio';
+import { PageInfo } from '@/domain/ui/PaginationInfo';
 
+export type { PageInfo };
+// Assets
 export interface AssetNode {
   ticker: string;
   name: string;
@@ -28,10 +31,7 @@ export interface AssetResponse {
 export interface AssetListResponse {
   assets: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
+    pageInfo: PageInfo;
     nodes: AssetNode[];
   };
 }
@@ -93,10 +93,7 @@ export interface IdentityResponse {
 export interface IdentityListResponse {
   identities: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
+    pageInfo: PageInfo;
     nodes: IdentityNode[];
   };
 }
@@ -119,10 +116,7 @@ export interface VenueResponse {
 export interface VenueListResponse {
   venues: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
+    pageInfo: PageInfo;
     nodes: VenueNode[];
   };
 }
@@ -148,12 +142,7 @@ export interface PortfolioMovementNode {
 export interface PortfolioMovementsResponse {
   portfolioMovements: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string;
-      endCursor: string;
-    };
+    pageInfo: PageInfo;
     nodes: PortfolioMovementNode[];
   };
 }
@@ -177,12 +166,7 @@ export interface AssetTransactionNode {
 export interface AssetTransactionsResponse {
   assetTransactions: {
     totalCount: number;
-    pageInfo: {
-      hasNextPage: boolean;
-      hasPreviousPage: boolean;
-      startCursor: string;
-      endCursor: string;
-    };
+    pageInfo: PageInfo;
     nodes: AssetTransactionNode[];
   };
 }

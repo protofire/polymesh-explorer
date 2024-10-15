@@ -7,9 +7,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  TablePagination,
 } from '@mui/material';
-import { PaginatedData } from '@/types/pagination';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { truncateAddress } from '@/services/polymesh/address';
@@ -17,14 +15,14 @@ import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 
 interface TabAssetTransactionsTableProps {
-  assetTransactions: PaginatedData<AssetTransaction> | undefined;
+  assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
-  currentPage: number;
-  pageSize: number;
-  onPageChange: (event: unknown, newPage: number) => void;
   subscanUrl: string;
 }
 
@@ -32,14 +30,13 @@ export function TabAssetTransactionsTable({
   assetTransactions,
   isLoadingTransactions,
   isFetchingTransactions,
-  currentPage,
-  pageSize,
-  onPageChange,
   subscanUrl,
 }: TabAssetTransactionsTableProps) {
-  if (isLoadingTransactions || isFetchingTransactions) {
+  if (isLoadingTransactions || isFetchingTransactions || !assetTransactions) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
   }
+
+  const { data: transactions, paginationController } = assetTransactions;
 
   return (
     <>
@@ -56,8 +53,8 @@ export function TabAssetTransactionsTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {assetTransactions?.data && assetTransactions.data.length > 0 ? (
-              assetTransactions.data.map((transaction) => {
+            {transactions.length > 0 ? (
+              transactions.map((transaction) => {
                 const fromDid = transaction.fromId?.split('/')[0] || '';
                 const toDid = transaction.toId?.split('/')[0] || '';
 
@@ -96,7 +93,11 @@ export function TabAssetTransactionsTable({
                         </GenericLink>
                       )}
                     </TableCell>
-                    <TableCell>{transaction.amount}</TableCell>
+                    <TableCell>
+                      {transaction.amount && (
+                        <FormattedNumber value={transaction.amount} />
+                      )}
+                    </TableCell>
                   </TableRow>
                 );
               })
@@ -109,16 +110,7 @@ export function TabAssetTransactionsTable({
           </TableBody>
         </Table>
       </TableContainer>
-      {assetTransactions?.paginationInfo && (
-        <TablePagination
-          component="div"
-          count={assetTransactions.paginationInfo.totalCount}
-          page={currentPage - 1}
-          onPageChange={onPageChange}
-          rowsPerPage={pageSize}
-          rowsPerPageOptions={[pageSize]}
-        />
-      )}
+      <PaginationFooter paginationController={paginationController} />
     </>
   );
 }
