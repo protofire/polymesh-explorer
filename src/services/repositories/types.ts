@@ -2,6 +2,7 @@ import { Portfolio } from '@/domain/entities/Portfolio';
 import { PageInfo } from '@/domain/ui/PaginationInfo';
 
 export type { PageInfo };
+
 // Assets
 export interface AssetNode {
   ticker: string;
@@ -169,4 +170,28 @@ export interface AssetTransactionsResponse {
     pageInfo: PageInfo;
     nodes: AssetTransactionNode[];
   };
+}
+
+// Extrinsics (History Accounts)
+export interface ExtrinsicNode {
+  blockId: string;
+  extrinsicIdx: number;
+  address: string;
+  nonce: number;
+  moduleId: string;
+  callId: string;
+  paramsTxt: string;
+  success: boolean;
+  specVersionId: number;
+  extrinsicHash: string;
+  block: {
+    hash: string;
+    datetime: string;
+  };
+}
+
+export interface ExtrinsicResponse {
+  totalCount: number;
+  nodes: ExtrinsicNode[];
+  pageInfo: PageInfo;
 }

@@ -7,12 +7,14 @@ import {
   IdentityNode,
   PortfolioMovementNode,
   VenueNode,
+  ExtrinsicNode,
 } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
 
 export function assetNodeToAsset(assetNode: AssetNode): Asset {
   return {
@@ -110,5 +112,26 @@ export function assetTransactionNodeToAssetTransaction(
     eventId: node.eventId,
     instructionId: node.instructionId || undefined,
     memo: node.instructionMemo || undefined,
+  };
+}
+
+export function extrinsicNodeToExtrinsicTransaction(
+  node: ExtrinsicNode,
+): ExtrinsicTransaction {
+  return {
+    blockId: node.blockId,
+    extrinsicIdx: node.extrinsicIdx,
+    address: node.address,
+    nonce: node.nonce,
+    moduleId: node.moduleId,
+    callId: node.callId,
+    paramsTxt: node.paramsTxt,
+    success: node.success,
+    specVersionId: node.specVersionId,
+    extrinsicHash: node.extrinsicHash,
+    block: {
+      hash: node.block.hash,
+      datetime: new Date(node.block.datetime),
+    },
   };
 }

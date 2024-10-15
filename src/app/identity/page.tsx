@@ -6,16 +6,14 @@ import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
 import { useIdentityCreationCountByMonth } from '@/hooks/identity/useIdentityCreationCountByMonth';
 import { SummaryIdentitiesCard } from '@/components/identity/SummaryIdentitiesCard/SummaryIdentitiesCard';
-import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { SkeletonIdentityTable } from '@/components/identity/IdentityTable/SkeletonIdentityTable';
+import { useTransactionHistoryDidsAccounts } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
 
 export default function IdentityPage() {
   const { data, isLoading, error } = useListIdentities();
   const { data: dataHistory, isFetched: isDataHistoryFetched } =
-    useTransactionHistoryAccounts(data?.data, {
-      size: 1,
-    });
+    useTransactionHistoryDidsAccounts(data?.data);
 
   const {
     data: chartData,
