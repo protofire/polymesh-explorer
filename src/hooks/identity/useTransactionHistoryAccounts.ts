@@ -4,85 +4,82 @@ import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymesh
 import { customReportError } from '@/utils/customReportError';
 import { ExtrinsicGraphRepo } from '@/services/repositories/ExtrinsicGraphRepo';
 import { Identity } from '@/domain/entities/Identity';
+import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
+import { getIdentityAddresses } from '@/utils/identityUtils';
+import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
 
-export interface Transaction {
-  blockId: string;
-  extrinsicIdx: number;
-  address: string;
-  nonce: number;
-  moduleId: string;
-  callId: string;
-  paramsTxt: string;
-  success: boolean;
-  specVersionId: number;
-  extrinsicHash: string;
-  block: {
-    hash: string;
-    datetime: string;
-  };
+export type UseTransactionHistoryAccountsReturn = PaginatedData<
+  ExtrinsicTransaction[]
+>;
+
+interface UseTransactionHistoryAccountsParams {
+  identity?: Identity | null;
 }
 
-interface TransactionHistoryParams {
-  size?: number;
-  start?: number;
-}
-
-export interface UseTransactionHistoryAccountsResult {
-  [key: string]: {
-    extrinsics: Transaction[];
-    totalCount: number;
-  };
-}
-
-const DEFAULT_PARAMS: TransactionHistoryParams = {
-  size: 10,
-  start: 0,
-};
-
-export function useTransactionHistoryAccounts(
-  identities: Identity[] | undefined,
-  params?: TransactionHistoryParams,
-): UseQueryResult<UseTransactionHistoryAccountsResult, Error> {
+export function useTransactionHistoryAccounts({
+  identity,
+}: UseTransactionHistoryAccountsParams): UseQueryResult<UseTransactionHistoryAccountsReturn> {
   const { graphQlClient } = usePolymeshSdkService();
-
-  const extrinsicsService = useMemo(() => {
+  const extrinsicsRepo = useMemo(() => {
     if (!graphQlClient) return null;
-
     return new ExtrinsicGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  const groupedIdentities = useMemo(() => {
-    return identities?.reduce(
-      (acc, i) => {
-        acc[i.did] = [i.primaryAccount, ...i.secondaryAccounts];
-        return acc;
-      },
-      {} as Record<string, string[]>,
-    );
-  }, [identities]);
+  const paginationController = usePaginationControllerGraphQl({
+    useOffset: true,
+  });
 
-  return useQuery<UseTransactionHistoryAccountsResult, Error>({
-    queryKey: ['useTransactionHistoryAccounts', groupedIdentities, params],
-    queryFn: async () => {
-      if (!extrinsicsService)
-        throw new Error('Extrinsic service not initialized');
+  const addresses = useMemo(
+    () => (identity ? getIdentityAddresses(identity) : []),
+    [identity],
+  );
 
-      try {
-        const { size, start } = { ...DEFAULT_PARAMS, ...params };
-        return await extrinsicsService?.getTransactionsByDid(
-          groupedIdentities as Record<string, string[]>,
-          start,
-          size,
-        );
-      } catch (error) {
-        customReportError(error);
-        throw error;
-      }
-    },
+  const fetchTransactions = async () => {
+    if (!extrinsicsRepo) {
+      throw new Error('ExtrinsicRepo is not initialized');
+    }
+
+    try {
+      const result = await extrinsicsRepo.getTransactionsByAddresses(
+        addresses,
+        paginationController.paginationInfo.offset,
+        paginationController.paginationInfo.pageSize,
+      );
+
+      paginationController.setPageInfo({
+        hasNextPage: result.pageInfo.hasNextPage,
+        hasPreviousPage: result.pageInfo.hasPreviousPage,
+        startCursor: result.pageInfo.startCursor,
+        endCursor: result.pageInfo.endCursor,
+        totalCount: result.totalCount,
+      });
+
+      return result.extrinsics;
+    } catch (e) {
+      customReportError(e);
+      throw e;
+    }
+  };
+
+  return useQuery<
+    ExtrinsicTransaction[],
+    Error,
+    UseTransactionHistoryAccountsReturn
+  >({
+    queryKey: [
+      'useTransactionHistoryAccounts',
+      graphQlClient,
+      addresses,
+      paginationController.paginationInfo.pageSize,
+      paginationController.paginationInfo.offset,
+    ],
+    queryFn: fetchTransactions,
+    select: (data: ExtrinsicTransaction[]) => ({
+      data,
+      paginationController,
+    }),
     enabled:
-      !!graphQlClient &&
-      !!groupedIdentities &&
-      identities &&
-      identities?.length > 0,
+      !!graphQlClient && !!extrinsicsRepo && addresses.length > 0 && !!identity,
   });
 }

@@ -1,35 +1,19 @@
 import { GraphQLClient, gql } from 'graphql-request';
-
-interface Extrinsic {
-  blockId: string;
-  extrinsicIdx: number;
-  address: string;
-  nonce: number;
-  moduleId: string;
-  callId: string;
-  paramsTxt: string;
-  success: boolean;
-  specVersionId: number;
-  extrinsicHash: string;
-  block: {
-    hash: string;
-    datetime: string;
-  };
-}
-
-interface ExtrinsicResponse {
-  totalCount: number;
-  nodes: Extrinsic[];
-}
+import { ExtrinsicResponse, PageInfo } from './types';
+import { pageInfoFragment } from './fragments';
+import { extrinsicNodeToExtrinsicTransaction } from './transformer';
+import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
 
 export class ExtrinsicGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  async getTransactionsByDid(
+  async getTransactionsByDidsAddresses(
     didTransactions: Record<string, string[]>,
     start: number = 0,
     size: number = 10,
-  ): Promise<Record<string, { extrinsics: Extrinsic[]; totalCount: number }>> {
+  ): Promise<
+    Record<string, { extrinsics: ExtrinsicTransaction[]; totalCount: number }>
+  > {
     const queries = Object.entries(didTransactions).map(([did, addresses]) => {
       const addressFilter = addresses
         .map((address) => `"${address}"`)
@@ -73,15 +57,15 @@ export class ExtrinsicGraphRepo {
 
     const result: Record<
       string,
-      { extrinsics: Extrinsic[]; totalCount: number }
+      { extrinsics: ExtrinsicTransaction[]; totalCount: number }
     > = {};
     Object.entries(response).forEach(([key, value]) => {
       const did = Object.keys(didTransactions).find(
-        (d) => d === key.substring(4),
+        (d) => d === key.substring(4), // Compare removing did_ on key
       );
       if (did) {
         result[did] = {
-          extrinsics: value.nodes,
+          extrinsics: value.nodes.map(extrinsicNodeToExtrinsicTransaction),
           totalCount: value.totalCount,
         };
       }
@@ -90,20 +74,28 @@ export class ExtrinsicGraphRepo {
     return result;
   }
 
-  async getTransactionsByAddress(
-    address: string,
+  async getTransactionsByAddresses(
+    addresses: string[],
     start: number = 0,
     size: number = 10,
-  ): Promise<{ extrinsics: Extrinsic[]; totalCount: number }> {
+  ): Promise<{
+    extrinsics: ExtrinsicTransaction[];
+    totalCount: number;
+    pageInfo: PageInfo;
+  }> {
     const query = gql`
-      query TransactionsQuery($start: Int, $size: Int, $address: String!) {
+      ${pageInfoFragment}
+      query TransactionsQuery($start: Int, $size: Int, $addresses: [String!]!) {
         extrinsics(
-          filter: { address: { equalTo: $address } }
+          filter: { address: { in: $addresses } }
           orderBy: [CREATED_AT_DESC]
           first: $size
           offset: $start
         ) {
           totalCount
+          pageInfo {
+            ...PageInfoFields
+          }
           nodes {
             blockId
             extrinsicIdx
@@ -127,7 +119,7 @@ export class ExtrinsicGraphRepo {
     const variables = {
       start,
       size,
-      address,
+      addresses,
     };
 
     const response = await this.client.request<{
@@ -135,8 +127,11 @@ export class ExtrinsicGraphRepo {
     }>(query, variables);
 
     return {
-      extrinsics: response.extrinsics.nodes,
+      extrinsics: response.extrinsics.nodes.map(
+        extrinsicNodeToExtrinsicTransaction,
+      ),
       totalCount: response.extrinsics.totalCount,
+      pageInfo: response.extrinsics.pageInfo,
     };
   }
 }

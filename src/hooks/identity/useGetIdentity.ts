@@ -6,10 +6,10 @@ import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { customReportError } from '@/utils/customReportError';
 
 interface Props {
-  did: Identity['did'];
+  identityDid: Identity['did'];
 }
 
-export const useGetIdentity = ({ did }: Props) => {
+export const useGetIdentity = ({ identityDid }: Props) => {
   const { graphQlClient } = usePolymeshSdkService();
   const identityService = useMemo(() => {
     if (!graphQlClient) return null;
@@ -18,11 +18,11 @@ export const useGetIdentity = ({ did }: Props) => {
   }, [graphQlClient]);
 
   const queryResult = useQuery({
-    queryKey: ['useGetIdentity', identityService, did],
+    queryKey: ['useGetIdentity', identityService, identityDid],
     queryFn: async () => {
       if (!identityService) return null;
       try {
-        const identity = await identityService.findByIdentifier(did);
+        const identity = await identityService.findByIdentifier(identityDid);
 
         return identity;
       } catch (e) {
@@ -30,7 +30,7 @@ export const useGetIdentity = ({ did }: Props) => {
         throw e;
       }
     },
-    enabled: !!did || !!identityService,
+    enabled: !!identityDid || !!identityService,
   });
 
   return queryResult;

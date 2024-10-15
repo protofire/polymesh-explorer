@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
-import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { AssetTabTable } from './AssetTabTable';
 import { PortfoliosTab } from './PortfoliosTab';
-import { TransactionsTab } from './TransactionsTab';
+import { TransactionsTabTable } from './TransactionsTab';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
+import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
-  identityDid: string;
   subscanUrl: string;
   portfolios: PortfolioWithAssets[];
   isLoadingPortfolios: boolean;
+  paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
+  isLoadingTransactions: boolean;
 }
 
 interface TabPanelProps {
@@ -41,16 +42,15 @@ function TabPanel(props: TabPanelProps) {
 
 export function IdentityDetailsTabs({
   identity,
-  identityDid,
   subscanUrl,
   portfolios,
   isLoadingPortfolios,
+  paginatedTransactions,
+  isLoadingTransactions,
 }: IdentityDetailsTabsProps) {
   const [value, setValue] = useState(0);
   const { ownedAssets, heldAssets } = identity;
   const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
-
-  const { data: transactionData } = useTransactionHistoryAccounts([identity]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -86,12 +86,11 @@ export function IdentityDetailsTabs({
         </Tabs>
       </Box>
       <TabPanel value={value} index={isAssetIssuer ? 3 : 2}>
-        {transactionData && transactionData[identityDid] && (
-          <TransactionsTab
-            transactions={transactionData[identityDid].extrinsics}
-            subscanUrl={subscanUrl}
-          />
-        )}
+        <TransactionsTabTable
+          paginatedTransactions={paginatedTransactions}
+          subscanUrl={subscanUrl}
+          isLoading={isLoadingTransactions}
+        />
       </TabPanel>
       <TabPanel value={value} index={0}>
         <AssetTabTable assets={heldAssets} />

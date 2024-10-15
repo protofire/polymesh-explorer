@@ -41,7 +41,9 @@ function CustomTooltip({
   return null;
 }
 
-export function IdentitiesByMonthChart({ chartData }: IdentitiesByMonthChartProps) {
+export function IdentitiesByMonthChart({
+  chartData,
+}: IdentitiesByMonthChartProps) {
   const maxCount = Math.max(...chartData.map((item) => item.count));
   const yAxisMax = Math.ceil(maxCount * 1.1); // 10% more than the max value
 

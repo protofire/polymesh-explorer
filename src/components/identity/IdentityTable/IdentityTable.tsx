@@ -20,16 +20,16 @@ import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
-import { UseTransactionHistoryAccountsResult } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { UseTransactionHistoryDidsAccountsResult } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity[]>;
   error: Error | null;
-  transactionHistory?: UseTransactionHistoryAccountsResult;
+  transactionHistory?: UseTransactionHistoryDidsAccountsResult;
   isTransactionHistoryFetched?: boolean;
 }
 
@@ -94,11 +94,8 @@ export function IdentityTable({
                     transactionHistory?.[identity.did]?.extrinsics?.[0] && (
                       <Tooltip
                         title={format(
-                          new Date(
-                            transactionHistory[
-                              identity.did
-                            ].extrinsics[0].block.datetime,
-                          ),
+                          transactionHistory[identity.did].extrinsics[0].block
+                            .datetime,
                           'PPpp',
                         )}
                       >
