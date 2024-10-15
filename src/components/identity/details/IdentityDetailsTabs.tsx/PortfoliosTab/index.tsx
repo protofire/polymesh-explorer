@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Tabs,
   Tab,
   Typography,
@@ -21,11 +14,8 @@ import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMov
 import { useListAssetTransactions } from '@/hooks/portfolio/useListAssetTransactions';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import { TabTokenMovementsTable } from './TabTokenMovementsTable';
-import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
-import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
+import { TabPortfolioAssets } from './TabPortfolioAssets';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -131,43 +121,7 @@ export function PortfoliosTab({
               <Tab label="Transactions" />
             </Tabs>
             <TabPanel value={selectedTab} index={0}>
-              <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Ticker</TableCell>
-                      <TableCell>Balance</TableCell>
-                      <TableCell>Asset Type</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {selectedPortfolio.assets.length > 0 ? (
-                      selectedPortfolio.assets.map((asset) => (
-                        <TableRow key={asset.ticker}>
-                          <TableCell>{asset.name}</TableCell>
-                          <TableCell>
-                            <GenericLink
-                              href={`${ROUTES.Asset}/${asset.ticker}`}
-                            >
-                              {asset.ticker}
-                            </GenericLink>
-                          </TableCell>
-                          <TableCell>
-                            <FormattedNumber value={asset.balance} />
-                          </TableCell>
-                          <TableCell>{asset.type}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <NoDataAvailableTBody
-                        colSpan={4}
-                        message="No assets available for this portfolio"
-                      />
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <TabPortfolioAssets assets={selectedPortfolio.assets} />
             </TabPanel>
             <TabPanel value={selectedTab} index={1}>
               <TabTokenMovementsTable

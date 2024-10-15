@@ -1,6 +1,7 @@
 import { Asset } from './Asset';
 
-interface AssetPortfolio extends Pick<Asset, 'name' | 'ticker' | 'type'> {
+export interface AssetPortfolio
+  extends Pick<Asset, 'name' | 'ticker' | 'type'> {
   balance: string;
 }
 
