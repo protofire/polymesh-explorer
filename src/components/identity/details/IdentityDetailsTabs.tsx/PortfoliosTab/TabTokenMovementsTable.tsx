@@ -74,8 +74,10 @@ export function TabTokenMovementsTable({
                   <TableCell>{movement.from.name}</TableCell>
                   <TableCell>{movement.to.name}</TableCell>
                   <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
-                      {movement.assetId}
+                    <GenericLink
+                      href={`${ROUTES.Asset}/${movement.assetTicker}`}
+                    >
+                      {movement.assetTicker}
                     </GenericLink>
                   </TableCell>
                   <TableCell>{movement.amount}</TableCell>

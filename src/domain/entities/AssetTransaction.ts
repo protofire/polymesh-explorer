@@ -3,6 +3,7 @@ import { Portfolio } from './Portfolio';
 export interface AssetTransaction {
   id: string;
   assetId: string;
+  assetTicker: string;
   fromId: string;
   from?: Portfolio;
   toId: string;
