@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Box, Card, CardContent, Typography, Skeleton } from '@mui/material';
 import { SummaryIdentitySkeleton } from './SummaryIdentitySkeleton';
 import { IdentitiesByMonthChart } from './IdentitiesByMonthChart';
@@ -32,6 +32,14 @@ export function SummaryIdentitiesCard({
   nMonths,
   totalIdentities,
 }: SummaryIdentitiesCardProps) {
+  const lastValidTotalIdentitiesRef = useRef<number | undefined>(undefined);
+
+  useEffect(() => {
+    if (totalIdentities !== undefined) {
+      lastValidTotalIdentitiesRef.current = totalIdentities;
+    }
+  }, [totalIdentities]);
+
   const renderChartContent = () => {
     if (isLoading) return <SummaryIdentitySkeleton />;
     if (error) return renderError(error);
@@ -95,8 +103,8 @@ export function SummaryIdentitiesCard({
               Total Identities Created (All Time)
             </Typography>
             {renderTotalIdentities(
-              totalIdentities || 0,
-              totalIdentities === undefined,
+              lastValidTotalIdentitiesRef.current ?? 0,
+              lastValidTotalIdentitiesRef.current === undefined,
             )}
           </CardContent>
         </Card>

@@ -4,13 +4,15 @@ import {
   Box,
   Typography,
   Autocomplete,
-  TextField,
   styled,
+  TextField,
   IconButton,
 } from '@mui/material';
 import Link from 'next/link';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LaunchIcon from '@mui/icons-material/Launch';
+import { AccountOrDidTextField } from '@/components/shared/AccountOrDidTextField';
+import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { truncateAddress } from '@/services/polymesh/address';
 
 interface SecondaryKeysProps {
@@ -52,57 +54,65 @@ export function SecondaryKeys({
   return (
     <Box mt={2}>
       <Typography variant="body2" gutterBottom>
-        Secondary Keys
-      </Typography>
-      <StyledAutocomplete
-        id="secondary-accounts-selector"
-        options={secondaryAccounts}
-        value={selectedAccount}
-        onChange={(event, value) => {
-          if (typeof value === 'string' || value === null) {
-            setSelectedAccount(value);
-          }
-        }}
-        onBlur={handleBlur}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            variant="outlined"
-            placeholder="Search secondary keys account"
-            size="small"
-          />
+        {secondaryAccounts.length > 1 ? (
+          <CounterBadge count={secondaryAccounts.length}>
+            Secondary Keys
+          </CounterBadge>
+        ) : (
+          'Secondary Keys'
         )}
-        renderOption={(props, option) => {
-          const { key, ...otherProps } = props;
-          return (
-            <li key={key} {...otherProps}>
-              <OptionWrapper>
-                <Link href={`/account/${option as string}`}>
+      </Typography>
+      {secondaryAccounts.length === 1 ? (
+        <AccountOrDidTextField value={secondaryAccounts[0]} />
+      ) : (
+        <StyledAutocomplete
+          id="secondary-accounts-selector"
+          options={secondaryAccounts}
+          value={selectedAccount}
+          onChange={(event, value) => {
+            if (typeof value === 'string' || value === null) {
+              setSelectedAccount(value);
+            }
+          }}
+          onBlur={handleBlur}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              variant="outlined"
+              placeholder="Search secondary keys account"
+              size="small"
+            />
+          )}
+          renderOption={(props, option) => {
+            const { key, ...otherProps } = props;
+            return (
+              <li key={key} {...otherProps}>
+                <OptionWrapper>
                   <Typography variant="body2">
                     {truncateAddress(option as string)}
                   </Typography>
-                </Link>
-                <Box>
-                  <IconButton
-                    size="small"
-                    onClick={() => handleCopy(option as string)}
-                  >
-                    <ContentCopyIcon fontSize="small" />
-                  </IconButton>
-                  <IconButton
-                    size="small"
-                    component={Link}
-                    href={`/account/${option}`}
-                  >
-                    <LaunchIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </OptionWrapper>
-            </li>
-          );
-        }}
-        getOptionLabel={(option) => truncateAddress(option as string)}
-      />
+                  <Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleCopy(option as string)}
+                    >
+                      <ContentCopyIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      component={Link}
+                      href={`/account/${option}`}
+                    >
+                      <LaunchIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </OptionWrapper>
+              </li>
+            );
+          }}
+          getOptionLabel={(option) => truncateAddress(option as string)}
+        />
+      )}
     </Box>
   );
 }
