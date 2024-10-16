@@ -21,9 +21,8 @@ const theme = createTheme({
     MuiPaper: {
       styleOverrides: {
         root: {
-          backgroundColor: '#00000011',
+          backgroundColor: '#000000',
           borderRadius: '1rem',
-          padding: '0.6rem',
           boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.25)',
         },
       },
