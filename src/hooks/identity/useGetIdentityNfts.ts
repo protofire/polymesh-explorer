@@ -23,13 +23,19 @@ export const useGetIdentityNfts = ({ identity }: Props) => {
 
       try {
         const nftService = new NftService(polymeshService);
-        const portfolios = await polymeshService.getIdentityPortfolios(identity.did);
+        const portfolios = await polymeshService.getIdentityPortfolios(
+          identity.did,
+        );
 
         const collections = await Promise.all(
-          portfolios.map(portfolio => nftService.getCollectionsFromPortfolio(portfolio as any))
+          portfolios.map((portfolio) =>
+            nftService.getCollectionsFromPortfolio(portfolio as any),
+          ),
         );
         const assets = await Promise.all(
-          portfolios.map(portfolio => nftService.getNftAssetsFromPortfolio(portfolio as any))
+          portfolios.map((portfolio) =>
+            nftService.getNftAssetsFromPortfolio(portfolio as any),
+          ),
         );
 
         return {
