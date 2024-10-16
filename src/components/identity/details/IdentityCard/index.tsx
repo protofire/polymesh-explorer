@@ -13,7 +13,6 @@ import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
-import { truncateAddress } from '@/services/polymesh/address';
 import { SecondaryKeys } from './SecondaryKeys';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { IdentityCardSkeleton } from './IdentityCardSkeleton';
