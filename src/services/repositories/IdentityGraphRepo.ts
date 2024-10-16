@@ -125,7 +125,7 @@ export class IdentityGraphRepo {
       );
 
       queries.push(`
-        month${i}: identities(filter: {createdAt: { greaterThanOrEqualTo: "${monthStart.toISOString()}", 
+        month${i}: identities(filter: {datetime: { greaterThanOrEqualTo: "${monthStart.toISOString()}", 
                               lessThanOrEqualTo: "${monthEnd.toISOString()}"}}) {
           aggregates {
             distinctCount {

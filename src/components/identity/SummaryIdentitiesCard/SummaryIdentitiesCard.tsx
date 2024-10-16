@@ -13,6 +13,8 @@ interface SummaryIdentitiesCardProps {
   isLoading: boolean;
   error: unknown;
   totalVerifiedIdentities: number;
+  nMonths: number;
+  totalIdentities: number | undefined;
 }
 
 const renderError = (error: unknown) => (
@@ -27,6 +29,8 @@ export function SummaryIdentitiesCard({
   isLoading,
   error,
   totalVerifiedIdentities,
+  nMonths,
+  totalIdentities,
 }: SummaryIdentitiesCardProps) {
   const renderChartContent = () => {
     if (isLoading) return <SummaryIdentitySkeleton />;
@@ -35,15 +39,11 @@ export function SummaryIdentitiesCard({
     return <IdentitiesByMonthChart chartData={chartData} />;
   };
 
-  const renderTotalCreatedIdentities = () => {
-    if (isLoading || totalVerifiedIdentities === 0) {
+  const renderTotalIdentities = (value: number, showSkeleton: boolean) => {
+    if (showSkeleton) {
       return <Skeleton variant="text" width="60%" height={60} />;
     }
-    return (
-      <Typography variant="h3">
-        {totalVerifiedIdentities.toLocaleString()}
-      </Typography>
-    );
+    return <Typography variant="h3">{value.toLocaleString()}</Typography>;
   };
 
   return (
@@ -58,24 +58,46 @@ export function SummaryIdentitiesCard({
       <Card sx={{ flex: 1 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom>
-            Identities verified per Month
+            Identities Created per Month (Last {nMonths} Months)
           </Typography>
           {renderChartContent()}
         </CardContent>
       </Card>
-      <Box sx={{ flexDirection: 'column', flex: 1, gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, gap: 2 }}>
         <Card sx={{ flex: 1 }}>
           <CardContent
             sx={{
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'center',
+              height: '100%',
             }}
           >
             <Typography variant="h6" gutterBottom>
-              Total Created Identities
+              Total Identities Created (Last {nMonths} Months)
             </Typography>
-            {renderTotalCreatedIdentities()}
+            {renderTotalIdentities(
+              totalVerifiedIdentities,
+              isLoading || totalVerifiedIdentities === 0,
+            )}
+          </CardContent>
+        </Card>
+        <Card sx={{ flex: 1 }}>
+          <CardContent
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              height: '100%',
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              Total Identities Created (All Time)
+            </Typography>
+            {renderTotalIdentities(
+              totalIdentities || 0,
+              totalIdentities === undefined,
+            )}
           </CardContent>
         </Card>
       </Box>

@@ -1,12 +1,12 @@
 import React, { createContext, useState, useEffect, useCallback } from 'react';
 import { NetworkType, NetworkConfig } from '@/domain/services/NetworkType';
 import { LocalStorageNetworkRepository } from '@/services/localstorage/LocalStorageNetworkRepository';
-import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
+import { NETWORK_MAP } from '@/config/constant';
 import { NetworkProviderEvents } from '@/domain/events/NetworkProviderEvents';
 
 interface NetworkContextType {
   currentNetwork: NetworkType | undefined;
-  currentNetworkConfig: NetworkConfig;
+  currentNetworkConfig: NetworkConfig | undefined;
   setNetwork: (network: NetworkType) => void;
 }
 
@@ -18,7 +18,7 @@ const networkRepository = new LocalStorageNetworkRepository();
 export function NetworkProvider({ children }: { children: React.ReactNode }) {
   const [currentNetwork, setCurrentNetworkState] = useState<NetworkType>();
   const [currentNetworkConfig, setCurrentNetworkConfig] =
-    useState<NetworkConfig>(NETWORK_MAP[DEFAULT_NETWORK]);
+    useState<NetworkConfig>();
 
   const setNetwork = useCallback((newNetwork: NetworkType) => {
     networkRepository.setNetworkSelected(newNetwork);

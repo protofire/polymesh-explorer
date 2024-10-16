@@ -19,6 +19,7 @@ interface TabPortfolioAssetsProps {
 }
 
 export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
+  // TODO
   //   const filteredAssets = assets.filter((asset) =>
   //     assetType === 'Fungible' ? asset.isFungible : !asset.isFungible,
   //   );
