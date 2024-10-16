@@ -100,7 +100,7 @@ export function IdentityTable({
                         )}
                       >
                         <Box display="flex" alignItems="center">
-                          <Typography noWrap>
+                          <Typography variant="body2" noWrap>
                             {
                               transactionHistory[identity.did].extrinsics[0]
                                 .moduleId

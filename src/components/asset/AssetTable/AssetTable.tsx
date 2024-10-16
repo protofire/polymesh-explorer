@@ -70,7 +70,9 @@ export function AssetTable({ paginatedAssets, error }: AssetTableProps) {
                       maxWidth="100%"
                     />
                   </TableCell>
-                  <TableCell>{asset.type}</TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{asset.type}</Typography>
+                  </TableCell>
                   <TableCell>
                     <Tooltip
                       title={
