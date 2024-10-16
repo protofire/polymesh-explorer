@@ -8,6 +8,8 @@ import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { UseListPortfolioMovementsReturn } from '@/hooks/portfolio/useListPortfolioMovements';
 import { UseListAssetTransactionsReturn } from '@/hooks/portfolio/useListAssetTransactions';
+import { useGetIdentityNfts } from '@/hooks/identity/useGetIdentityNfts';
+import { Identity } from '@/domain/entities/Identity';
 
 interface GroupedTabsFungibleOrNonProps {
   assetType: AssetTypeSelected;
@@ -19,6 +21,7 @@ interface GroupedTabsFungibleOrNonProps {
   assetTransactions: UseListAssetTransactionsReturn | undefined;
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
+  identity: Identity;
 }
 
 export function GroupedTabsFungibleOrNon({
@@ -31,8 +34,10 @@ export function GroupedTabsFungibleOrNon({
   assetTransactions,
   isLoadingTransactions,
   isFetchingTransactions,
+  identity,
 }: GroupedTabsFungibleOrNonProps) {
   const [selectedTab, setSelectedTab] = useState(0);
+  const { data: nftData, isLoading: isLoadingNfts } = useGetIdentityNfts({ identity });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -84,10 +89,20 @@ export function GroupedTabsFungibleOrNon({
         <Tab label="Movements" />
       </Tabs>
       <GenericTabPanel value={selectedTab} index={0} labelKey="portfolio">
-        {/* NFTs collections */}
+        {isLoadingNfts ? (
+          <p>Cargando colecciones...</p>
+        ) : (
+          // Renderizar la lista de colecciones aquí
+          <pre>{JSON.stringify(nftData?.collections, null, 2)}</pre>
+        )}
       </GenericTabPanel>
       <GenericTabPanel value={selectedTab} index={1} labelKey="portfolio">
-        {/* NFTs Items */}
+        {isLoadingNfts ? (
+          <p>Cargando NFTs...</p>
+        ) : (
+          // Renderizar la lista de NFTs aquí
+          <pre>{JSON.stringify(nftData?.assets, null, 2)}</pre>
+        )}
       </GenericTabPanel>
     </>
   );
