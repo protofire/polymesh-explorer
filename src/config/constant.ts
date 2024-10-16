@@ -11,7 +11,7 @@ export const GRAPHQL_ENDPOINT_TESTNET = 'https://testnet-graphql.polymesh.live';
 export const SUBSCAN_URL_TESTNET = 'https://polymesh-testnet.subscan.io/';
 // export const GRAPHQL_ENDPOINT_TESTNET = 'http://dev.polymesh.tech:3049';
 
-export const DEFAULT_NETWORK = IS_DEVELOPMENT ? 'mainnet' : 'mainnet';
+export const DEFAULT_NETWORK = IS_DEVELOPMENT ? 'testnet' : 'mainnet';
 
 type NetworkTypeWithoutCustom = Omit<NetworkType, 'custom'> & string;
 export const NETWORK_MAP: Record<NetworkTypeWithoutCustom, NetworkConfig> = {
