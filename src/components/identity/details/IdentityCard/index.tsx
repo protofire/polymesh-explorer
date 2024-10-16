@@ -13,10 +13,10 @@ import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import Identicon from '@polkadot/ui-identicon';
 import Link from 'next/link';
 import { Identity } from '@/domain/entities/Identity';
-import { truncateAddress } from '@/services/polymesh/address';
 import { SecondaryKeys } from './SecondaryKeys';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { IdentityCardSkeleton } from './IdentityCardSkeleton';
+import { AccountOrDidTextField } from '@/components/shared/AccountOrDidTextField';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -68,11 +68,7 @@ export function IdentityCard({
       <Box display="flex" alignItems="center" justifyContent="space-between">
         <Box mt={2}>
           <Typography variant="body2">Primary Key</Typography>
-          <Typography variant="body1">
-            <Link href={`/account/${primaryAccount}`}>
-              {truncateAddress(primaryAccount)}
-            </Link>
-          </Typography>
+          <AccountOrDidTextField value={primaryAccount} />
         </Box>
         {secondaryAccounts && secondaryAccounts.length > 0 && (
           <SecondaryKeys secondaryAccounts={secondaryAccounts} />

@@ -7,7 +7,6 @@ import {
 } from 'react';
 import { GraphQLClient } from 'graphql-request';
 import { PolymeshSdkService } from '@/services/PolymeshSdkService';
-import { DEFAULT_NETWORK, NETWORK_MAP } from '@/config/constant';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 
 interface IPolymeshSdkContext {
@@ -34,14 +33,15 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
   const { currentNetworkConfig } = useNetworkProvider();
 
   const networkConfig = useMemo(() => {
-    const { rpc, graphQlNode } = currentNetworkConfig || {
-      rpc: NETWORK_MAP[DEFAULT_NETWORK].rpc,
-      graphQlNode: NETWORK_MAP[DEFAULT_NETWORK].graphQlNode,
-    };
+    if (!currentNetworkConfig) return undefined;
+
+    const { rpc, graphQlNode } = currentNetworkConfig;
     return { rpc, graphQlNode };
   }, [currentNetworkConfig]);
 
   useEffect(() => {
+    if (!networkConfig) return;
+
     setIsLoading(true);
     setError(null);
 
