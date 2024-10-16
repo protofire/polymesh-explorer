@@ -4,7 +4,7 @@ import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymesh
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { customReportError } from '@/utils/customReportError';
 
-export const useCreatedIdentityGroupedByMonth = (months: number = 6) => {
+export const useCreatedIdentityGroupedByMonth = (months: number) => {
   const { graphQlClient } = usePolymeshSdkService();
   const identityService = useMemo(() => {
     if (!graphQlClient) return null;

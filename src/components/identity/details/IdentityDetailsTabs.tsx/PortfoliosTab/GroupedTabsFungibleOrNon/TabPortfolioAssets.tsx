@@ -8,16 +8,22 @@ import {
   TableRow,
   Paper,
 } from '@mui/material';
-import { Asset } from '@/domain/entities/Asset';
-import { ROUTES } from '@/config/routes';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
+import { AssetPortfolio } from '@/domain/entities/Portfolio';
 
-interface AssetTabTableProps {
-  assets: Asset[];
+interface TabPortfolioAssetsProps {
+  assets: AssetPortfolio[];
 }
 
-export function AssetTabTable({ assets }: AssetTabTableProps) {
+export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
+  // TODO
+  //   const filteredAssets = assets.filter((asset) =>
+  //     assetType === 'Fungible' ? asset.isFungible : !asset.isFungible,
+  //   );
+
   return (
     <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
       <Table size="small">
@@ -25,7 +31,8 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
           <TableRow>
             <TableCell>Name</TableCell>
             <TableCell>Ticker</TableCell>
-            <TableCell>Type</TableCell>
+            <TableCell>Balance</TableCell>
+            <TableCell>Asset Type</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -38,11 +45,17 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
                     {asset.ticker}
                   </GenericLink>
                 </TableCell>
+                <TableCell>
+                  <FormattedNumber value={asset.balance} />
+                </TableCell>
                 <TableCell>{asset.type}</TableCell>
               </TableRow>
             ))
           ) : (
-            <NoDataAvailableTBody colSpan={3} />
+            <NoDataAvailableTBody
+              colSpan={4}
+              message="No assets available for this portfolio"
+            />
           )}
         </TableBody>
       </Table>

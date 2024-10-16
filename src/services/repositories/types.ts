@@ -130,6 +130,9 @@ export interface PortfolioMovementNode {
   toId: string;
   to: Portfolio;
   assetId: string;
+  asset: {
+    ticker: string;
+  };
   amount?: string;
   nftIds?: string[];
   address: string;
@@ -153,6 +156,9 @@ export interface AssetTransactionNode {
   fromPortfolioId: string;
   toPortfolioId: string;
   assetId: string;
+  asset: {
+    ticker: string;
+  };
   amount: string;
   nftIds: string[] | null;
   datetime: string;

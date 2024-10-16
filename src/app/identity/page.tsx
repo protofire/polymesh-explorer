@@ -10,6 +10,8 @@ import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { SkeletonIdentityTable } from '@/components/identity/IdentityTable/SkeletonIdentityTable';
 import { useTransactionHistoryDidsAccounts } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
 
+const N_MONTHS = 12;
+
 export default function IdentityPage() {
   const { data, isLoading, error } = useListIdentities();
   const { data: dataHistory, isFetched: isDataHistoryFetched } =
@@ -20,7 +22,7 @@ export default function IdentityPage() {
     isLoading: isChartLoading,
     isFetched: isChartFetched,
     error: chartError,
-  } = useIdentityCreationCountByMonth();
+  } = useIdentityCreationCountByMonth(N_MONTHS);
 
   return (
     <MainWrapper>
@@ -28,12 +30,14 @@ export default function IdentityPage() {
         Identities overview
       </Typography>
       <SummaryIdentitiesCard
+        nMonths={N_MONTHS}
         chartData={chartData}
         isLoading={isChartLoading || !isChartFetched}
         error={chartError}
         totalVerifiedIdentities={
           chartData?.reduce((sum, item) => sum + Number(item.count), 0) || 0
         }
+        totalIdentities={data?.paginationController.paginationInfo.totalCount}
       />
       {isLoading || dataHistory === undefined ? (
         <SkeletonIdentityTable />

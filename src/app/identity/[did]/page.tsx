@@ -20,9 +20,7 @@ export default function IdentityPage() {
   } = useGetIdentity({ identityDid: identityDid as string });
   const { data: portfolios, isFetched: portfoliosFetched } =
     useGetIdentityPortfolios({ identity });
-  const {
-    currentNetworkConfig: { subscanUrl },
-  } = useNetworkProvider();
+  const { currentNetworkConfig } = useNetworkProvider();
 
   const { data: transactionData, isFetched: isTransactionDataFetched } =
     useTransactionHistoryAccounts({ identity });
@@ -40,11 +38,11 @@ export default function IdentityPage() {
           identity={identity}
         />
 
-        {identity && (
+        {identity && currentNetworkConfig && (
           <Box mt={3}>
             <IdentityDetailsTabs
               identity={identity}
-              subscanUrl={subscanUrl}
+              subscanUrl={currentNetworkConfig.subscanUrl}
               portfolios={portfolios || []}
               isLoadingPortfolios={!portfoliosFetched}
               paginatedTransactions={transactionData}

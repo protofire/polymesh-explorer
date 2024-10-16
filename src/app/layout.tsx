@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { Providers } from '@/context/Providers';
 import { AppLayout } from '@/components/shared/layout/AppLayout';
 import TopLoader from '@/components/shared/TopLoader';
+import { SearchBarSkeleton } from '@/components/shared/layout/LayoutSearchTextInput/SearchTextInputSkeleton';
 
 export const metadata = {
   title: 'Polymesh Blockchain Explorer',
@@ -22,7 +23,7 @@ export default function RootLayout({
       <body>
         <TopLoader />
         <Providers>
-          <Suspense fallback={<>Loading...</>}>
+          <Suspense fallback={<SearchBarSkeleton />}>
             <AppLayout>{children}</AppLayout>
           </Suspense>
         </Providers>

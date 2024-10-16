@@ -46,7 +46,9 @@ export function FormattedNumber({ value, decimals = 2 }: FormattedNumberProps) {
     ? value
     : new BigNumber(value.toString());
   const formattedValue = formatNumber(bigValue, decimals);
-  const fullValue = bigValue.toFormat(decimals);
+  const fullValue = bigValue.isInteger()
+    ? bigValue.toFormat(0)
+    : bigValue.toFormat(decimals);
 
   if (formattedValue === fullValue) {
     return <Typography>{formattedValue}</Typography>;

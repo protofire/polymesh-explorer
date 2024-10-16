@@ -63,6 +63,9 @@ export class PortfolioMovementsGraphRepo {
               name
             }
             assetId
+            asset {
+              ticker
+            }
             ${assetDetail}
             address
             memo
@@ -131,6 +134,9 @@ export class PortfolioMovementsGraphRepo {
           nodes {
             amount
             assetId
+            asset {
+              ticker
+            }
             nftIds
             datetime
             id

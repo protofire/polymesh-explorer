@@ -21,7 +21,11 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     ticker: assetNode.ticker,
     name: assetNode.name,
     type: assetNode.type,
-    totalSupply: assetNode.totalSupply,
+    totalSupply:
+      assetNode.totalSupply &&
+      balanceToBigNumber(
+        assetNode.totalSupply as unknown as Balance,
+      ).toString(),
     ownerDid: assetNode.owner.did,
     isNftCollection: assetNode.isNftCollection,
     holders: assetNode.holders.totalCount.toString(),
@@ -80,6 +84,7 @@ export function portfolioMovementNodeToPortfolioMovement(
     toId: node.toId,
     to: getPortfolioParty(node.to),
     assetId: node.assetId,
+    assetTicker: node.asset.ticker,
     amount:
       node.amount &&
       balanceToBigNumber(node.amount as unknown as Balance).toString(),
@@ -97,6 +102,7 @@ export function assetTransactionNodeToAssetTransaction(
   return {
     id: node.id,
     assetId: node.assetId,
+    assetTicker: node.asset.ticker,
     fromId: node.fromPortfolioId,
     toId: node.toPortfolioId,
     amount:

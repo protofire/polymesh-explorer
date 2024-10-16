@@ -7,6 +7,7 @@ import { PortfoliosTab } from './PortfoliosTab';
 import { TransactionsTabTable } from './TransactionsTab';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -15,29 +16,6 @@ interface IdentityDetailsTabsProps {
   isLoadingPortfolios: boolean;
   paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
   isLoadingTransactions: boolean;
-}
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`asset-tabpanel-${index}`}
-      aria-labelledby={`asset-tab-${index}`}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
 }
 
 export function IdentityDetailsTabs({
@@ -85,27 +63,35 @@ export function IdentityDetailsTabs({
           <Tab label="History" />
         </Tabs>
       </Box>
-      <TabPanel value={value} index={isAssetIssuer ? 3 : 2}>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 3 : 2}
+        labelKey="identity"
+      >
         <TransactionsTabTable
           paginatedTransactions={paginatedTransactions}
           subscanUrl={subscanUrl}
           isLoading={isLoadingTransactions}
         />
-      </TabPanel>
-      <TabPanel value={value} index={0}>
+      </GenericTabPanel>
+      <GenericTabPanel value={value} index={0} labelKey="identity">
         <AssetTabTable assets={heldAssets} />
-      </TabPanel>
-      <TabPanel value={value} index={isAssetIssuer ? 2 : 1}>
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 2 : 1}
+        labelKey="identity"
+      >
         <PortfoliosTab
           portfolios={portfolios}
           isLoading={isLoadingPortfolios}
           subscanUrl={subscanUrl}
         />
-      </TabPanel>
+      </GenericTabPanel>
       {isAssetIssuer && (
-        <TabPanel value={value} index={1}>
+        <GenericTabPanel value={value} index={1} labelKey="identity">
           <AssetTabTable assets={ownedAssets} />
-        </TabPanel>
+        </GenericTabPanel>
       )}
     </Box>
   );

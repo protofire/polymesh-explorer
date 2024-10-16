@@ -1,15 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Tabs,
-  Tab,
   Typography,
   List,
   ListItem,
@@ -20,11 +11,11 @@ import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
 import { useListAssetTransactions } from '@/hooks/portfolio/useListAssetTransactions';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
-import { TabTokenMovementsTable } from './TabTokenMovementsTable';
-import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
-import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
+import {
+  AssetTypeSelected,
+  AssetTypeToggleButton,
+} from './AssetTypeToggleButton';
+import { GroupedTabsFungibleOrNon } from './GroupedTabsFungibleOrNon';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -32,37 +23,14 @@ interface PortfoliosTabProps {
   subscanUrl: string;
 }
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`portfolio-tabpanel-${index}`}
-      aria-labelledby={`portfolio-tab-${index}`}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
 export function PortfoliosTab({
   portfolios,
   isLoading,
   subscanUrl,
 }: PortfoliosTabProps) {
-  const [selectedTab, setSelectedTab] = useState(0);
   const [selectedPortfolio, setSelectedPortfolio] =
     useState<PortfolioWithAssets | null>(portfolios[0] || null);
+  const [assetType, setAssetType] = useState<AssetTypeSelected>('Fungible');
 
   const {
     data: portfolioMovements,
@@ -83,12 +51,17 @@ export function PortfoliosTab({
     nonFungible: false,
   });
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setSelectedTab(newValue);
-  };
-
   const handlePortfolioSelect = (portfolio: PortfolioWithAssets) => {
     setSelectedPortfolio(portfolio);
+  };
+
+  const handleAssetTypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAssetType: AssetTypeSelected,
+  ) => {
+    if (newAssetType !== null) {
+      setAssetType(newAssetType);
+    }
   };
 
   if (isLoading) {
@@ -117,71 +90,33 @@ export function PortfoliosTab({
       <Box sx={{ width: '70%', pl: 2 }}>
         {selectedPortfolio ? (
           <>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              {selectedPortfolio.name}
-            </Typography>
-            <Tabs
-              value={selectedTab}
-              onChange={handleTabChange}
-              aria-label="portfolio details tabs"
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 2,
+              }}
             >
-              <Tab label="Assets" />
-              <Tab label="Movements" />
-              <Tab label="Transactions" />
-            </Tabs>
-            <TabPanel value={selectedTab} index={0}>
-              <TableContainer component={Paper} sx={{ minHeight: '15rem' }}>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Ticker</TableCell>
-                      <TableCell>Balance</TableCell>
-                      <TableCell>Asset Type</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {selectedPortfolio.assets.length > 0 ? (
-                      selectedPortfolio.assets.map((asset) => (
-                        <TableRow key={asset.ticker}>
-                          <TableCell>{asset.name}</TableCell>
-                          <TableCell>
-                            <GenericLink
-                              href={`${ROUTES.Asset}/${asset.ticker}`}
-                            >
-                              {asset.ticker}
-                            </GenericLink>
-                          </TableCell>
-                          <TableCell>{asset.balance}</TableCell>
-                          <TableCell>{asset.type}</TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <NoDataAvailableTBody
-                        colSpan={4}
-                        message="No assets available for this portfolio"
-                      />
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </TabPanel>
-            <TabPanel value={selectedTab} index={1}>
-              <TabTokenMovementsTable
-                subscanUrl={subscanUrl}
-                portfolioMovements={portfolioMovements}
-                isLoadingMovements={isLoadingMovements}
-                isFetchingMovements={isFetchingMovements}
-              />
-            </TabPanel>
-            <TabPanel value={selectedTab} index={2}>
-              <TabAssetTransactionsTable
-                subscanUrl={subscanUrl}
-                assetTransactions={assetTransactions}
-                isLoadingTransactions={isLoadingTransactions}
-                isFetchingTransactions={isFetchingTransactions}
-              />
-            </TabPanel>
+              <Typography variant="h6">{selectedPortfolio.name}</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <AssetTypeToggleButton
+                  onChange={handleAssetTypeChange}
+                  assetType={assetType}
+                />
+              </Box>
+            </Box>
+            <GroupedTabsFungibleOrNon
+              assetType={assetType}
+              selectedPortfolio={selectedPortfolio}
+              subscanUrl={subscanUrl}
+              portfolioMovements={portfolioMovements}
+              isLoadingMovements={isLoadingMovements}
+              isFetchingMovements={isFetchingMovements}
+              assetTransactions={assetTransactions}
+              isLoadingTransactions={isLoadingTransactions}
+              isFetchingTransactions={isFetchingTransactions}
+            />
           </>
         ) : (
           <Typography>Select a portfolio to view details</Typography>
