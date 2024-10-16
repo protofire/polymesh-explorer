@@ -7,7 +7,10 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Tooltip,
 } from '@mui/material';
+import CollectionsIcon from '@mui/icons-material/Collections';
+import TokenIcon from '@mui/icons-material/Toll';
 import { Asset } from '@/domain/entities/Asset';
 import { ROUTES } from '@/config/routes';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
@@ -26,6 +29,7 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
             <TableCell>Name</TableCell>
             <TableCell>Ticker</TableCell>
             <TableCell>Type</TableCell>
+            <TableCell>Fungible / Non fungible</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -39,6 +43,21 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
                   </GenericLink>
                 </TableCell>
                 <TableCell>{asset.type}</TableCell>
+                <TableCell>
+                  <Tooltip
+                    title={
+                      asset.isNftCollection
+                        ? 'NFT Collection'
+                        : 'Fungible Token'
+                    }
+                  >
+                    {asset.isNftCollection ? (
+                      <CollectionsIcon color="primary" />
+                    ) : (
+                      <TokenIcon color="secondary" />
+                    )}
+                  </Tooltip>
+                </TableCell>
               </TableRow>
             ))
           ) : (

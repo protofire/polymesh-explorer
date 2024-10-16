@@ -43,15 +43,15 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
       .map((account) => account.address),
     createdAt: new Date(node.createdAt),
     claimsCount: node.claimsByTargetId.totalCount,
-    assetsCount: node.heldAssets.totalCount,
+    assetsCount: node.heldAssets.totalCount + node.heldNfts.totalCount,
     venuesCount: node.venuesByOwnerId.totalCount,
     portfoliosCount: node.portfolios.totalCount,
     ownedAssets: node.assetsByOwnerId.nodes.map((asset) =>
       assetNodeToAsset(asset),
     ),
-    heldAssets: node.heldAssets.nodes.map((heldAsset) =>
-      assetNodeToAsset(heldAsset.asset),
-    ),
+    heldAssets: node.heldAssets.nodes
+      .map((heldAsset) => assetNodeToAsset(heldAsset.asset))
+      .concat(node.heldNfts.nodes.map((nft) => assetNodeToAsset(nft.asset))),
     isCustodian: node.portfoliosByCustodianId.totalCount > 0,
     custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
     isChildIdentity: node.parentChildIdentities.totalCount > 0,
