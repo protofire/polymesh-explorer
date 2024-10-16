@@ -56,7 +56,7 @@ export function FormattedNumber({ value, decimals = 2 }: FormattedNumberProps) {
 
   return (
     <Tooltip title={fullValue} arrow>
-      <Typography>{formattedValue}</Typography>
+      <Typography variant="body2">{formattedValue}</Typography>
     </Tooltip>
   );
 }

@@ -19,7 +19,7 @@ export function FormattedDate({
 
   return (
     <Tooltip title={format(parsedDate, formatString)}>
-      <Typography>
+      <Typography variant="caption">
         {formatDistanceToNow(parsedDate, { addSuffix: true })}
       </Typography>
     </Tooltip>

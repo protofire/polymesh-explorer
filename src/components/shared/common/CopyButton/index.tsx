@@ -73,7 +73,7 @@ function CopyButton({
           <SvgIcon
             component={ContentCopyIcon}
             inheritViewBox
-            sx={{ fontSize: '1.1rem', color: '#3d3d3d' }}
+            sx={{ fontSize: '1.1rem', color: '#bdbdbd' }}
           />
         )}
       </IconButton>
