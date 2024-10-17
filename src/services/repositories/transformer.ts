@@ -29,7 +29,7 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     ownerDid: assetNode.owner.did,
     isNftCollection: assetNode.isNftCollection,
     holders: assetNode.holders.totalCount.toString(),
-    createdAt: new Date(assetNode.createdAt),
+    createdAt: new Date(`${assetNode.createdAt}Z`),
     documents: assetNode.documents.totalCount.toString(),
   };
 }
@@ -41,7 +41,7 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     secondaryAccounts: node.secondaryAccounts.nodes
       .filter((account) => account.address !== node.primaryAccount)
       .map((account) => account.address),
-    createdAt: new Date(node.createdAt),
+    createdAt: new Date(`{node.createdAt}Z`),
     claimsCount: node.claimsByTargetId.totalCount,
     assetsCount: node.heldAssets.totalCount + node.heldNfts.totalCount,
     venuesCount: node.venuesByOwnerId.totalCount,
@@ -65,7 +65,7 @@ export function venueNodeToVenue(node: VenueNode): Venue {
     details: node.details,
     type: node.type,
     ownerId: node.ownerId,
-    createdAt: new Date(node.createdAt),
+    createdAt: new Date(`${node.createdAt}Z`),
   };
 }
 
@@ -84,14 +84,14 @@ export function portfolioMovementNodeToPortfolioMovement(
     toId: node.toId,
     to: getPortfolioParty(node.to),
     assetId: node.assetId,
-    assetTicker: node.asset.ticker,
+    assetTicker: node.asset?.ticker,
     amount:
       node.amount &&
       balanceToBigNumber(node.amount as unknown as Balance).toString(),
     nftIds: node.nftIds,
     address: node.address,
     memo: node.memo,
-    createdAt: node.createdBlock.datetime,
+    createdAt: new Date(`${node.createdBlock.datetime}Z`),
     blockId: node.createdBlock.blockId,
   };
 }
@@ -111,7 +111,7 @@ export function assetTransactionNodeToAssetTransaction(
     nftIds: node.nftIds || undefined,
     createdBlock: {
       blockId: node.createdBlockId,
-      datetime: new Date(node.datetime),
+      datetime: new Date(`${node.datetime}Z`),
     },
     extrinsicIdx: node.extrinsicIdx,
     eventIdx: node.eventIdx,
@@ -137,7 +137,7 @@ export function extrinsicNodeToExtrinsicTransaction(
     extrinsicHash: node.extrinsicHash,
     block: {
       hash: node.block.hash,
-      datetime: new Date(node.block.datetime),
+      datetime: new Date(`${node.block.datetime}Z`),
     },
   };
 }

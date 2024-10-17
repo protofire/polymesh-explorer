@@ -8,6 +8,7 @@ import { Nft } from '@polymeshassociation/polymesh-sdk/internal';
 import { NftAsset, NftCollection } from '@/domain/entities/NftData';
 
 const IPFS_PROVIDER_URL = 'https://ipfs.io/ipfs';
+const imageUrlCache = new Map();
 
 export const convertIpfsLink = (uri: string): string => {
   const rawIpfsUrl: string = IPFS_PROVIDER_URL;
@@ -98,22 +99,38 @@ export async function getNftAssetsFromPortfolio(
     collectionsList.map(async ({ free, locked, collection: rawCollection }) => {
       const { name: collectionName } = await rawCollection.details();
       const freeNfts = await Promise.all(
-        free.map(async (nft) => ({
-          id: nft.id.toNumber(),
-          imgUrl: '',
-          isLocked: false,
-          collectionTicker: rawCollection.ticker,
-          collectionName,
-        })),
+        free.map(async (nft) => {
+          let imgUrl = imageUrlCache.get(nft.uuid);
+          if (!imgUrl) {
+            imgUrl = await getNftImageUrl(nft);
+            imageUrlCache.set(nft.uuid, imgUrl);
+          }
+
+          return {
+            id: nft.id.toNumber(),
+            imgUrl,
+            isLocked: false,
+            collectionTicker: rawCollection.ticker,
+            collectionName,
+          };
+        }),
       );
       const lockedNfts = await Promise.all(
-        locked.map(async (nft) => ({
-          id: nft.id.toNumber(),
-          imgUrl: '',
-          isLocked: true,
-          collectionTicker: rawCollection.ticker,
-          collectionName,
-        })),
+        locked.map(async (nft) => {
+          let imgUrl = imageUrlCache.get(nft.uuid);
+          if (!imgUrl) {
+            imgUrl = await getNftImageUrl(nft);
+            imageUrlCache.set(nft.uuid, imgUrl);
+          }
+
+          return {
+            id: nft.id.toNumber(),
+            imgUrl,
+            isLocked: true,
+            collectionTicker: rawCollection.ticker,
+            collectionName,
+          };
+        }),
       );
       return [...freeNfts, ...lockedNfts];
     }),

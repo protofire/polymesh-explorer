@@ -7,11 +7,11 @@ export interface PortfolioMovement {
   toId: string;
   to: Portfolio;
   assetId: string;
-  assetTicker: string;
+  assetTicker?: string;
   amount?: string;
   nftIds?: string[];
   address: string;
   memo?: string;
-  createdAt: string;
+  createdAt: Date;
   blockId: string;
 }

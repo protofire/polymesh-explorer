@@ -1,4 +1,5 @@
 import { GraphQLClient, gql } from 'graphql-request';
+import { PortfolioMovementTypeEnum } from '@polymeshassociation/polymesh-sdk/middleware/types';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import {
   assetTransactionNodeToAssetTransaction,
@@ -12,7 +13,7 @@ import {
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { pageInfoFragment } from './fragments';
 
-export type PortfolioMovementType = 'Fungible' | 'NonFungible';
+export type PortfolioMovementType = PortfolioMovementTypeEnum;
 
 export class PortfolioMovementsGraphRepo {
   constructor(private client: GraphQLClient) {}
