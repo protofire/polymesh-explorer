@@ -31,8 +31,6 @@ export function PortfoliosTab({
   const [selectedPortfolio, setSelectedPortfolio] =
     useState<PortfolioWithAssets | null>(portfolios[0] || null);
   const [assetType, setAssetType] = useState<AssetTypeSelected>('Fungible');
-  console.log('__portfolios')
-  // const { data: nftData, isLoading: isLoadingNfts } = useGetIdentityNfts({ identity });
 
   const {
     data: portfolioMovements,
@@ -63,6 +61,7 @@ export function PortfoliosTab({
   ) => {
     if (newAssetType !== null) {
       setAssetType(newAssetType);
+      setSelectedPortfolio(portfolios[0] || null);
     }
   };
 
@@ -109,6 +108,7 @@ export function PortfoliosTab({
               </Box>
             </Box>
             <GroupedTabsFungibleOrNon
+              portfolios={portfolios}
               assetType={assetType}
               selectedPortfolio={selectedPortfolio}
               subscanUrl={subscanUrl}

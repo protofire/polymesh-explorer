@@ -12,6 +12,7 @@ import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 
 export default function IdentityPage() {
+  const { currentNetworkConfig } = useNetworkProvider();
   const { did: identityDid } = useParams();
   const {
     data: identity,
@@ -20,8 +21,6 @@ export default function IdentityPage() {
   } = useGetIdentity({ identityDid: identityDid as string });
   const { data: portfolios, isFetched: portfoliosFetched } =
     useGetIdentityPortfolios({ identity });
-  const { currentNetworkConfig } = useNetworkProvider();
-
   const { data: transactionData, isFetched: isTransactionDataFetched } =
     useTransactionHistoryAccounts({ identity });
 

@@ -1,52 +1,107 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQueries, useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { Identity } from '@/domain/entities/Identity';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
+import {
+  getCollectionsFromPortfolio,
+  getNftAssetsFromPortfolio,
+} from '@/services/polymesh/sdk/assetsService';
 import { customReportError } from '@/utils/customReportError';
-import { NftService, NftCollection, NftAsset } from '@/services/NftService';
+import { NftData } from '@/domain/entities/NftData';
 
-interface Props {
-  identity?: Identity | null;
+interface UseGetIdentityNftsProps {
+  portfolios: PortfolioWithAssets[];
+  selectedPortfolio: PortfolioWithAssets | null;
 }
 
-interface NftData {
-  collections: NftCollection[];
-  assets: NftAsset[];
+interface UseGetIdentityNftsReturn {
+  portfolios: PortfolioWithAssets[];
+  selectedPortfolio: PortfolioWithAssets | null;
+  status: {
+    isLoadingCollections: boolean;
+    isLoadingNfts: boolean;
+    isFetchedCollections: boolean;
+    isFetchedNfts: boolean;
+  };
+  error: Error | null;
 }
 
-export const useGetIdentityNfts = ({ identity }: Props) => {
+export const useGetIdentityNfts = ({
+  portfolios,
+  selectedPortfolio,
+}: UseGetIdentityNftsProps): UseGetIdentityNftsReturn => {
   const { polymeshService } = usePolymeshSdkService();
 
-  return useQuery<NftData | null, Error>({
-    queryKey: ['useGetIdentityNfts', identity?.did],
+  const collectionsQueries = useQueries({
+    queries: portfolios.map((portfolio) => ({
+      queryKey: ['useGetIdentityNftsCollections', portfolio.id],
+      queryFn: async () => {
+        if (!polymeshService?.polymeshSdk) {
+          throw new Error('Polymesh SDK is not initialized');
+        }
+        try {
+          return await getCollectionsFromPortfolio(portfolio.portfolioSdk);
+        } catch (error) {
+          customReportError(error);
+          throw error;
+        }
+      },
+      enabled: !!polymeshService,
+    })),
+  });
+
+  const nftAssetsQuery = useQuery({
+    queryKey: ['useGetIdentityNftsAssets', selectedPortfolio?.id],
     queryFn: async () => {
-      if (!identity || !polymeshService) return null;
-
+      if (!polymeshService?.polymeshSdk || !selectedPortfolio) {
+        throw new Error(
+          'Polymesh SDK is not initialized or no portfolio selected',
+        );
+      }
       try {
-        const nftService = new NftService(polymeshService);
-        const portfolios = await polymeshService.getIdentityPortfolios(
-          identity.did,
-        );
-
-        const collections = await Promise.all(
-          portfolios.map((portfolio) =>
-            nftService.getCollectionsFromPortfolio(portfolio as any),
-          ),
-        );
-        const assets = await Promise.all(
-          portfolios.map((portfolio) =>
-            nftService.getNftAssetsFromPortfolio(portfolio as any),
-          ),
-        );
-
-        return {
-          collections: collections.flat(),
-          assets: assets.flat(),
-        };
+        return await getNftAssetsFromPortfolio(selectedPortfolio.portfolioSdk);
       } catch (error) {
         customReportError(error);
         throw error;
       }
     },
-    enabled: !!identity && !!polymeshService,
+    enabled: !!selectedPortfolio && !!polymeshService,
   });
+
+  const updatedPortfolios = useMemo(() => {
+    return portfolios.map((portfolio, index) => ({
+      ...portfolio,
+      nonFungibleAssets: {
+        collections: collectionsQueries[index].data || [],
+        nftAssets:
+          portfolio.id === selectedPortfolio?.id
+            ? nftAssetsQuery.data || []
+            : [],
+      } as NftData,
+    }));
+  }, [portfolios, collectionsQueries, nftAssetsQuery.data, selectedPortfolio]);
+
+  const updatedSelectedPortfolio = useMemo(() => {
+    if (!selectedPortfolio) return null;
+    return updatedPortfolios.find((p) => p.id === selectedPortfolio.id) || null;
+  }, [selectedPortfolio, updatedPortfolios]);
+
+  const status = {
+    isLoadingCollections: collectionsQueries.some((query) => query.isLoading),
+    isLoadingNfts: nftAssetsQuery.isLoading,
+    isFetchedCollections: collectionsQueries.every((query) => query.isFetched),
+    isFetchedNfts: nftAssetsQuery.isFetched,
+  };
+
+  const error =
+    collectionsQueries.find((query) => query.error)?.error ||
+    nftAssetsQuery.error ||
+    null;
+
+  return {
+    portfolios: updatedPortfolios,
+    selectedPortfolio: updatedSelectedPortfolio,
+    status,
+    error,
+  };
 };

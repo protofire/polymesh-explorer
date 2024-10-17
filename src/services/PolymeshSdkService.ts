@@ -98,6 +98,7 @@ export class PolymeshSdkService {
       return await Promise.all(
         portfolios.map(async (portfolio, index) => {
           const assetBalances = await portfolio.getAssetBalances();
+          const custodian = await portfolio.getCustodian();
           const assets = assetBalances
             .filter(({ total }) => total.toNumber() > 0)
             .map((balance) => ({
@@ -106,13 +107,6 @@ export class PolymeshSdkService {
               balance: balance.total.toString(),
               type: 'Default', // Assumes a Default type
             }));
-
-          // Get and count Nfts
-          const collections = await portfolio.getCollections();
-          const nftCount = collections.reduce(
-            (total, collection) => total + collection.total.toNumber(),
-            0,
-          );
 
           const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
           const name =
@@ -125,7 +119,8 @@ export class PolymeshSdkService {
             number,
             name,
             assets,
-            nftCount,
+            custodianDid: custodian.did !== did ? custodian.did : undefined,
+            portfolioSdk: portfolio,
           };
         }),
       );
