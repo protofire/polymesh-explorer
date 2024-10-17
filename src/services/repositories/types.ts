@@ -132,7 +132,6 @@ export interface PortfolioMovementNode {
   assetId: string;
   asset: {
     ticker: string;
-    id: string;
   };
   amount?: string;
   nftIds?: string[];
