@@ -112,6 +112,7 @@ export function GroupedTabsFungibleOrNon({
           assetTransactions={assetTransactions}
           isLoadingTransactions={isLoadingTransactions}
           isFetchingTransactions={isFetchingTransactions}
+          assetType={assetType}
         />
       </GenericTabPanel>
       <GenericTabPanel value={selectedTab} index={3} labelKey="portfolio">
@@ -120,6 +121,7 @@ export function GroupedTabsFungibleOrNon({
           portfolioMovements={portfolioMovements}
           isLoadingMovements={isLoadingMovements}
           isFetchingMovements={isFetchingMovements}
+          assetType={assetType}
         />
       </GenericTabPanel>
     </>

@@ -25,7 +25,7 @@ interface TabAssetTransactionsTableProps {
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
   subscanUrl: string;
-  assetType: AssetTypeSelected;
+  assetType?: AssetTypeSelected;
 }
 
 export function TabAssetTransactionsTable({
@@ -33,7 +33,7 @@ export function TabAssetTransactionsTable({
   isLoadingTransactions,
   isFetchingTransactions,
   subscanUrl,
-  assetType,
+  assetType = 'Fungible',
 }: TabAssetTransactionsTableProps) {
   if (isLoadingTransactions || isFetchingTransactions || !assetTransactions) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
