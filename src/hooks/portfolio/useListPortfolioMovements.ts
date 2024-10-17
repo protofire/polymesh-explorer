@@ -9,6 +9,7 @@ import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
+import { AssetTypeSelected } from '@/components/identity/details/IdentityDetailsTabs.tsx/PortfoliosTab/AssetTypeToggleButton';
 
 export type UseListPortfolioMovementsReturn = PaginatedData<
   PortfolioMovement[]
@@ -16,7 +17,7 @@ export type UseListPortfolioMovementsReturn = PaginatedData<
 
 interface UseListPortfolioMovementsParams {
   portfolioNumber: string;
-  type: PortfolioMovementType;
+  type: AssetTypeSelected;
 }
 
 export function useListPortfolioMovements({
@@ -42,7 +43,7 @@ export function useListPortfolioMovements({
       const result = await portfolioMovementsRepo.getPortfolioMovements(
         paginationController.paginationInfo.pageSize,
         portfolioNumber,
-        type,
+        type as PortfolioMovementType,
         paginationController.paginationInfo.offset,
       );
 

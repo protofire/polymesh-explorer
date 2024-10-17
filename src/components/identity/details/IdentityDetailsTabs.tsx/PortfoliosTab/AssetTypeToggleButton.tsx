@@ -26,7 +26,7 @@ const StyledToggleButton = styled(ToggleButton)(({ theme }) => ({
   },
 }));
 
-export type AssetTypeSelected = 'Fungible' | 'Non-Fungible';
+export type AssetTypeSelected = 'Fungible' | 'NonFungible';
 
 interface AssetTypeToggleButtonProps {
   assetType: AssetTypeSelected;
@@ -52,7 +52,7 @@ export function AssetTypeToggleButton({
         <TokenIcon sx={{ mr: 0.5 }} />
         Fungible Assets
       </StyledToggleButton>
-      <StyledToggleButton value="Non-Fungible" aria-label="non-fungible assets">
+      <StyledToggleButton value="NonFungible" aria-label="non-fungible assets">
         <CollectionsIcon sx={{ mr: 0.5 }} />
         Non-Fungible Assets
       </StyledToggleButton>

@@ -8,10 +8,14 @@ import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { UseListPortfolioMovementsReturn } from '@/hooks/portfolio/useListPortfolioMovements';
 import { UseListAssetTransactionsReturn } from '@/hooks/portfolio/useListAssetTransactions';
+import { useGetIdentityNfts } from '@/hooks/identity/useGetIdentityNfts';
+import { TabNftAssets } from './TabNftAssets';
+import { TabNftCollections } from './TabNftCollections';
 
 interface GroupedTabsFungibleOrNonProps {
   assetType: AssetTypeSelected;
   selectedPortfolio: PortfolioWithAssets;
+  portfolios: PortfolioWithAssets[];
   subscanUrl: string;
   portfolioMovements: UseListPortfolioMovementsReturn | undefined;
   isLoadingMovements: boolean;
@@ -24,6 +28,7 @@ interface GroupedTabsFungibleOrNonProps {
 export function GroupedTabsFungibleOrNon({
   assetType,
   selectedPortfolio,
+  portfolios,
   subscanUrl,
   portfolioMovements,
   isLoadingMovements,
@@ -33,6 +38,12 @@ export function GroupedTabsFungibleOrNon({
   isFetchingTransactions,
 }: GroupedTabsFungibleOrNonProps) {
   const [selectedTab, setSelectedTab] = useState(0);
+
+  const { selectedPortfolio: selectedPortfolioExtended, status } =
+    useGetIdentityNfts({
+      portfolios,
+      selectedPortfolio,
+    });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setSelectedTab(newValue);
@@ -84,10 +95,34 @@ export function GroupedTabsFungibleOrNon({
         <Tab label="Movements" />
       </Tabs>
       <GenericTabPanel value={selectedTab} index={0} labelKey="portfolio">
-        {/* NFTs collections */}
+        <TabNftCollections
+          selectedPortfolio={selectedPortfolioExtended}
+          isLoadingCollections={status.isLoadingCollections}
+        />
       </GenericTabPanel>
       <GenericTabPanel value={selectedTab} index={1} labelKey="portfolio">
-        {/* NFTs Items */}
+        <TabNftAssets
+          selectedPortfolio={selectedPortfolioExtended}
+          isLoadingNfts={status.isLoadingNfts}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel value={selectedTab} index={2} labelKey="portfolio">
+        <TabAssetTransactionsTable
+          subscanUrl={subscanUrl}
+          assetTransactions={assetTransactions}
+          isLoadingTransactions={isLoadingTransactions}
+          isFetchingTransactions={isFetchingTransactions}
+          assetType={assetType}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel value={selectedTab} index={3} labelKey="portfolio">
+        <TabTokenMovementsTable
+          subscanUrl={subscanUrl}
+          portfolioMovements={portfolioMovements}
+          isLoadingMovements={isLoadingMovements}
+          isFetchingMovements={isFetchingMovements}
+          assetType={assetType}
+        />
       </GenericTabPanel>
     </>
   );

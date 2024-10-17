@@ -18,12 +18,14 @@ import { ROUTES } from '@/config/routes';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
+import { AssetTypeSelected } from '../AssetTypeToggleButton';
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
   subscanUrl: string;
+  assetType?: AssetTypeSelected;
 }
 
 export function TabAssetTransactionsTable({
@@ -31,11 +33,12 @@ export function TabAssetTransactionsTable({
   isLoadingTransactions,
   isFetchingTransactions,
   subscanUrl,
+  assetType = 'Fungible',
 }: TabAssetTransactionsTableProps) {
   if (isLoadingTransactions || isFetchingTransactions || !assetTransactions) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
   }
-
+  const isFungible = assetType === 'Fungible';
   const { data: transactions, paginationController } = assetTransactions;
 
   return (
@@ -49,7 +52,7 @@ export function TabAssetTransactionsTable({
               <TableCell>Asset</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>{isFungible ? 'Amount' : 'Nft Id'}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -94,9 +97,11 @@ export function TabAssetTransactionsTable({
                       )}
                     </TableCell>
                     <TableCell>
-                      {transaction.amount && (
-                        <FormattedNumber value={transaction.amount} />
-                      )}
+                      {isFungible
+                        ? transaction.amount && (
+                            <FormattedNumber value={transaction.amount} />
+                          )
+                        : transaction.nftIds?.join(', ')}
                     </TableCell>
                   </TableRow>
                 );

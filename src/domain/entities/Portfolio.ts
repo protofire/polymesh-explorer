@@ -1,4 +1,7 @@
+import { Portfolio as PortfolioSdk } from '@polymeshassociation/polymesh-sdk/api/entities/Portfolio';
 import { Asset } from './Asset';
+import { Identity } from './Identity';
+import { NftData } from './NftData';
 
 export interface AssetPortfolio
   extends Pick<Asset, 'name' | 'ticker' | 'type'> {
@@ -13,5 +16,7 @@ export interface Portfolio {
 
 export interface PortfolioWithAssets extends Portfolio {
   assets: AssetPortfolio[];
-  nftCount: number;
+  nonFungibleAssets?: NftData;
+  custodianDid?: Identity['did'];
+  portfolioSdk: PortfolioSdk;
 }

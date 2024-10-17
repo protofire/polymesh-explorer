@@ -16,12 +16,15 @@ import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSke
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { AssetTypeSelected } from '../AssetTypeToggleButton';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
   isLoadingMovements: boolean;
   isFetchingMovements: boolean;
   subscanUrl: string;
+  assetType?: AssetTypeSelected;
 }
 
 export function TabTokenMovementsTable({
@@ -29,11 +32,13 @@ export function TabTokenMovementsTable({
   isLoadingMovements,
   isFetchingMovements,
   subscanUrl,
+  assetType = 'Fungible',
 }: TabTokenMovementsTableProps) {
   if (isLoadingMovements || isFetchingMovements || !portfolioMovements) {
     return <GenericTableSkeleton columnCount={7} rowCount={3} />;
   }
 
+  const isFungible = assetType === 'Fungible';
   const { data: movements, paginationController } = portfolioMovements;
 
   return (
@@ -47,7 +52,7 @@ export function TabTokenMovementsTable({
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
               <TableCell>Asset</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>{isFungible ? 'Amount' : 'Nft Id'}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -80,7 +85,13 @@ export function TabTokenMovementsTable({
                       {movement.assetTicker}
                     </GenericLink>
                   </TableCell>
-                  <TableCell>{movement.amount}</TableCell>
+                  <TableCell>
+                    {isFungible
+                      ? movement.amount && (
+                          <FormattedNumber value={movement.amount} />
+                        )
+                      : movement.nftIds?.join(', ')}
+                  </TableCell>
                 </TableRow>
               ))
             )}

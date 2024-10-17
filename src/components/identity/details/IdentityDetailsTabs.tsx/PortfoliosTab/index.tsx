@@ -38,7 +38,7 @@ export function PortfoliosTab({
     isFetching: isFetchingMovements,
   } = useListPortfolioMovements({
     portfolioNumber: selectedPortfolio?.id || '',
-    type: 'Fungible',
+    type: assetType,
   });
 
   const {
@@ -48,7 +48,7 @@ export function PortfoliosTab({
   } = useListAssetTransactions({
     portfolios,
     portfolioId: selectedPortfolio?.id || null,
-    nonFungible: false,
+    nonFungible: assetType === 'NonFungible',
   });
 
   const handlePortfolioSelect = (portfolio: PortfolioWithAssets) => {
@@ -61,6 +61,7 @@ export function PortfoliosTab({
   ) => {
     if (newAssetType !== null) {
       setAssetType(newAssetType);
+      setSelectedPortfolio(portfolios[0] || null);
     }
   };
 
@@ -107,6 +108,7 @@ export function PortfoliosTab({
               </Box>
             </Box>
             <GroupedTabsFungibleOrNon
+              portfolios={portfolios}
               assetType={assetType}
               selectedPortfolio={selectedPortfolio}
               subscanUrl={subscanUrl}
