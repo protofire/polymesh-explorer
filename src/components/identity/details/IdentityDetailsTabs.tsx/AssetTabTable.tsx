@@ -61,7 +61,7 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
               </TableRow>
             ))
           ) : (
-            <NoDataAvailableTBody colSpan={3} />
+            <NoDataAvailableTBody colSpan={4} />
           )}
         </TableBody>
       </Table>

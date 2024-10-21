@@ -8,6 +8,8 @@ import { TransactionsTabTable } from './TransactionsTab';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
+import { SettlementInstructionInfo } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs.tsx/SettlementInstructionsTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -16,6 +18,8 @@ interface IdentityDetailsTabsProps {
   isLoadingPortfolios: boolean;
   paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
   isLoadingTransactions: boolean;
+  settlementInstructions: SettlementInstructionInfo[] | null | undefined;
+  isLoadingSettlementInstructions: boolean;
 }
 
 export function IdentityDetailsTabs({
@@ -25,6 +29,8 @@ export function IdentityDetailsTabs({
   isLoadingPortfolios,
   paginatedTransactions,
   isLoadingTransactions,
+  settlementInstructions,
+  isLoadingSettlementInstructions,
 }: IdentityDetailsTabsProps) {
   const [value, setValue] = useState(0);
   const { ownedAssets, heldAssets } = identity;
@@ -61,6 +67,7 @@ export function IdentityDetailsTabs({
             }
           />
           <Tab label="History" />
+          <Tab label="Settlement Instructions" />
         </Tabs>
       </Box>
       <GenericTabPanel
@@ -93,6 +100,16 @@ export function IdentityDetailsTabs({
           <AssetTabTable assets={ownedAssets} />
         </GenericTabPanel>
       )}
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 4 : 3}
+        labelKey="identity"
+      >
+        <SettlementInstructionsTab
+          instructions={settlementInstructions}
+          isLoading={isLoadingSettlementInstructions}
+        />
+      </GenericTabPanel>
     </Box>
   );
 }
