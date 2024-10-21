@@ -10,6 +10,7 @@ import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetai
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 
 export default function IdentityPage() {
   const { currentNetworkConfig } = useNetworkProvider();
@@ -23,6 +24,12 @@ export default function IdentityPage() {
     useGetIdentityPortfolios({ identity });
   const { data: transactionData, isFetched: isTransactionDataFetched } =
     useTransactionHistoryAccounts({ identity });
+  const {
+    data: settlementsInstructions,
+    isFetched: isFetchedSettlementInstructions,
+  } = useGetSettlementInstructionsByDid({
+    identity,
+  });
 
   if (!identityLoading && identity === null) {
     notFound();
@@ -46,6 +53,8 @@ export default function IdentityPage() {
               isLoadingPortfolios={!portfoliosFetched}
               paginatedTransactions={transactionData}
               isLoadingTransactions={!isTransactionDataFetched}
+              settlementInstructions={settlementsInstructions}
+              isLoadingSettlementInstructions={!isFetchedSettlementInstructions}
             />
           </Box>
         )}
