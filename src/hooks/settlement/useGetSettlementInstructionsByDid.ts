@@ -1,38 +1,28 @@
 import { useQuery } from '@tanstack/react-query';
 import {
+  Instruction,
   InstructionStatus,
-  Leg,
-  InstructionDetails,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
 import { customReportError } from '@/utils/customReportError';
+import { SettlementInstruction } from '@/domain/entities/SettlementInstruction';
+import { transformSettlementInstruction } from '@/services/transformers/settlementInstructionTransformer';
 
-export interface SettlementInstructionInfo {
-  id: string;
-  venueId: string;
-  status: InstructionStatus;
-  createdAt: string;
-  counterparties: number;
-  settlementType: string;
-  legs: Leg[];
+export interface GroupedSettlementInstructions {
+  affirmed: SettlementInstruction[];
+  failed: SettlementInstruction[];
+  pending: SettlementInstruction[];
 }
 
 interface Props {
   identity?: Identity | null;
 }
 
-function getSettlementType(details: InstructionDetails): string {
-  if ('type' in details) {
-    return details.type;
-  }
-  return 'Unknown';
-}
-
 export const useGetSettlementInstructionsByDid = ({ identity }: Props) => {
   const { polymeshService } = usePolymeshSdkService();
 
-  const queryResult = useQuery<SettlementInstructionInfo[] | null, Error>({
+  const queryResult = useQuery<GroupedSettlementInstructions | null, Error>({
     queryKey: ['useGetSettlementInstructionsByDid', identity?.did],
     queryFn: async () => {
       if (!polymeshService?.polymeshSdk) {
@@ -42,34 +32,43 @@ export const useGetSettlementInstructionsByDid = ({ identity }: Props) => {
       try {
         const polymeshIdentity =
           await polymeshService.polymeshSdk.identities.getIdentity({
-            did: (identity as Identity).did,
+            did: identity!.did,
           });
         const instructions = await polymeshIdentity.getInstructions();
 
-        const allInstructions = [
-          ...instructions.pending,
-          ...instructions.failed,
-          ...instructions.affirmed,
-        ];
+        const processedInstructions = await Promise.all(
+          Object.entries(instructions).flatMap(([status, instructionArray]) =>
+            instructionArray.map(async (instruction: Instruction) => {
+              const details = await instruction.details();
+              const legs = await instruction.getLegs();
+              const affirmations = await instruction.getAffirmations();
 
-        const instructionInfos: SettlementInstructionInfo[] = await Promise.all(
-          allInstructions.map(async (instruction) => {
-            const details = await instruction.details();
-            const status = await instruction.getStatus();
-            const legs = await instruction.getLegs();
-            return {
-              id: instruction.id.toString(),
-              venueId: details.venue.id.toString(),
-              status: status.status,
-              createdAt: details.createdAt.toISOString(),
-              counterparties: legs.data.length,
-              settlementType: getSettlementType(details),
-              legs: legs.data,
-            };
-          }),
+              return {
+                status: status as InstructionStatus,
+                instruction: transformSettlementInstruction(
+                  instruction,
+                  details,
+                  legs.data,
+                  affirmations.data,
+                  identity!.did,
+                ),
+              };
+            }),
+          ),
         );
 
-        return instructionInfos;
+        const groupedInstructions =
+          processedInstructions.reduce<GroupedSettlementInstructions>(
+            (acc, { status, instruction }) => {
+              acc[
+                status.toLowerCase() as keyof GroupedSettlementInstructions
+              ].push(instruction);
+              return acc;
+            },
+            { affirmed: [], failed: [], pending: [] },
+          );
+
+        return groupedInstructions;
       } catch (error) {
         customReportError(error);
         throw error;

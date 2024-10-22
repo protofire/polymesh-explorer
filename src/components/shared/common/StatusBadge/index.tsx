@@ -1,9 +1,8 @@
 import React from 'react';
 import { Chip, styled } from '@mui/material';
-import { InstructionStatus } from '@polymeshassociation/polymesh-sdk/types';
 
 interface StatusBadgeProps {
-  status: InstructionStatus;
+  status: 'affirmed' | 'pending' | 'failed';
 }
 
 const StyledChip = styled(Chip)(({ theme }) => ({
@@ -26,14 +25,13 @@ export function StatusBadge({ status }: StatusBadgeProps) {
   let color: 'success' | 'error' | 'warning' | 'default' = 'default';
 
   switch (status) {
-    case InstructionStatus.Pending:
+    case 'pending':
       color = 'warning';
       break;
-    case InstructionStatus.Success:
+    case 'affirmed':
       color = 'success';
       break;
-    case InstructionStatus.Failed:
-    case InstructionStatus.Rejected:
+    case 'failed':
       color = 'error';
       break;
     default:
