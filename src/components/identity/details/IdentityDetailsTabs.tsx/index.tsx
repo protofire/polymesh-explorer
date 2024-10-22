@@ -8,8 +8,8 @@ import { TransactionsTabTable } from './TransactionsTab';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
-import { SettlementInstructionInfo } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs.tsx/SettlementInstructionsTab';
+import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -18,7 +18,7 @@ interface IdentityDetailsTabsProps {
   isLoadingPortfolios: boolean;
   paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
   isLoadingTransactions: boolean;
-  settlementInstructions: SettlementInstructionInfo[] | null | undefined;
+  settlementInstructions: GroupedSettlementInstructions | null | undefined;
   isLoadingSettlementInstructions: boolean;
 }
 

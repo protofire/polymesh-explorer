@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Table,
   TableBody,
@@ -14,60 +14,33 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import {
-  FungibleLeg,
-  NftLeg,
-  OffChainLeg,
-  DefaultPortfolio,
-  NumberedPortfolio,
-  Identity,
-} from '@polymeshassociation/polymesh-sdk/types';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { SettlementInstructionInfo } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { StatusBadge } from '@/components/shared/common/StatusBadge';
+import { SettlementLegDirectionField } from '@/components/shared/common/SettlementLegDirectionField';
+import {
+  SettlementInstruction,
+  SettlementLeg,
+} from '@/domain/entities/SettlementInstruction';
+import { useLocalPagination } from '@/hooks/useLocalPagination';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface SettlementInstructionsTabProps {
-  instructions: SettlementInstructionInfo[] | null | undefined;
+  instructions: GroupedSettlementInstructions | null | undefined;
   isLoading: boolean;
 }
 
-function getLegAsset(leg: FungibleLeg | NftLeg | OffChainLeg): string {
-  if ('asset' in leg) {
-    return typeof leg.asset === 'string' ? leg.asset : leg.asset.ticker;
-  }
-  return 'Unknown';
-}
-
-function getLegAmount(leg: FungibleLeg | NftLeg | OffChainLeg): string {
-  if ('amount' in leg) {
-    return leg.amount.toString();
-  }
-  if ('nfts' in leg) {
-    return `${leg.nfts.length} NFTs`;
-  }
-  if ('offChainAmount' in leg) {
-    return leg.offChainAmount.toString();
-  }
-  return 'Unknown';
-}
-
-function getLegParty(
-  party: DefaultPortfolio | NumberedPortfolio | Identity,
-): string {
-  if ('did' in party) {
-    return party.did;
-  }
-  if ('id' in party) {
-    return `Portfolio ${party.id.toString()}`;
-  }
-  return 'Default Portfolio';
-}
-
-function Row({ instruction }: { instruction: SettlementInstructionInfo }) {
+function Row({
+  instruction,
+  status,
+}: {
+  instruction: SettlementInstruction;
+  status: 'pending' | 'affirmed' | 'failed';
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -85,12 +58,14 @@ function Row({ instruction }: { instruction: SettlementInstructionInfo }) {
           </GenericLink>
         </TableCell>
         <TableCell>
-          <StatusBadge status={instruction.status} />
+          <StatusBadge status={status} />
         </TableCell>
         <TableCell>
-          <FormattedDate date={instruction.createdAt} />
+          <FormattedDate date={instruction.createdAt.toISOString()} />
         </TableCell>
-        <TableCell>{instruction.counterparties}</TableCell>
+        <TableCell>
+          {instruction.counterparties} (affirmed by {instruction.affirmedBy})
+        </TableCell>
         <TableCell>{instruction.settlementType}</TableCell>
       </TableRow>
       <TableRow>
@@ -103,21 +78,35 @@ function Row({ instruction }: { instruction: SettlementInstructionInfo }) {
               <Table size="small">
                 <TableHead>
                   <TableRow>
-                    <TableCell>From</TableCell>
-                    <TableCell>To</TableCell>
+                    <TableCell>Direction</TableCell>
+                    <TableCell>Sending Portfolio</TableCell>
+                    <TableCell>Receiving Portfolio</TableCell>
                     <TableCell>Asset</TableCell>
                     <TableCell>Amount</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {instruction.legs.map((leg) => (
+                  {instruction.legs.map((leg: SettlementLeg) => (
                     <TableRow
                       key={`leg-${instruction.venueId}-${instruction.id}`}
                     >
-                      <TableCell>{getLegParty(leg.from)}</TableCell>
-                      <TableCell>{getLegParty(leg.to)}</TableCell>
-                      <TableCell>{getLegAsset(leg)}</TableCell>
-                      <TableCell>{getLegAmount(leg)}</TableCell>
+                      <TableCell>
+                        <SettlementLegDirectionField
+                          direction={leg.direction}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <GenericLink href={`${ROUTES.Identity}/${leg.from.id}`}>
+                          {leg.from.name}
+                        </GenericLink>
+                      </TableCell>
+                      <TableCell>
+                        <GenericLink href={`${ROUTES.Identity}/${leg.to.id}`}>
+                          {leg.to.name}
+                        </GenericLink>
+                      </TableCell>
+                      <TableCell>{leg.asset}</TableCell>
+                      <TableCell>{leg.amount}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -134,37 +123,60 @@ export function SettlementInstructionsTab({
   instructions,
   isLoading,
 }: SettlementInstructionsTabProps) {
+  const allInstructions = useMemo(() => {
+    if (!instructions) return [];
+
+    return Object.entries(instructions).flatMap(([status, instructionList]) =>
+      instructionList.map((instruction: SettlementInstruction) => ({
+        ...instruction,
+        status,
+      })),
+    );
+  }, [instructions]);
+
+  const { paginatedItems: paginatedInstructions, ...paginationController } =
+    useLocalPagination(allInstructions);
+
   if (isLoading || instructions === undefined) {
     return <GenericTableSkeleton columnCount={7} rowCount={8} />;
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>Instruction ID</TableCell>
-            <TableCell>Venue ID</TableCell>
-            <TableCell>Status</TableCell>
-            <TableCell>Created At</TableCell>
-            <TableCell># Counterparties</TableCell>
-            <TableCell>Settlement Type</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {instructions && instructions.length > 0 ? (
-            instructions.map((instruction) => (
-              <Row key={instruction.id} instruction={instruction} />
-            ))
-          ) : (
-            <NoDataAvailableTBody
-              colSpan={7}
-              message="No settlement instructions found."
-            />
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>Instruction ID</TableCell>
+              <TableCell>Venue ID</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Created At</TableCell>
+              <TableCell># Counterparties</TableCell>
+              <TableCell>Settlement Type</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {paginatedInstructions.length > 0 ? (
+              paginatedInstructions.map((instruction) => (
+                <Row
+                  key={`${instruction.status}-${instruction.id}`}
+                  instruction={instruction}
+                  status={
+                    instruction.status as 'pending' | 'affirmed' | 'failed'
+                  }
+                />
+              ))
+            ) : (
+              <NoDataAvailableTBody
+                colSpan={7}
+                message="No se encontraron instrucciones de liquidación."
+              />
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <PaginationFooter paginationController={paginationController} />
+    </>
   );
 }
