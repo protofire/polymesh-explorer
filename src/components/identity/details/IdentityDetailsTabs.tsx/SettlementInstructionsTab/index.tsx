@@ -170,7 +170,7 @@ export function SettlementInstructionsTab({
             ) : (
               <NoDataAvailableTBody
                 colSpan={7}
-                message="No se encontraron instrucciones de liquidación."
+                message="No settlement instructions found."
               />
             )}
           </TableBody>
