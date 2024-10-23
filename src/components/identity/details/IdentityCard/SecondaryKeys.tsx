@@ -11,9 +11,9 @@ import {
 import Link from 'next/link';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import LaunchIcon from '@mui/icons-material/Launch';
-import { AccountOrDidTextField } from '@/components/shared/AccountOrDidTextField';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { truncateAddress } from '@/services/polymesh/address';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface SecondaryKeysProps {
   secondaryAccounts: string[];

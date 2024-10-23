@@ -1,10 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Box, Container, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { notFound, useParams } from 'next/navigation';
-import { AccountCard } from '@/components/account/AccountCard';
 import { useGetAccount } from '@/hooks/account/useGetAccount';
+import { MainWrapper } from '@/components/shared/layout/mainWrapper';
+import { AccountDetailsTabs } from '@/components/account/details/AccountDetailsTabs';
+import { AccountCard } from '@/components/account/AccountCard';
 
 export default function AccountDetailPage() {
   const { key } = useParams();
@@ -19,14 +21,20 @@ export default function AccountDetailPage() {
   }
 
   if (!isLoading && account === null) {
-    notFound();
+    return notFound();
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box my={4}>
-        {account && <AccountCard account={account} isLoading={isLoading} />}
-      </Box>
-    </Container>
+    <MainWrapper>
+      <>
+        <AccountCard account={account} isLoading={isLoading} />
+
+        {account && (
+          <Box mt={3}>
+            <AccountDetailsTabs account={account} />
+          </Box>
+        )}
+      </>
+    </MainWrapper>
   );
 }

@@ -1,11 +1,16 @@
 import { Identity } from './Identity';
 
+export type IdentityRelationship =
+  | 'Primary'
+  | 'Secondary'
+  | 'MultiSigSigner'
+  | 'Unassigned';
+
 export interface Account {
   key: string;
   identityDid: Identity['did'] | null;
   balance?: string;
-  createdAt: string;
+  identityRelationship: IdentityRelationship;
+  isSmartContract: boolean;
   isMultisig: boolean;
-  isPrimaryKey: boolean;
-  isSecondaryKey: boolean;
 }
