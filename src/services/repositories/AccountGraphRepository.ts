@@ -58,12 +58,12 @@ export class AccountGraphRepository {
     return {
       key: account.address,
       identityDid: account.identityId,
-      createdAt: new Date(account.createdAt).toISOString(),
       isMultisig: account.multiSigsByCreatorAccountId.totalCount > 0,
-      isPrimaryKey: account.identity?.primaryAccount === account.address,
-      isSecondaryKey:
-        !!account.identityId &&
-        account.identity?.primaryAccount !== account.address,
+      identityRelationship:
+        account.identity?.primaryAccount === account.address
+          ? 'Primary'
+          : 'Secondary',
+      isSmartContract: false,
     };
   }
 

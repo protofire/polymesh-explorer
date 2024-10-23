@@ -2,14 +2,14 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import Identicon from '@polkadot/ui-identicon';
 import { truncateAddress } from '@/services/polymesh/address';
-import { GenericLink } from './common/GenericLink';
-import CopyButton from './common/CopyButton';
+import { GenericLink } from '../common/GenericLink';
+import CopyButton from '../common/CopyButton';
 import { ROUTES } from '@/config/routes';
 
 interface AccountOrDidTextFieldProps {
   value: string;
   showIdenticon?: boolean;
-  isIdentity: boolean;
+  isIdentity?: boolean;
 }
 
 export function AccountOrDidTextField({
@@ -21,12 +21,7 @@ export function AccountOrDidTextField({
   const pathUrl = isIdentity ? ROUTES.Identity : ROUTES.Account;
 
   return (
-    <Box
-      display="flex"
-      gap={1}
-      alignItems="center"
-      justifyContent="space-between"
-    >
+    <Box display="flex" gap={1} alignItems="center">
       {showIdenticon && (
         <Identicon
           value={value}

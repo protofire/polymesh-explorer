@@ -1,12 +1,13 @@
 import React from 'react';
-import { Box, Typography, Stack, Skeleton } from '@mui/material';
+import { Box, Typography, Chip, Stack, Tooltip } from '@mui/material';
 import Identicon from '@polkadot/ui-identicon';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
-import GroupKeyIcon from '@mui/icons-material/Diversity3';
+import GroupIcon from '@mui/icons-material/Group';
+import CodeIcon from '@mui/icons-material/Code';
 import { Account } from '@/domain/entities/Account';
 import { IdentityCardSkeleton } from '@/components/identity/details/IdentityCard/IdentityCardSkeleton';
 import CopyButton from '@/components/shared/common/CopyButton';
-import { AccountOrDidTextField } from '@/components/shared/AccountOrDidTextField';
+import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface AccountCardProps {
   account: Account | undefined | null;
@@ -28,57 +29,66 @@ export function AccountCard({
     isSmartContract,
   } = account;
 
-  const renderBooleanValue = (value: boolean | undefined): React.ReactNode => {
-    if (value === undefined || isLoading) return <Skeleton width={100} />;
-    return (
-      <Typography variant="h6" color={value ? 'success.main' : 'error.main'}>
-        {value ? 'Yes' : 'No'}
-      </Typography>
-    );
-  };
-
   return (
     <>
-      <Typography variant="h4">Account Details</Typography>
-      <Box display="flex" alignItems="center" mt={2}>
-        <Identicon value={key} size={56} style={{ marginRight: '16px' }} />
-        <Box display="flex" flexDirection="column">
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-start"
+      >
+        <Typography variant="h4">Account Details</Typography>
+        <Stack direction="row" spacing={1}>
+          {isMultisig && (
+            <Tooltip title="This is a Multisig account">
+              <Chip
+                icon={<GroupIcon />}
+                label="Multisig"
+                color="primary"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+          {isSmartContract && (
+            <Tooltip title="This is a Smart Contract account">
+              <Chip
+                icon={<CodeIcon />}
+                label="Smart Contract"
+                color="secondary"
+                variant="outlined"
+              />
+            </Tooltip>
+          )}
+        </Stack>
+      </Box>
+      <Box display="flex" alignItems="center" mt={2} mb={2}>
+        <Identicon
+          theme="polkadot"
+          value={key}
+          size={56}
+          style={{ marginRight: '16px' }}
+        />
+        <Box display="flex" flexDirection="column" flexGrow={1}>
           <Typography variant="body1" color="textSecondary">
             Key:
           </Typography>
-          <Box display="flex" gap={1}>
-            <Typography variant="body1">{key}</Typography>
-            <CopyButton text={identityDid || ''} />
+          <Box display="flex" alignItems="center">
+            <Typography
+              variant="body1"
+              sx={{
+                mr: 1,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {key}
+            </Typography>
+            <CopyButton text={key} />
+            <PolymeshExplorerLink hash={key} />
           </Box>
         </Box>
       </Box>
-      <Stack direction="row" spacing={2} mt={2}>
-        <Box width="33%">
-          <Typography variant="body2">Account Type</Typography>
-          <Typography variant="h6">{identityRelationship}</Typography>
-        </Box>
-        <Box width="33%">
-          <Typography variant="body2">Multisig</Typography>
-          <Box display="flex" alignItems="center">
-            <GroupKeyIcon sx={{ marginRight: 1 }} />
-            {renderBooleanValue(isMultisig)}
-          </Box>
-        </Box>
-        <Box width="33%">
-          <Typography variant="body2">Smart Contract</Typography>
-          <Box display="flex" alignItems="center">
-            <IntegrationInstructionsIcon sx={{ marginRight: 1 }} />
-            {renderBooleanValue(isSmartContract)}
-          </Box>
-        </Box>
-      </Stack>
-      <Box
-        mt={2}
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Box mt={2} mb={2}>
+      <Stack direction="row" spacing={2}>
+        <Box flex={1}>
           <Typography variant="body2" mb={1}>
             Associated identity
           </Typography>
@@ -89,10 +99,18 @@ export function AccountCard({
               isIdentity
             />
           ) : (
-            '-'
+            <Typography>-</Typography>
           )}
         </Box>
-      </Box>
+        <Box flex={1}>
+          <Typography variant="body2" mb={1}>
+            Account Type
+          </Typography>
+          <Typography variant="body1" fontWeight="medium">
+            {identityRelationship}
+          </Typography>
+        </Box>
+      </Stack>
     </>
   );
 }

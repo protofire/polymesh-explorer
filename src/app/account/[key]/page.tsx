@@ -5,12 +5,10 @@ import { Box, Typography } from '@mui/material';
 import { notFound, useParams } from 'next/navigation';
 import { useGetAccount } from '@/hooks/account/useGetAccount';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
-import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { AccountDetailsTabs } from '@/components/account/details/AccountDetailsTabs';
 import { AccountCard } from '@/components/account/AccountCard';
 
 export default function AccountDetailPage() {
-  const { currentNetworkConfig } = useNetworkProvider();
   const { key } = useParams();
   const {
     data: account,
@@ -31,12 +29,9 @@ export default function AccountDetailPage() {
       <>
         <AccountCard account={account} isLoading={isLoading} />
 
-        {account && currentNetworkConfig && (
+        {account && (
           <Box mt={3}>
-            <AccountDetailsTabs
-              account={account}
-              subscanUrl={currentNetworkConfig.subscanUrl}
-            />
+            <AccountDetailsTabs account={account} />
           </Box>
         )}
       </>

@@ -16,7 +16,8 @@ import { Identity } from '@/domain/entities/Identity';
 import { SecondaryKeys } from './SecondaryKeys';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { IdentityCardSkeleton } from './IdentityCardSkeleton';
-import { AccountOrDidTextField } from '@/components/shared/AccountOrDidTextField';
+import { ROUTES } from '@/config/routes';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -95,7 +96,7 @@ export function IdentityCard({
                   color="secondary"
                   variant="outlined"
                   component={Link}
-                  href={`/identity/${parentIdentityDid}`}
+                  href={`${ROUTES.Identity}/${parentIdentityDid}`}
                   clickable
                 />
               </Tooltip>
