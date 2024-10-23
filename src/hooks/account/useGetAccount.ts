@@ -4,13 +4,14 @@ import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymesh
 import { AccountGraphRepository } from '@/services/repositories/AccountGraphRepository';
 import { Account } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';
+import { transformAccount } from '@/services/transformers/accountTransformer';
 
 interface Props {
   key: Account['key'];
 }
 
 export const useGetAccount = ({ key }: Props) => {
-  const { graphQlClient } = usePolymeshSdkService();
+  const { graphQlClient, polymeshService } = usePolymeshSdkService();
   const accountService = useMemo(() => {
     if (!graphQlClient) return null;
 
@@ -24,12 +25,30 @@ export const useGetAccount = ({ key }: Props) => {
     queryFn: async () => {
       if (!accountService) return null;
       try {
-        return await accountService.findByKey(key);
+        const accountSdk =
+          await polymeshService?.polymeshSdk.accountManagement.getAccount({
+            address: key,
+          });
+
+        if (!accountSdk) {
+          throw new Error('Account not found');
+        }
+
+        const typeInfo = await accountSdk.getTypeInfo();
+        const identity = await accountSdk.getIdentity();
+
+        const transformedAccount = transformAccount(
+          accountSdk,
+          typeInfo,
+          identity?.did,
+        );
+
+        return transformedAccount;
       } catch (e) {
         customReportError(e);
         throw e;
       }
     },
-    enabled: !!key && !!accountService,
+    enabled: !!key && !!accountService && !!polymeshService,
   });
 };

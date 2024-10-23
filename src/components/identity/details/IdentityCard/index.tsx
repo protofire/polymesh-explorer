@@ -30,7 +30,7 @@ export function IdentityCard({
   isLoading,
 }: IdentityCardProps): React.ReactElement {
   if (isLoading || !identity) {
-    return <IdentityCardSkeleton />;
+    return <IdentityCardSkeleton textField="Identity" />;
   }
 
   const {

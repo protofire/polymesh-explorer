@@ -1,10 +1,16 @@
 import React from 'react';
 import { Box, Typography, Skeleton, Stack } from '@mui/material';
 
-export function IdentityCardSkeleton(): React.ReactElement {
+interface Props {
+  textField: string;
+}
+
+export function IdentityCardSkeleton({
+  textField = 'Identity',
+}: Props): React.ReactElement {
   return (
     <>
-      <Typography variant="h4">Identity</Typography>
+      <Typography variant="h4">{textField}</Typography>
       <Box display="flex" alignItems="center" mt={2}>
         <Skeleton
           variant="circular"
