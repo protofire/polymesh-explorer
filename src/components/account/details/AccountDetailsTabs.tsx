@@ -9,6 +9,7 @@ interface AccountDetailsTabsProps {
   account: Account;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function AccountDetailsTabs({ account }: AccountDetailsTabsProps) {
   const [value, setValue] = useState(0);
 

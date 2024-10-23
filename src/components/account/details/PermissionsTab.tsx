@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, List, ListItem, ListItemText } from '@mui/material';
-import { Account, Permission } from '@polymeshassociation/polymesh-sdk/types';
+import { Typography, List } from '@mui/material';
+import { Account, Permissions } from '@polymeshassociation/polymesh-sdk/types';
+import { customReportError } from '@/utils/customReportError';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 
 interface PermissionsTabProps {
   account: Account;
 }
 
 export function PermissionsTab({ account }: PermissionsTabProps) {
-  const [permissions, setPermissions] = useState<Permission[]>([]);
+  const [permissions, setPermissions] = useState<Permissions>();
 
   useEffect(() => {
     async function fetchPermissions() {
@@ -15,7 +17,7 @@ export function PermissionsTab({ account }: PermissionsTabProps) {
         const accountPermissions = await account.getPermissions();
         setPermissions(accountPermissions);
       } catch (error) {
-        console.error('Error al obtener los permisos:', error);
+        customReportError(error);
       }
     }
 
@@ -27,16 +29,16 @@ export function PermissionsTab({ account }: PermissionsTabProps) {
       <Typography variant="h6" gutterBottom>
         Permisos de la cuenta
       </Typography>
-      {permissions.length > 0 ? (
+      {permissions ? (
         <List>
-          {permissions.map((permission, index) => (
+          {/* {permissions.map((permission, index) => (
             <ListItem key={index}>
               <ListItemText primary={permission} />
             </ListItem>
-          ))}
+          ))} */}
         </List>
       ) : (
-        <Typography>Esta cuenta no tiene permisos asignados.</Typography>
+        <NoDataAvailableTBody colSpan={1} />
       )}
     </div>
   );
