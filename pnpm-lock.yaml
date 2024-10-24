@@ -36,8 +36,8 @@ importers:
         specifier: ^0.41.1
         version: 0.41.1(@babel/core@7.25.2)(@polkadot/keyring@13.1.1(@polkadot/util-crypto@12.6.2(@polkadot/util@12.6.2))(@polkadot/util@12.6.2))(@polkadot/util-crypto@12.6.2(@polkadot/util@12.6.2))(@polkadot/util@12.6.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@polymeshassociation/polymesh-sdk':
-        specifier: ^25.0.0
-        version: 25.0.0(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+        specifier: ^25.1.1
+        version: 25.1.1(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@tanstack/react-query':
         specifier: ^5.55.4
         version: 5.55.4(react@18.3.1)
@@ -1275,8 +1275,8 @@ packages:
     resolution: {integrity: sha512-cGZWo7K5eRRQCRl2LrcyCYsrc3lRbTlixZh3AzgU8uX4wASVGRlNWi/Hf4TtHNe1ExCDmxabJzdIsABIfrr7xw==}
     engines: {node: '>=18'}
 
-  '@polymeshassociation/polymesh-sdk@25.0.0':
-    resolution: {integrity: sha512-D4tpkqNUM47FPJN5TggTJUJUv3WD+1VuqXSjuaYKjdcMlpXrW3J78XZSU676efiLPfuNvh2T4FLpjguhY5cErw==}
+  '@polymeshassociation/polymesh-sdk@25.1.1':
+    resolution: {integrity: sha512-P59V/KF47gXeyeF3oOgD6YAUP2cD0y7tiBRWGbTgvbpL3itFiJVv/mXXAq8FJOHadQUpFgPKYYwqI5KEZ+fNXg==}
 
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
@@ -3588,6 +3588,9 @@ packages:
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
 
+  tslib@2.8.0:
+    resolution: {integrity: sha512-jWVzBLplnCmoaTr13V9dYbiQ99wvZRd0vNWaDRg+aVYRcjDF3nDksxFDE/+fkXnKhpnUUkmx5pK/v8mCtLVqZA==}
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -4873,7 +4876,7 @@ snapshots:
     dependencies:
       '@polkadot/util': 12.6.2
       '@polkadot/util-crypto': 12.6.2(@polkadot/util@12.6.2)
-      tslib: 2.7.0
+      tslib: 2.8.0
 
   '@polkadot/networks@12.6.2':
     dependencies:
@@ -5104,7 +5107,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@polymeshassociation/polymesh-sdk@25.0.0(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@polymeshassociation/polymesh-sdk@25.1.1(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
       '@apollo/client': 3.11.8(@types/react@18.3.5)(graphql@16.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@polkadot/api': 11.2.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)
@@ -7785,6 +7788,8 @@ snapshots:
       strip-bom: 3.0.0
 
   tslib@2.7.0: {}
+
+  tslib@2.8.0: {}
 
   type-check@0.4.0:
     dependencies:

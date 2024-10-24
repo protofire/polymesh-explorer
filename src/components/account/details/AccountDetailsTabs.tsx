@@ -1,27 +1,35 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
-// import { PermissionsTab } from './PermissionsTab';
-import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
-import { Account } from '@/domain/entities/Account';
-// import { SubsidiesTab } from './SubsidiesTab';
+import { PermissionsTab } from './PermissionsTab';
+import { SubsidiesTab } from './SubsidiesTab';
+import {
+  useGetAccountDetails,
+  UseGetAccountDetailsReturn,
+} from '@/hooks/account/useGetAccountDetails';
+import { AccountDetails } from '@/domain/entities/Account';
 
 interface AccountDetailsTabsProps {
-  account: Account;
+  accountDetails: AccountDetails | null;
+  status: UseGetAccountDetailsReturn['status'];
+  error: UseGetAccountDetailsReturn['error'];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function AccountDetailsTabs({ account }: AccountDetailsTabsProps) {
-  const [value, setValue] = useState(0);
+export function AccountDetailsTabs({
+  accountDetails,
+  status,
+  error,
+}: AccountDetailsTabsProps) {
+  const [tabSelected, setTabSelected] = React.useState(0);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    setTabSelected(newValue);
   };
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs
-          value={value}
+          value={tabSelected}
           onChange={handleChange}
           aria-label="account details tabs"
         >
@@ -29,12 +37,24 @@ export function AccountDetailsTabs({ account }: AccountDetailsTabsProps) {
           <Tab label="Subsidies" />
         </Tabs>
       </Box>
-      <GenericTabPanel value={value} index={0} labelKey="account">
-        {/* <PermissionsTab account={account} /> */}
-      </GenericTabPanel>
-      <GenericTabPanel value={value} index={1} labelKey="account">
-        {/* <SubsidiesTab account={account} /> */}
-      </GenericTabPanel>
+      <Box sx={{ p: 3 }}>
+        {tabSelected === 0 && (
+          <PermissionsTab
+            accountDetails={accountDetails}
+            isLoading={
+              !status.isFetchedPermissions || status.isLoadingPermissions
+            }
+            error={error.permissionsError}
+          />
+        )}
+        {tabSelected === 1 && (
+          <SubsidiesTab
+            accountDetails={accountDetails}
+            isLoading={!status.isFetchedSubsidies || status.isLoadingSubsidies}
+            error={error.subsidiesError}
+          />
+        )}
+      </Box>
     </Box>
   );
 }
