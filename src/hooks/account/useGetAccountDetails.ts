@@ -1,5 +1,4 @@
 import { useQueries } from '@tanstack/react-query';
-import { SubsidyWithAllowance } from '@polymeshassociation/polymesh-sdk/types';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Account, AccountDetails } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';

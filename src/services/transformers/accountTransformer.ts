@@ -17,9 +17,6 @@ export function transformAccount(
     identityRelationship: typeInfo.relation as IdentityRelationship,
     isMultisig: typeInfo.keyType === 'Multisig',
     isSmartContract: typeInfo.keyType === 'SmartContract',
-<<<<<<< HEAD
     polymeshSdkClass: sdkAccount,
-=======
->>>>>>> develop
   };
 }

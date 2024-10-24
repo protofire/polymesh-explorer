@@ -2,10 +2,7 @@ import React from 'react';
 import { Tabs, Tab, Box } from '@mui/material';
 import { PermissionsTab } from './PermissionsTab';
 import { SubsidiesTab } from './SubsidiesTab';
-import {
-  useGetAccountDetails,
-  UseGetAccountDetailsReturn,
-} from '@/hooks/account/useGetAccountDetails';
+import { UseGetAccountDetailsReturn } from '@/hooks/account/useGetAccountDetails';
 import { AccountDetails } from '@/domain/entities/Account';
 
 interface AccountDetailsTabsProps {
