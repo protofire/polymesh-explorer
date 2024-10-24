@@ -18,6 +18,7 @@ export interface Account {
   identityRelationship: IdentityRelationship;
   isSmartContract: boolean;
   isMultisig: boolean;
+<<<<<<< HEAD
   polymeshSdkClass?: AccountSdk;
 }
 
@@ -27,4 +28,6 @@ export interface AccountDetails extends Account {
     beneficiaries: SubsidyWithAllowance[];
     subsidizer: SubsidyWithAllowance | null;
   } | null;
+=======
+>>>>>>> develop
 }
