@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, TablePagination, IconButton } from '@mui/material';
+import { Box, TablePagination, IconButton, Stack } from '@mui/material';
 import {
   FirstPage as FirstPageIcon,
   KeyboardArrowLeft,
@@ -9,6 +9,7 @@ import { PaginationController } from '@/domain/ui/PaginationInfo';
 
 interface PaginationFooterProps {
   paginationController: PaginationController;
+  leftActions?: React.ReactNode;
 }
 
 interface TablePaginationActionsProps {
@@ -71,6 +72,7 @@ function TablePaginationActions(props: TablePaginationActionsProps) {
 
 export function PaginationFooter({
   paginationController,
+  leftActions,
 }: PaginationFooterProps) {
   const { paginationInfo, ...pagination } = paginationController;
 
@@ -97,16 +99,24 @@ export function PaginationFooter({
   );
 
   return (
-    <TablePagination
-      component="div"
-      count={paginationInfo.totalCount}
-      page={paginationInfo.currentPage - 1}
-      onPageChange={handleChangePage}
-      rowsPerPage={paginationInfo.pageSize}
-      onRowsPerPageChange={handleChangeRowsPerPage}
-      rowsPerPageOptions={paginationInfo.totalCount > 0 ? [10, 30, 50] : []}
-      ActionsComponent={TablePaginationActions}
-      disabled={paginationInfo.totalCount <= paginationInfo.pageSize}
-    />
+    <Stack
+      direction="row"
+      justifyContent="space-between"
+      alignItems="center"
+      spacing={2}
+    >
+      <Box>{leftActions}</Box>
+      <TablePagination
+        component="div"
+        count={paginationInfo.totalCount}
+        page={paginationInfo.currentPage - 1}
+        onPageChange={handleChangePage}
+        rowsPerPage={paginationInfo.pageSize}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+        rowsPerPageOptions={paginationInfo.totalCount > 0 ? [10, 30, 50] : []}
+        ActionsComponent={TablePaginationActions}
+        disabled={paginationInfo.totalCount <= paginationInfo.pageSize}
+      />
+    </Stack>
   );
 }

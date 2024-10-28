@@ -28,6 +28,9 @@ import { TruncatedText } from '@/components/shared/fieldAttributes/TruncatedText
 import { AssetTypeToggleButton } from '@/components/identity/details/IdentityDetailsTabs.tsx/PortfoliosTab/AssetTypeToggleButton';
 import { AssetTokenType } from '@/domain/criteria/AssetCriteria';
 import { UseListAssetsReturn } from '@/hooks/asset/useListAssets';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { AssetCsvExportService } from '@/domain/services/exports/AssetCsvExportService';
 
 interface AssetTableProps {
   paginatedAssets: PaginatedData<Asset[]>;
@@ -53,6 +56,14 @@ export function AssetTable({
     if (newAssetType !== null) {
       criteriaController.setCriteria('assetType', newAssetType);
     }
+  };
+
+  const handleExport = () => {
+    const csvExporter = new CsvExporter<Asset>(
+      AssetCsvExportService.getAssetColumns(),
+    );
+    const exportService = new AssetCsvExportService(csvExporter);
+    exportService.exportAssets(assets);
   };
 
   return (
@@ -136,7 +147,15 @@ export function AssetTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={assets.length === 0}
+          />
+        }
+      />
     </Box>
   );
 }
