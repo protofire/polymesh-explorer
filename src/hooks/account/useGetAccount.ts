@@ -25,20 +25,20 @@ export const useGetAccount = ({ key }: Props) => {
     queryFn: async () => {
       if (!accountService) return null;
       try {
-        const accountSdk =
+        const accountEntitySdk =
           await polymeshService?.polymeshSdk.accountManagement.getAccount({
             address: key,
           });
 
-        if (!accountSdk) {
+        if (!accountEntitySdk) {
           throw new Error('Account not found');
         }
 
-        const typeInfo = await accountSdk.getTypeInfo();
-        const identity = await accountSdk.getIdentity();
+        const typeInfo = await accountEntitySdk.getTypeInfo();
+        const identity = await accountEntitySdk.getIdentity();
 
         const transformedAccount = transformAccount(
-          accountSdk,
+          accountEntitySdk,
           typeInfo,
           identity?.did,
         );

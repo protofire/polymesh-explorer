@@ -19,7 +19,11 @@ export default function AssetPage() {
       {isLoading ? (
         <GenericTableSkeleton columnCount={8} rowCount={10} />
       ) : (
-        <AssetTable paginatedAssets={data} error={error} />
+        <AssetTable
+          paginatedAssets={data}
+          error={error}
+          criteriaController={data?.criteriaController}
+        />
       )}
     </MainWrapper>
   );

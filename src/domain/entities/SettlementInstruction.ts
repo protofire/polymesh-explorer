@@ -11,10 +11,10 @@ export interface SettlementLeg {
 
 export interface SettlementInstruction {
   id: string;
-  venueId: string;
+  venueId?: string;
   status: InstructionStatus;
   memo: string | null;
-  createdAt: Date;
+  createdAt?: Date;
   counterparties: number;
   affirmedBy: number;
   settlementType: string;

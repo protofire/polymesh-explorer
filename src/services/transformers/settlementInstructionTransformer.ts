@@ -90,10 +90,10 @@ export function transformSettlementInstruction(
 
   return {
     id: instruction.id.toString(),
-    venueId: details.venue.id.toString(),
+    venueId: details.venue?.id.toString(),
     status: details.status,
     memo: details.memo,
-    createdAt: new Date(details.createdAt),
+    createdAt: details.createdAt ? new Date(details.createdAt) : undefined,
     counterparties: uniqueCounterparties.size,
     affirmedBy: affirmations.filter((a) => a.status === 'Affirmed').length,
     settlementType: getSettlementType(details),

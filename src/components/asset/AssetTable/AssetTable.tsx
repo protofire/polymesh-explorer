@@ -25,20 +25,45 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { TruncatedText } from '@/components/shared/fieldAttributes/TruncatedText';
+import { AssetTypeToggleButton } from '@/components/identity/details/IdentityDetailsTabs.tsx/PortfoliosTab/AssetTypeToggleButton';
+import { AssetTokenType } from '@/domain/criteria/AssetCriteria';
+import { UseListAssetsReturn } from '@/hooks/asset/useListAssets';
 
 interface AssetTableProps {
   paginatedAssets: PaginatedData<Asset[]>;
+  criteriaController?: UseListAssetsReturn['criteriaController'];
   error: Error | null;
 }
 
-export function AssetTable({ paginatedAssets, error }: AssetTableProps) {
+export function AssetTable({
+  paginatedAssets,
+  criteriaController,
+  error,
+}: AssetTableProps) {
   if (error)
     return <Typography color="error">Error: {error.message}</Typography>;
+  if (!criteriaController) return null;
 
-  const { paginationController, data: assets } = paginatedAssets;
+  const { data: assets, paginationController } = paginatedAssets;
+
+  const handleAssetTypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newAssetType: AssetTokenType,
+  ) => {
+    if (newAssetType !== null) {
+      criteriaController.setCriteria('assetType', newAssetType);
+    }
+  };
 
   return (
     <Box>
+      <Box sx={{ mb: 2 }}>
+        <AssetTypeToggleButton
+          assetType={criteriaController.criteria.assetType}
+          onChange={handleAssetTypeChange}
+          includeAllOption
+        />
+      </Box>
       <TableContainer component={Paper}>
         <Table size="small">
           <TableHead>
