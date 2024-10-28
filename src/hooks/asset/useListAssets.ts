@@ -6,8 +6,19 @@ import { Asset } from '@/domain/entities/Asset';
 import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import {
+  CriteriaController,
+  useCriteriaController,
+} from '@/hooks/useCriteriaController';
+import {
+  AssetCriteria,
+  AssetCriteriaBuilder,
+  AssetFilters,
+} from '@/domain/criteria/AssetCriteria';
 
-export type UseListAssetsReturn = PaginatedData<Asset[]>;
+export interface UseListAssetsReturn extends PaginatedData<Asset[]> {
+  criteriaController: CriteriaController<AssetCriteria, AssetFilters>;
+}
 
 export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
   const { graphQlClient } = usePolymeshSdkService();
@@ -17,6 +28,11 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
   }, [graphQlClient]);
 
   const paginationController = usePaginationControllerGraphQl();
+  const criteriaController = useCriteriaController<AssetCriteria, AssetFilters>(
+    new AssetCriteriaBuilder(),
+    { assetType: 'All' },
+    paginationController,
+  );
 
   const fetchAssets = useCallback(async () => {
     if (!assetService) {
@@ -24,10 +40,9 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
     }
 
     try {
-      const result = await assetService.getAssetList(
-        paginationController.paginationInfo.pageSize,
-        paginationController.paginationInfo.cursor ?? undefined,
-      );
+      const criteria = criteriaController.buildCriteria();
+
+      const result = await assetService.getAssetList(criteria);
 
       paginationController.setPageInfo({
         hasNextPage: result.pageInfo.hasNextPage,
@@ -42,12 +57,13 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
       customReportError(e);
       throw e;
     }
-  }, [assetService, paginationController]);
+  }, [assetService, paginationController, criteriaController]);
 
   return useQuery<Asset[], Error, UseListAssetsReturn>({
     queryKey: [
       'useListAssets',
       graphQlClient,
+      criteriaController.criteria.assetType,
       paginationController.paginationInfo.pageSize,
       paginationController.paginationInfo.cursor,
     ],
@@ -56,8 +72,9 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
       (data: Asset[]) => ({
         data,
         paginationController,
+        criteriaController,
       }),
-      [paginationController],
+      [paginationController, criteriaController],
     ),
     enabled: !!graphQlClient && !!assetService,
   });

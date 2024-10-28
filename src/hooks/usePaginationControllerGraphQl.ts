@@ -65,7 +65,7 @@ export function usePaginationControllerGraphQl({
   const goToFirstPage = useCallback(() => {
     setPaginationInfo((prev) => ({
       ...prev,
-      cursor: prev.firstCursor,
+      cursor: null,
       currentPage: 1,
     }));
   }, []);

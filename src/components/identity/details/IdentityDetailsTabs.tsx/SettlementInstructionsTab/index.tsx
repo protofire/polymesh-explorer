@@ -61,7 +61,11 @@ function Row({
           <StatusBadge status={status} />
         </TableCell>
         <TableCell>
-          <FormattedDate date={instruction.createdAt.toISOString()} />
+          {instruction.createdAt ? (
+            <FormattedDate date={instruction.createdAt.toISOString()} />
+          ) : (
+            '-'
+          )}
         </TableCell>
         <TableCell>
           {instruction.counterparties} (affirmed by {instruction.affirmedBy})

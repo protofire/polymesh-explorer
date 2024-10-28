@@ -3,6 +3,13 @@ import { Asset } from '@/domain/entities/Asset';
 import { assetNodeToAsset } from './transformer';
 import { assetFragment, pageInfoFragment } from './fragments';
 import { AssetListResponse, AssetResponse, PageInfo } from './types';
+import { AssetCriteria } from '@/domain/criteria/AssetCriteria';
+
+interface Params {
+  first: number;
+  after?: string;
+  isNftCollection?: boolean;
+}
 
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -31,15 +38,42 @@ export class AssetGraphRepo {
     return assetNodeToAsset(assets[0]);
   }
 
-  async getAssetList(
-    first: number,
-    after?: string,
-  ): Promise<{
+  async getAssetList(criteria: AssetCriteria): Promise<{
     assets: Asset[];
     totalCount: number;
     pageInfo: PageInfo;
   }> {
-    const query = gql`
+    const params: Params = {
+      first: criteria.pageSize,
+      after: criteria.cursor,
+    };
+
+    if (criteria.assetType !== 'All' && criteria.assetType !== undefined) {
+      params.isNftCollection = criteria.assetType === 'NonFungible';
+    }
+
+    const queryWithFilter = gql`
+      ${assetFragment}
+      ${pageInfoFragment}
+      query ($first: Int!, $after: Cursor, $isNftCollection: Boolean!) {
+        assets(
+          first: $first
+          after: $after
+          orderBy: CREATED_AT_DESC
+          filter: { isNftCollection: { equalTo: $isNftCollection } }
+        ) {
+          totalCount
+          pageInfo {
+            ...PageInfoFields
+          }
+          nodes {
+            ...AssetFields
+          }
+        }
+      }
+    `;
+
+    const queryWithoutFilter = gql`
       ${assetFragment}
       ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
@@ -55,14 +89,14 @@ export class AssetGraphRepo {
       }
     `;
 
-    const variables = {
-      first,
-      after,
-    };
+    const query =
+      params.isNftCollection !== undefined
+        ? queryWithFilter
+        : queryWithoutFilter;
 
     const response = await this.client.request<AssetListResponse>(
       query,
-      variables,
+      params,
     );
     const { assets } = response;
 

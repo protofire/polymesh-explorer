@@ -104,6 +104,7 @@ export class PolymeshSdkService {
             .map((balance) => ({
               name: balance.asset.toHuman(),
               ticker: balance.asset.ticker,
+              assetId: balance.asset.id,
               balance: balance.total.toString(),
               type: 'Default', // Assumes a Default type
             }));

@@ -18,6 +18,7 @@ import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
 
 export function assetNodeToAsset(assetNode: AssetNode): Asset {
   return {
+    assetId: assetNode.id,
     ticker: assetNode.ticker,
     name: assetNode.name,
     type: assetNode.type,

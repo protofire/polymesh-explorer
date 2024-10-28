@@ -2,6 +2,7 @@ import { gql } from 'graphql-request';
 
 export const assetFragment = gql`
   fragment AssetFields on Asset {
+    id
     ticker
     name
     type

@@ -1,6 +1,7 @@
 export interface NftCollection {
   collectionId: string;
-  ticker: string;
+  ticker?: string;
+  assetId: string;
   uuid: string;
   imgUrl: string;
   name: string;
@@ -12,7 +13,8 @@ export interface NftAsset {
   id: number;
   imgUrl: string;
   isLocked: boolean;
-  collectionTicker: string;
+  collectionTicker?: string;
+  assetId: string;
   collectionName: string;
 }
 

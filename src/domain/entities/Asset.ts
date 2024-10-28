@@ -1,5 +1,6 @@
 export interface Asset {
-  ticker: string;
+  assetId: string;
+  ticker?: string;
   name: string;
   type: string;
   totalSupply: string;
