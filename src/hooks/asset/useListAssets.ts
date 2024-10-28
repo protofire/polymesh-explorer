@@ -31,6 +31,7 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
   const criteriaController = useCriteriaController<AssetCriteria, AssetFilters>(
     new AssetCriteriaBuilder(),
     { assetType: 'All' },
+    paginationController,
   );
 
   const fetchAssets = useCallback(async () => {
@@ -39,10 +40,7 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
     }
 
     try {
-      const criteria = criteriaController.buildCriteria(
-        paginationController.paginationInfo.pageSize,
-        paginationController.paginationInfo.cursor ?? undefined,
-      );
+      const criteria = criteriaController.buildCriteria();
 
       const result = await assetService.getAssetList(criteria);
 

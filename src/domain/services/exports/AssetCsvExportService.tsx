@@ -12,6 +12,10 @@ export class AssetCsvExportService {
   public static getAssetColumns(): CsvColumn<Asset>[] {
     return [
       {
+        header: 'Id',
+        accessor: (asset) => asset.assetId || '',
+      },
+      {
         header: 'Ticker',
         accessor: (asset) => asset.ticker || '',
       },
