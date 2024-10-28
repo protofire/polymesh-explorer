@@ -34,7 +34,7 @@ function getPortfolioFromParty(
 
 function getLegAsset(leg: FungibleLeg | NftLeg | OffChainLeg): string {
   if ('asset' in leg) {
-    return typeof leg.asset === 'string' ? leg.asset : leg.asset.ticker;
+    return typeof leg.asset === 'string' ? leg.asset : leg.asset.id;
   }
   return 'Unknown';
 }

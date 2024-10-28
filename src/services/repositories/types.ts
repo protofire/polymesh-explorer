@@ -5,6 +5,7 @@ export type { PageInfo };
 
 // Assets
 export interface AssetNode {
+  id: string;
   ticker: string;
   name: string;
   type: string;

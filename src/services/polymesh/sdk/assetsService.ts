@@ -81,6 +81,7 @@ export async function getCollectionsFromPortfolio(
       return {
         collectionId: collectionId.toString(),
         ticker: collection.ticker,
+        assetId: collection.id,
         imgUrl: imgUrl || '',
         uuid: collection.uuid,
         name,
@@ -111,6 +112,7 @@ export async function getNftAssetsFromPortfolio(
             imgUrl,
             isLocked: false,
             collectionTicker: rawCollection.ticker,
+            assetId: rawCollection.id,
             collectionName,
           };
         }),
@@ -128,6 +130,7 @@ export async function getNftAssetsFromPortfolio(
             imgUrl,
             isLocked: true,
             collectionTicker: rawCollection.ticker,
+            assetId: rawCollection.id,
             collectionName,
           };
         }),
