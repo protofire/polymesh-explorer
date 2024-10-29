@@ -34,7 +34,7 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Ticker</TableCell>
+              <TableCell>Ticker or Id</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Fungible / Non fungible</TableCell>
             </TableRow>
@@ -43,7 +43,11 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
             {paginatedAssets.length > 0 ? (
               paginatedAssets.map((asset) => (
                 <TableRow key={asset.ticker}>
-                  <TableCell>{asset.name}</TableCell>
+                  <TableCell>
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
+                      {asset.name}
+                    </GenericLink>
+                  </TableCell>
                   <TableCell>
                     <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
                       {asset.ticker || truncateAddress(asset.assetId, 4)}
