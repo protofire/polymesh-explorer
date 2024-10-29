@@ -10,10 +10,10 @@ export function IssuerTab({ asset }: IssuerTabProps) {
   return (
     <Box p={2}>
       <Typography variant="h6" gutterBottom>
-        Issuer Information
+        Issuer Information on {asset.name}
       </Typography>
       <Stack spacing={2}>
-        {asset.issuerInfo && (
+        {/* {asset.issuerInfo && (
           <>
             <Box>
               <Typography color="textSecondary" variant="body2">
@@ -40,8 +40,8 @@ export function IssuerTab({ asset }: IssuerTabProps) {
               <Typography>{asset.issuerInfo.regulatoryStatus}</Typography>
             </Box>
           </>
-        )}
+        )} */}
       </Stack>
     </Box>
   );
-} 
+}

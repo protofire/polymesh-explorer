@@ -1,18 +1,11 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Stack,
-  Skeleton,
-  IconButton,
-  Tooltip,
-} from '@mui/material';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
+import { Box, Typography, Stack, Skeleton } from '@mui/material';
 import Identicon from '@polkadot/ui-identicon';
 import { Asset } from '@/domain/entities/Asset';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { AssetTypeChip } from './AssetTypeChip';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 
 interface AssetCardProps {
   asset: Asset | null | undefined;
@@ -45,19 +38,7 @@ export function AssetCard({
       >
         <Box display="flex" alignItems="center" gap={1}>
           <Typography variant="h4">Asset Details</Typography>
-          <Tooltip title="View Polymesh Asset Documentation">
-            <IconButton
-              size="small"
-              onClick={() =>
-                window.open(
-                  'https://developers.polymesh.network/polymesh-docs/primitives/assets/',
-                  '_blank',
-                )
-              }
-            >
-              <MenuBookIcon />
-            </IconButton>
-          </Tooltip>
+          <DocumentationIconButton polymeshEntity="asset" />
         </Box>
         <Stack direction="row" spacing={1}>
           <AssetTypeChip asset={asset} />

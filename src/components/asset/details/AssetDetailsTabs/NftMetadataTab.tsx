@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, Grid, Card, CardContent } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
 
 interface NftMetadataTabProps {
@@ -10,11 +10,14 @@ export function NftMetadataTab({ asset }: NftMetadataTabProps) {
   return (
     <Box p={2}>
       <Typography variant="h6" gutterBottom>
-        NFT Collection Metadata
+        NFT Collection Metadata on {asset.name}
       </Typography>
-      <Grid container spacing={2}>
-        {asset.nftMetadata?.map((nft) => (
-          <Grid item xs={12} sm={6} md={4} key={nft.id}>
+      <Box display="grid" gridTemplateColumns="repeat(12, 1fr)" gap={2}>
+        {/* {asset.nftMetadata?.map((nft) => (
+          <Box
+            gridColumn={{ xs: 'span 12', sm: 'span 6', md: 'span 4' }}
+            key={nft.id}
+          >
             <Card>
               <CardContent>
                 <Typography variant="subtitle1" gutterBottom>
@@ -30,9 +33,9 @@ export function NftMetadataTab({ asset }: NftMetadataTabProps) {
                 ))}
               </CardContent>
             </Card>
-          </Grid>
-        ))}
-      </Grid>
+          </Box>
+        ))} */}
+      </Box>
     </Box>
   );
-} 
+}

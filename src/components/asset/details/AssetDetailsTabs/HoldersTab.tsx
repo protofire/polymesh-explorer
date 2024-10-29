@@ -9,7 +9,6 @@ import {
   Typography,
 } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface HoldersTabProps {
   asset: Asset;
@@ -19,7 +18,7 @@ export function HoldersTab({ asset }: HoldersTabProps) {
   return (
     <Box p={2}>
       <Typography variant="h6" gutterBottom>
-        Asset Holders
+        Asset Holders on {asset.name}
       </Typography>
       <Table>
         <TableHead>
@@ -30,7 +29,7 @@ export function HoldersTab({ asset }: HoldersTabProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {asset.totalHolders?.map((holder) => (
+          {/* {asset.totalHolders?.map((holder) => (
             <TableRow key={holder.did}>
               <TableCell>
                 <AccountOrDidTextField value={holder.did} isIdentity />
@@ -38,9 +37,9 @@ export function HoldersTab({ asset }: HoldersTabProps) {
               <TableCell align="right">{holder.balance}</TableCell>
               <TableCell align="right">{holder.percentage}%</TableCell>
             </TableRow>
-          ))}
+          ))} */}
         </TableBody>
       </Table>
     </Box>
   );
-} 
+}

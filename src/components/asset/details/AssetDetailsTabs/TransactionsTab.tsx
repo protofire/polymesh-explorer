@@ -7,26 +7,26 @@ import {
   TableHead,
   TableRow,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface TransactionsTabProps {
   asset: Asset;
 }
 
 export function TransactionsTab({ asset }: TransactionsTabProps) {
-  const [selectedVenue, setSelectedVenue] = React.useState('all');
+  //   const [selectedVenue, setSelectedVenue] = React.useState('all');
 
   return (
     <Box p={2}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-        <Typography variant="h6">Asset Transactions</Typography>
-        {asset.allowedVenues && (
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
+        <Typography variant="h6">Asset Transactions on {asset.name}</Typography>
+        {/* {asset.allowedVenues && (
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>Filter by Venue</InputLabel>
             <Select
@@ -42,7 +42,7 @@ export function TransactionsTab({ asset }: TransactionsTabProps) {
               ))}
             </Select>
           </FormControl>
-        )}
+        )} */}
       </Box>
       <Table>
         <TableHead>
@@ -55,7 +55,7 @@ export function TransactionsTab({ asset }: TransactionsTabProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {asset.transactions?.map((tx) => (
+          {/* {asset.transactions?.map((tx) => (
             <TableRow key={tx.id}>
               <TableCell>{new Date(tx.timestamp).toLocaleString()}</TableCell>
               <TableCell>
@@ -67,9 +67,9 @@ export function TransactionsTab({ asset }: TransactionsTabProps) {
               <TableCell align="right">{tx.amount}</TableCell>
               <TableCell>{tx.venue}</TableCell>
             </TableRow>
-          ))}
+          ))} */}
         </TableBody>
       </Table>
     </Box>
   );
-} 
+}

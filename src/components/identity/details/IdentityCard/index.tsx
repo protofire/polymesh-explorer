@@ -18,6 +18,7 @@ import CopyButton from '@/components/shared/common/CopyButton';
 import { IdentityCardSkeleton } from './IdentityCardSkeleton';
 import { ROUTES } from '@/config/routes';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -49,7 +50,10 @@ export function IdentityCard({
 
   return (
     <>
-      <Typography variant="h4">Identity</Typography>
+      <Box display="flex" alignItems="center" gap={1}>
+        <Typography variant="h4">Identity</Typography>
+        <DocumentationIconButton polymeshEntity="identity" />
+      </Box>
       <Box display="flex" alignItems="center" mt={2}>
         <Identicon
           value={identityDid}

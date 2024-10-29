@@ -118,7 +118,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
         }
         case PolymeshEntityType.Asset: {
           const asset = await polymeshService.polymeshSdk.assets.getAsset({
-            ticker: input.searchTerm,
+            ticker: input.searchTerm.toUpperCase(),
           });
           data = {
             ticker: asset.ticker,

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Typography, Stack, Chip } from '@mui/material';
+import { Box, Typography, Stack } from '@mui/material';
 import { Asset } from '@/domain/entities/Asset';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface OverviewTabProps {
   asset: Asset;
@@ -17,14 +16,14 @@ export function OverviewTab({ asset }: OverviewTabProps) {
           </Typography>
           <Stack spacing={1}>
             <Typography>
-              Transfer Status: {asset.transfersAreFrozen ? 'Frozen' : 'Active'}
+              {/* Transfer Status: {asset.transfersAreFrozen ? 'Frozen' : 'Active'} */}
             </Typography>
             <Typography>
-              Max Holders: {asset.maxHolderCount || 'Unlimited'}
+              {/* Max Holders: {asset.maxHolderCount || 'Unlimited'} */}
             </Typography>
-            {asset.trustedClaimIssuers?.map((issuer) => (
+            {/* {asset.trustedClaimIssuers?.map((issuer) => (
               <AccountOrDidTextField key={issuer} value={issuer} isIdentity />
-            ))}
+            ))} */}
           </Stack>
         </Box>
 
@@ -36,7 +35,7 @@ export function OverviewTab({ asset }: OverviewTabProps) {
             <Typography>
               Divisible: {asset.isDivisible ? 'Yes' : 'No'}
             </Typography>
-            <Typography>Metadata: {asset.metadata || 'Not set'}</Typography>
+            {/* <Typography>Metadata: {asset.metadata || 'Not set'}</Typography> */}
           </Stack>
         </Box>
 
@@ -45,9 +44,9 @@ export function OverviewTab({ asset }: OverviewTabProps) {
             Venues
           </Typography>
           <Stack direction="row" spacing={1}>
-            {asset.allowedVenues?.map((venue) => (
+            {/* {asset.allowedVenues?.map((venue) => (
               <Chip key={venue} label={venue} />
-            ))}
+            ))} */}
           </Stack>
         </Box>
 
@@ -56,9 +55,9 @@ export function OverviewTab({ asset }: OverviewTabProps) {
             Asset Agents
           </Typography>
           <Stack spacing={1}>
-            {asset.agents?.map((agent) => (
+            {/* {asset.agents?.map((agent) => (
               <AccountOrDidTextField key={agent} value={agent} isIdentity />
-            ))}
+            ))} */}
           </Stack>
         </Box>
       </Stack>
