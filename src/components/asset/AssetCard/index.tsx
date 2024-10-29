@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Stack, Skeleton } from '@mui/material';
-import Identicon from '@polkadot/ui-identicon';
 import { Asset } from '@/domain/entities/Asset';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
