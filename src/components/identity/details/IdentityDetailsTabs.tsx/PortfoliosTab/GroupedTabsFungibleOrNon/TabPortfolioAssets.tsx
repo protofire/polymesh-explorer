@@ -40,9 +40,13 @@ export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
             {paginatedAssets.length > 0 ? (
               paginatedAssets.map((asset) => (
                 <TableRow key={asset.ticker}>
-                  <TableCell>{asset.name}</TableCell>
                   <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${asset.ticker}`}>
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
+                      {asset.name}
+                    </GenericLink>
+                  </TableCell>
+                  <TableCell>
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
                       {asset.ticker}
                     </GenericLink>
                   </TableCell>

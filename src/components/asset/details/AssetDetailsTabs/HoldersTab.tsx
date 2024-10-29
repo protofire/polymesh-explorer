@@ -30,7 +30,7 @@ export function HoldersTab({ asset }: HoldersTabProps) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {asset.holders?.map((holder) => (
+          {asset.totalHolders?.map((holder) => (
             <TableRow key={holder.did}>
               <TableCell>
                 <AccountOrDidTextField value={holder.did} isIdentity />

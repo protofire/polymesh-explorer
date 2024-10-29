@@ -9,6 +9,7 @@ export const assetFragment = gql`
     totalSupply
     createdAt
     isNftCollection
+    isDivisible
     owner {
       did
     }

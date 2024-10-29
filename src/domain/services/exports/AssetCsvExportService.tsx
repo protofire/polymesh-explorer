@@ -43,7 +43,7 @@ export class AssetCsvExportService {
       },
       {
         header: 'Documents',
-        accessor: (asset) => asset.documents?.toString() || '0',
+        accessor: (asset) => asset.totalDocuments?.toString() || '0',
       },
       {
         header: 'Created At',

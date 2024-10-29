@@ -17,6 +17,7 @@ import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailable
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface AssetTabTableProps {
   assets: Asset[];
@@ -44,8 +45,8 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
                 <TableRow key={asset.ticker}>
                   <TableCell>{asset.name}</TableCell>
                   <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${asset.ticker}`}>
-                      {asset.ticker}
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
+                      {asset.ticker || truncateAddress(asset.assetId, 4)}
                     </GenericLink>
                   </TableCell>
                   <TableCell>{asset.type}</TableCell>

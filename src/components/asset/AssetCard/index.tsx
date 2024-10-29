@@ -136,13 +136,13 @@ export function AssetCard({
             <Typography variant="body2" color="textSecondary">
               Holders
             </Typography>
-            <Typography variant="h4">{asset.holders}</Typography>
+            <Typography variant="h4">{asset.totalHolders}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2" color="textSecondary">
               Documents
             </Typography>
-            <Typography variant="h4">{asset.documents}</Typography>
+            <Typography variant="h4">{asset.totalDocuments}</Typography>
           </Box>
           <Box width="25%">
             <Typography variant="body2" color="textSecondary">

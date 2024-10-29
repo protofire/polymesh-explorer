@@ -135,7 +135,7 @@ export function AssetTable({
                       {truncateAddress(asset.ownerDid, 5)}
                     </GenericLink>
                   </TableCell>
-                  <TableCell>{asset.documents}</TableCell>
+                  <TableCell>{asset.totalDocuments}</TableCell>
                   <TableCell>
                     <FormattedDate date={asset.createdAt} />
                   </TableCell>
