@@ -18,6 +18,7 @@ import { ROUTES } from '@/config/routes';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -80,7 +81,8 @@ export function TabTokenMovementsTable({
                   <TableCell>{movement.to.name}</TableCell>
                   <TableCell>
                     <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
-                      {movement.assetTicker}
+                      {movement.assetTicker ||
+                        truncateAddress(movement.assetId, 4)}
                     </GenericLink>
                   </TableCell>
                   <TableCell>

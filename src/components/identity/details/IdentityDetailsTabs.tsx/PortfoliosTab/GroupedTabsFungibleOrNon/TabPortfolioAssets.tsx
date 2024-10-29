@@ -15,6 +15,7 @@ import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNu
 import { AssetPortfolio } from '@/domain/entities/Portfolio';
 import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface TabPortfolioAssetsProps {
   assets: AssetPortfolio[];
@@ -31,7 +32,7 @@ export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
           <TableHead>
             <TableRow>
               <TableCell>Name</TableCell>
-              <TableCell>Ticker</TableCell>
+              <TableCell>Ticker or Id</TableCell>
               <TableCell>Balance</TableCell>
               <TableCell>Asset Type</TableCell>
             </TableRow>
@@ -47,7 +48,7 @@ export function TabPortfolioAssets({ assets }: TabPortfolioAssetsProps) {
                   </TableCell>
                   <TableCell>
                     <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
-                      {asset.ticker}
+                      {asset.ticker || truncateAddress(asset.assetId, 4)}
                     </GenericLink>
                   </TableCell>
                   <TableCell>
