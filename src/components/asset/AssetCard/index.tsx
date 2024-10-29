@@ -46,11 +46,6 @@ export function AssetCard({
       </Box>
 
       <Box display="flex" alignItems="center" mt={2}>
-        <Identicon
-          value={asset.assetId}
-          size={42}
-          style={{ marginRight: '16px' }}
-        />
         <Box display="flex" flexDirection="column">
           <Typography variant="body1" color="textSecondary">
             Asset ID:
