@@ -1,6 +1,5 @@
 import React from 'react';
 import { Box, Typography, Stack, Skeleton } from '@mui/material';
-import Identicon from '@polkadot/ui-identicon';
 import { Asset } from '@/domain/entities/Asset';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
@@ -46,11 +45,6 @@ export function AssetCard({
       </Box>
 
       <Box display="flex" alignItems="center" mt={2}>
-        <Identicon
-          value={asset.assetId}
-          size={42}
-          style={{ marginRight: '16px' }}
-        />
         <Box display="flex" flexDirection="column">
           <Typography variant="body1" color="textSecondary">
             Asset ID:

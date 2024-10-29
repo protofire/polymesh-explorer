@@ -79,7 +79,7 @@ export function AssetTable({
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell>Ticker</TableCell>
+              <TableCell>Ticker or Id</TableCell>
               <TableCell style={{ width: '200px' }}>Name</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Asset Type</TableCell>
@@ -94,8 +94,8 @@ export function AssetTable({
               assets.map((asset) => (
                 <TableRow key={asset.ticker}>
                   <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${asset.ticker}`}>
-                      {asset.ticker}
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
+                      {asset.ticker || truncateAddress(asset.assetId, 4)}
                     </GenericLink>
                   </TableCell>
                   <TableCell>
