@@ -10,9 +10,9 @@ export interface AssetNode {
   name: string;
   type: string;
   totalSupply: string;
-  divisible: boolean;
   createdAt: string;
   isNftCollection: boolean;
+  isDivisible: boolean;
   owner: {
     did: string;
   };

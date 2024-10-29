@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { Venue } from '@/domain/entities/Venue';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 
 interface VenueCardProps {
   venue: Venue;
@@ -33,8 +34,9 @@ export function VenueCard({
   return (
     <Card>
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box display="flex" alignItems="center" gap={1} mb={2}>
           <Typography variant="h4">Venue Details</Typography>
+          <DocumentationIconButton polymeshEntity="venue" />
         </Box>
         <Stack spacing={2}>
           <Box>

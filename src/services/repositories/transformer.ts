@@ -29,9 +29,10 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
       ).toString(),
     ownerDid: assetNode.owner.did,
     isNftCollection: assetNode.isNftCollection,
-    holders: assetNode.holders.totalCount.toString(),
+    isDivisible: assetNode.isDivisible,
+    totalHolders: assetNode.holders.totalCount.toString(),
     createdAt: new Date(`${assetNode.createdAt}Z`),
-    documents: assetNode.documents.totalCount.toString(),
+    totalDocuments: assetNode.documents.totalCount.toString(),
   };
 }
 

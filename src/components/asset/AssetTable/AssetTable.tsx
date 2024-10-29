@@ -82,7 +82,7 @@ export function AssetTable({
               <TableCell>Ticker</TableCell>
               <TableCell style={{ width: '200px' }}>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Token Type</TableCell>
+              <TableCell>Asset Type</TableCell>
               <TableCell>Total Supply</TableCell>
               <TableCell>Owner</TableCell>
               <TableCell>Documents</TableCell>
@@ -135,7 +135,7 @@ export function AssetTable({
                       {truncateAddress(asset.ownerDid, 5)}
                     </GenericLink>
                   </TableCell>
-                  <TableCell>{asset.documents}</TableCell>
+                  <TableCell>{asset.totalDocuments}</TableCell>
                   <TableCell>
                     <FormattedDate date={asset.createdAt} />
                   </TableCell>

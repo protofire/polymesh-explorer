@@ -17,7 +17,7 @@ export function useGetAsset(
     queryKey: ['asset', ticker],
     queryFn: async () => {
       if (!assetService) throw new Error('Asset service not initialized');
-      const assetNode = await assetService.findByTicker(ticker);
+      const assetNode = await assetService.findByAssetId(ticker);
       if (assetNode === null) return null;
 
       return assetNode;

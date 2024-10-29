@@ -77,9 +77,10 @@ export function TabAssetTransactionsTable({
                     </TableCell>
                     <TableCell>
                       <GenericLink
-                        href={`${ROUTES.Asset}/${transaction.assetTicker}`}
+                        href={`${ROUTES.Asset}/${transaction.assetId}`}
                       >
-                        {transaction.assetTicker}
+                        {transaction.assetTicker ||
+                          truncateAddress(transaction.assetId, 4)}
                       </GenericLink>
                     </TableCell>
                     <TableCell>

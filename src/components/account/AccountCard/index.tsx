@@ -8,6 +8,7 @@ import { IdentityCardSkeleton } from '@/components/identity/details/IdentityCard
 import CopyButton from '@/components/shared/common/CopyButton';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 
 interface AccountCardProps {
   account: Account | undefined | null;
@@ -36,7 +37,10 @@ export function AccountCard({
         justifyContent="space-between"
         alignItems="flex-start"
       >
-        <Typography variant="h4">Account Details</Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="h4">Account Details</Typography>
+          <DocumentationIconButton polymeshEntity="account" />
+        </Box>
         <Stack direction="row" spacing={1}>
           {isMultisig && (
             <Tooltip title="This is a Multisig account">

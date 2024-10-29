@@ -1,16 +1,11 @@
 import React from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-  Skeleton,
-} from '@mui/material';
-import Link from 'next/link';
+import { Box, Typography, Stack, Skeleton } from '@mui/material';
+import Identicon from '@polkadot/ui-identicon';
 import { Asset } from '@/domain/entities/Asset';
-import { truncateAddress } from '@/services/polymesh/address';
-import { ROUTES } from '@/config/routes';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import CopyButton from '@/components/shared/common/CopyButton';
+import { AssetTypeChip } from './AssetTypeChip';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 
 interface AssetCardProps {
   asset: Asset | null | undefined;
@@ -21,80 +16,125 @@ export function AssetCard({
   asset,
   isLoading,
 }: AssetCardProps): React.ReactElement {
-  const renderValue = (value: string | number | undefined) =>
-    value === undefined || isLoading ? <Skeleton width={100} /> : value;
+  if (isLoading || !asset) {
+    return (
+      <Box>
+        <Typography variant="h4">Asset Details</Typography>
+        <Box mt={2}>
+          <Skeleton variant="circular" width={42} height={42} />
+          <Skeleton width="60%" />
+          <Skeleton width="40%" />
+        </Box>
+      </Box>
+    );
+  }
 
   return (
-    <Card>
-      <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="flex-start"
+      >
+        <Box display="flex" alignItems="center" gap={1}>
           <Typography variant="h4">Asset Details</Typography>
+          <DocumentationIconButton polymeshEntity="asset" />
         </Box>
-        <Stack spacing={2}>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Ticker:
+        <Stack direction="row" spacing={1}>
+          <AssetTypeChip asset={asset} />
+        </Stack>
+      </Box>
+
+      <Box display="flex" alignItems="center" mt={2}>
+        <Identicon
+          value={asset.assetId}
+          size={42}
+          style={{ marginRight: '16px' }}
+        />
+        <Box display="flex" flexDirection="column">
+          <Typography variant="body1" color="textSecondary">
+            Asset ID:
+          </Typography>
+          <Box display="flex" gap={1}>
+            <Typography variant="body1">{asset.assetId}</Typography>
+            <CopyButton text={asset.assetId || ''} />
+          </Box>
+        </Box>
+      </Box>
+
+      <Stack spacing={3} mt={4}>
+        <Stack direction="row" spacing={2}>
+          <Box flex={1}>
+            <Typography variant="body2" color="textSecondary" mb={1}>
+              Name
             </Typography>
-            <Typography variant="body1">
-              {renderValue(asset?.ticker)}
+            <Typography variant="body1" fontWeight="medium">
+              {asset.name}
             </Typography>
           </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Name:
+          <Box flex={1}>
+            <Typography variant="body2" color="textSecondary" mb={1}>
+              Ticker
             </Typography>
-            <Typography variant="body1">{renderValue(asset?.name)}</Typography>
+            <Box display="flex" gap={1} alignItems="center">
+              <Typography variant="body1" fontWeight="medium">
+                {asset.ticker}
+              </Typography>
+              <CopyButton text={asset.ticker || ''} />
+            </Box>
           </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Type:
+        </Stack>
+
+        <Stack direction="row" spacing={2}>
+          <Box flex={1}>
+            <Typography variant="body2" color="textSecondary" mb={1}>
+              Owner
             </Typography>
-            <Typography variant="body1">{renderValue(asset?.type)}</Typography>
+            <AccountOrDidTextField
+              value={asset.ownerDid}
+              showIdenticon
+              isIdentity
+            />
           </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Total Supply:
+          <Box flex={1}>
+            <Typography variant="body2" color="textSecondary" mb={1}>
+              Type
             </Typography>
-            <Typography variant="body1">
-              {renderValue(asset?.totalSupply)}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Owner (DID):
-            </Typography>
-            <Typography variant="body1">
-              <Link href={`${ROUTES.Identity}/${asset?.ownerDid}`}>
-                {truncateAddress(asset?.ownerDid)}
-              </Link>
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Documents:
-            </Typography>
-            <Typography variant="body1">
-              {renderValue(asset?.documents)}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Asset Holders:
-            </Typography>
-            <Typography variant="body1">
-              {renderValue(asset?.holders)}
-            </Typography>
-          </Box>
-          <Box>
-            <Typography variant="body2" color="textSecondary">
-              Creation Date:
-            </Typography>
-            <Typography variant="body1">
-              {asset?.createdAt.toISOString()}
+            <Typography variant="body1" fontWeight="medium">
+              {asset.type}
             </Typography>
           </Box>
         </Stack>
-      </CardContent>
-    </Card>
+
+        <Stack direction="row" spacing={2}>
+          <Box width="25%">
+            <Typography variant="body2" color="textSecondary">
+              Total Supply
+            </Typography>
+            <Typography variant="h4">{asset.totalSupply}</Typography>
+          </Box>
+          <Box width="25%">
+            <Typography variant="body2" color="textSecondary">
+              Holders
+            </Typography>
+            <Typography variant="h4">{asset.totalHolders}</Typography>
+          </Box>
+          <Box width="25%">
+            <Typography variant="body2" color="textSecondary">
+              Documents
+            </Typography>
+            <Typography variant="h4">{asset.totalDocuments}</Typography>
+          </Box>
+          <Box width="25%">
+            <Typography variant="body2" color="textSecondary">
+              Created
+            </Typography>
+            <Typography variant="body1">
+              {asset.createdAt.toLocaleDateString()}
+            </Typography>
+          </Box>
+        </Stack>
+      </Stack>
+    </>
   );
 }

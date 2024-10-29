@@ -101,13 +101,12 @@ export class PolymeshSdkService {
           const custodian = await portfolio.getCustodian();
           const assets = assetBalances
             .filter(({ total }) => total.toNumber() > 0)
-            .map((balance) => ({
-              name: balance.asset.toHuman(),
-              ticker: balance.asset.ticker,
-              assetId: balance.asset.id,
-              balance: balance.total.toString(),
-              type: 'Default', // Assumes a Default type
-            }));
+            .map((balance) => {
+              return {
+                assetId: balance.asset.id,
+                balance: balance.total.toString(),
+              };
+            });
 
           const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
           const name =

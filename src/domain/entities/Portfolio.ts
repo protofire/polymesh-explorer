@@ -4,7 +4,8 @@ import { Identity } from './Identity';
 import { NftData } from './NftData';
 
 export interface AssetPortfolio
-  extends Pick<Asset, 'name' | 'ticker' | 'type'> {
+  extends Pick<Asset, 'assetId'>,
+    Partial<Omit<Asset, 'assetId'>> {
   balance: string;
 }
 
