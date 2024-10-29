@@ -45,7 +45,7 @@ interface AssetTypeToggleButtonProps {
   includeAllOption?: boolean;
 }
 
-const defaultOptions: AssetTypeOption[] = [
+export const assetTypeOptions: AssetTypeOption[] = [
   {
     value: 'Fungible',
     label: 'Fungible',
@@ -66,8 +66,8 @@ export function AssetTypeToggleButton({
   includeAllOption = false,
 }: AssetTypeToggleButtonProps) {
   const options = includeAllOption
-    ? [allOption, ...defaultOptions]
-    : defaultOptions;
+    ? [allOption, ...assetTypeOptions]
+    : assetTypeOptions;
 
   return (
     <StyledToggleButtonGroup

@@ -82,7 +82,7 @@ export function AssetTable({
               <TableCell>Ticker</TableCell>
               <TableCell style={{ width: '200px' }}>Name</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Token Type</TableCell>
+              <TableCell>Asset Type</TableCell>
               <TableCell>Total Supply</TableCell>
               <TableCell>Owner</TableCell>
               <TableCell>Documents</TableCell>

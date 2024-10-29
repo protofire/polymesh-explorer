@@ -14,7 +14,7 @@ interface Params {
 export class AssetGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  async findByTicker(ticker: string): Promise<Asset | null> {
+  async findByAssetId(assetId: string): Promise<Asset | null> {
     const query = gql`
       ${assetFragment}
       query ($filter: AssetFilter!) {
@@ -27,7 +27,7 @@ export class AssetGraphRepo {
     `;
 
     const variables = {
-      filter: { ticker: { equalTo: ticker } },
+      filter: { id: { equalTo: assetId } },
     };
 
     const response = await this.client.request<AssetResponse>(query, variables);
