@@ -14,7 +14,7 @@ const POLYMESH_DOC_BASE_URL =
 const DOCS_URLS: Record<PolymeshEntity, { name: string; link: string }> = {
   asset: {
     name: 'Asset',
-    link: `${POLYMESH_DOC_BASE_URL}/asset`,
+    link: `${POLYMESH_DOC_BASE_URL}/assets`,
   },
   identity: {
     name: 'Identity',
