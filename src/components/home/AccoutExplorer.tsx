@@ -10,7 +10,7 @@ import { transformToOption } from '@/domain/trasnformers/toSearchTextInputOption
 export default function AccountExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
   const {
-    data,
+    data: results,
     isFetching: isLoading,
     error,
     refetch,
@@ -19,9 +19,8 @@ export default function AccountExplorer() {
   });
 
   const options = useMemo(() => {
-    if (!data.searchCriteria.type) return [];
-    return [transformToOption(data)];
-  }, [data]);
+    return results.map((result) => transformToOption(result));
+  }, [results]);
 
   return (
     <CustomBox>

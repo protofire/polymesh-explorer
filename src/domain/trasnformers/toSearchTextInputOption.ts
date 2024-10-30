@@ -46,7 +46,7 @@ export function transformToOption(
       return {
         key: asset.assetId,
         type: PolymeshEntityType.Asset,
-        value: asset.assetId,
+        value: data.searchCriteria.searchTerm,
         link: `${ROUTES.Asset}/${asset.assetId}`,
       };
     }

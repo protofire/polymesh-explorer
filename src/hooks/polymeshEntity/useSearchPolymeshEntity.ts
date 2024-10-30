@@ -12,44 +12,130 @@ import { Asset } from '@/domain/entities/Asset';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { uuidToHex } from '@/services/polymesh/hexToUuid';
 
-async function identifyPolymeshEntity(
+async function searchEntities(
   sdk: Polymesh,
+  identityService: IdentityGraphRepo,
   input: string,
-): Promise<PolymeshEntityType> {
+): Promise<UseSearchPolymeshEntityResult[]> {
   const identifier = input.trim();
+  const results: UseSearchPolymeshEntityResult[] = [];
 
-  if (sdk.accountManagement.isValidAddress({ address: identifier })) {
-    return PolymeshEntityType.Account;
-  }
+  // Parallel search across all entities
+  const searchPromises = [
+    // Account search
+    (async () => {
+      if (sdk.accountManagement.isValidAddress({ address: identifier })) {
+        const balance = await sdk.accountManagement.getAccountBalance({
+          account: identifier,
+        });
+        results.push({
+          searchCriteria: {
+            searchTerm: identifier,
+            type: PolymeshEntityType.Account,
+          },
+          entity: {
+            balance: balance.total.toString(),
+            key: identifier,
+          },
+        });
+      }
+    })(),
 
-  if (isDid(identifier)) {
-    const isIdentityValid = await sdk.identities.isIdentityValid({
-      identity: identifier,
-    });
+    // Identity search
+    (async () => {
+      if (isDid(identifier)) {
+        const exists = await identityService.existsByIdentifier(identifier);
+        if (exists) {
+          const identityData =
+            await identityService.findByIdentifier(identifier);
+          results.push({
+            searchCriteria: {
+              searchTerm: identifier,
+              type: PolymeshEntityType.DID,
+            },
+            entity: {
+              did: identifier,
+              ...identityData,
+              primaryAccount: identityData?.primaryAccount || '',
+            },
+          });
+        }
+      }
+    })(),
 
-    return isIdentityValid
-      ? PolymeshEntityType.DID
-      : PolymeshEntityType.Unknown;
-  }
+    // Venue search
+    (async () => {
+      if (Number(identifier)) {
+        try {
+          const venue = await sdk.settlements.getVenue({
+            id: new BigNumber(identifier),
+          });
+          const venueDetails = await venue.details();
+          results.push({
+            searchCriteria: {
+              searchTerm: identifier,
+              type: PolymeshEntityType.Venue,
+            },
+            entity: {
+              id: venue.id.toString(),
+              type: venueDetails.type,
+            },
+          });
+        } catch (error) {
+          // Ignore error if venue is not found
+        }
+      }
+    })(),
 
-  if (Number(identifier)) {
-    try {
-      await sdk.settlements.getVenue({ id: new BigNumber(identifier) });
-      return PolymeshEntityType.Venue;
-    } catch (error) {
-      // if it doesn't exist, continue to the next check
-    }
-  }
+    // Asset search
+    (async () => {
+      try {
+        let asset;
+        // Search by ticker if length is valid
+        if (identifier.length <= 12) {
+          asset = await sdk.assets.getAsset({
+            ticker: identifier.toUpperCase(),
+          });
+        }
 
-  try {
-    if (identifier.length >= 4) {
-      return PolymeshEntityType.Asset;
-    }
-  } catch (error) {
-    // if it doesn't exist, continue to the next check
-  }
+        if (asset) {
+          results.push({
+            searchCriteria: {
+              searchTerm: identifier,
+              type: PolymeshEntityType.Asset,
+            },
+            entity: {
+              assetId: asset.id,
+            },
+          });
+        }
 
-  return PolymeshEntityType.Unknown;
+        // Search by assetId
+        if (identifier.length > 12) {
+          let assetId = identifier;
+          if (!assetId.startsWith('0x')) {
+            assetId = uuidToHex(identifier);
+          }
+
+          asset = await sdk.assets.getAsset({ assetId });
+          results.push({
+            searchCriteria: {
+              searchTerm: identifier,
+              type: PolymeshEntityType.Asset,
+            },
+            entity: {
+              assetId: asset.id,
+            },
+          });
+        }
+      } catch (error) {
+        // Ignore error if asset is not found
+      }
+    })(),
+  ];
+
+  await Promise.allSettled(searchPromises);
+  return results;
 }
 
 export interface UseSearchPolymeshEntityResult {
@@ -63,91 +149,20 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
     return { identityService: new IdentityGraphRepo(graphQlClient) };
   }, [graphQlClient]);
 
-  return useQuery<UseSearchPolymeshEntityResult, Error>({
+  return useQuery<UseSearchPolymeshEntityResult[], Error>({
     queryKey: ['useSearchPolymeshEntity', input],
     queryFn: async () => {
-      if (!polymeshService?.polymeshSdk) return { searchCriteria: input };
-
-      let data: UseSearchPolymeshEntityResult['entity'] | undefined;
-      const polymeshEntity = await identifyPolymeshEntity(
-        polymeshService.polymeshSdk,
-        input.searchTerm,
-      );
-      const searchCriteria = { ...input, type: polymeshEntity };
-
-      switch (polymeshEntity) {
-        case PolymeshEntityType.Account: {
-          const balance =
-            await polymeshService.polymeshSdk.accountManagement.getAccountBalance(
-              {
-                account: input.searchTerm,
-              },
-            );
-          data = {
-            balance: balance.total.toString(),
-            key: searchCriteria.searchTerm,
-          };
-          break;
-        }
-        case PolymeshEntityType.DID: {
-          const exists = await identityService.existsByIdentifier(
-            searchCriteria.searchTerm,
-          );
-          if (exists) {
-            const identityData = await identityService.findByIdentifier(
-              searchCriteria.searchTerm,
-            );
-
-            data = {
-              did: input.searchTerm,
-              ...identityData,
-              primaryAccount: identityData?.primaryAccount || '',
-            } as Identity;
-          }
-          break;
-        }
-        case PolymeshEntityType.Venue: {
-          const venue = await polymeshService.polymeshSdk.settlements.getVenue({
-            id: new BigNumber(input.searchTerm),
-          });
-
-          const venueDetails = await venue.details();
-          data = {
-            id: venue.id.toString(),
-            type: venueDetails.type,
-          };
-          break;
-        }
-        case PolymeshEntityType.Asset: {
-          let asset;
-
-          if (input.searchTerm.length <= 12) {
-            asset = await polymeshService.polymeshSdk.assets.getAsset({
-              ticker: input.searchTerm.toUpperCase(),
-            });
-          } else {
-            let assetId = input.searchTerm;
-            if (!assetId.startsWith('0x')) {
-              assetId = uuidToHex(input.searchTerm);
-            }
-
-            asset = await polymeshService.polymeshSdk.assets.getAsset({
-              assetId,
-            });
-          }
-
-          data = {
-            assetId: asset.id,
-          };
-          break;
-        }
-        default:
-          break;
+      if (!polymeshService?.polymeshSdk) {
+        throw new Error('PolymeshSdk service not initialized');
       }
 
-      return { searchCriteria, entity: data };
+      return searchEntities(
+        polymeshService.polymeshSdk,
+        identityService,
+        input.searchTerm,
+      );
     },
-    enabled: !!input.searchTerm,
-    initialData: { searchCriteria: input },
+    enabled: !!input.searchTerm && !!polymeshService?.polymeshSdk,
+    initialData: [],
   });
 };

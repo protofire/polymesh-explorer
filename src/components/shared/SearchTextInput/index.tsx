@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { StyledAutocomplete, StyledTextField } from './styled';
@@ -29,8 +29,14 @@ export function SearchTextInput({
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] =
     useState<SearchTextInputOption | null>(null);
-
   const searchInputRef = useRef<HTMLInputElement | null>(null); // Ref for the input
+
+  const handleSearch = useCallback(() => {
+    if (onRefetch) {
+      onRefetch();
+      setOpen(true);
+    }
+  }, [onRefetch]);
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event);
@@ -45,15 +51,21 @@ export function SearchTextInput({
     }
   }, [options]);
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (
-      event.key === 'Enter' &&
-      selectedOption &&
-      selectedOption?.type !== 'Unknown'
-    ) {
-      window.location.href = selectedOption.link;
-    }
-  };
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter') {
+        event.preventDefault(); // Prevent default Enter behavior
+        event.stopPropagation(); // Stop event propagation
+
+        if (selectedOption && selectedOption?.type !== 'Unknown') {
+          window.location.href = selectedOption.link;
+        } else {
+          handleSearch();
+        }
+      }
+    },
+    [selectedOption, handleSearch],
+  );
 
   useEffect(() => {
     const handleShortcut = (event: KeyboardEvent) => {
@@ -94,6 +106,7 @@ export function SearchTextInput({
       onChange={(event, newValue) => {
         setSelectedOption(newValue as SearchTextInputOption | null);
       }}
+      onKeyDown={handleKeyDown}
       renderOption={(props, option, { selected }) => {
         // eslint-disable-next-line @typescript-eslint/naming-convention, no-underscore-dangle
         const _option = option as SearchTextInputOption;
@@ -114,17 +127,20 @@ export function SearchTextInput({
           label={label}
           fullWidth
           inputRef={searchInputRef} // Attach the ref here
-          onKeyDown={handleKeyDown}
           customBigHeight={size === 'big'}
           slotProps={{
             input: {
               ...params.InputProps,
+              onKeyDown: handleKeyDown,
               endAdornment: (
                 <InputAdornment position="end">
                   {isLoading ? (
                     <CircularProgress color="inherit" size={20} />
                   ) : (
-                    <IconButton sx={{ color: '#d4d4d4' }} onClick={onRefetch}>
+                    <IconButton
+                      sx={{ color: '#d4d4d4' }}
+                      onClick={handleSearch}
+                    >
                       <SearchIcon />
                     </IconButton>
                   )}
