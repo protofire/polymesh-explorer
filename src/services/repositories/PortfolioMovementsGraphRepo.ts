@@ -4,7 +4,7 @@ import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import {
   assetTransactionNodeToAssetTransaction,
   portfolioMovementNodeToPortfolioMovement,
-} from './transformer';
+} from '@/services/repositories/nodeTransformers';
 import {
   PortfolioMovementsResponse,
   AssetTransactionsResponse,

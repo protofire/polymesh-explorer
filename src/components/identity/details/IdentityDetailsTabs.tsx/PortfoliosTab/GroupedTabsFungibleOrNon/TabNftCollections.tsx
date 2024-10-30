@@ -43,7 +43,7 @@ export function TabNftCollections({
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Collection ID</TableCell>
+              <TableCell>Collection</TableCell>
               <TableCell>Collection ID</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Asset Type</TableCell>
@@ -55,14 +55,16 @@ export function TabNftCollections({
               paginatedCollections.map((collection) => (
                 <TableRow key={collection.uuid}>
                   <TableCell>
-                    <NftAvatarField
-                      imgUrl={collection.imgUrl}
-                      alt={collection.name}
-                    />
+                    <GenericLink href={`${ROUTES.Asset}/${collection.assetId}`}>
+                      <NftAvatarField
+                        imgUrl={collection.imgUrl}
+                        alt={collection.name}
+                      />
+                    </GenericLink>
                   </TableCell>
                   <TableCell>{collection.collectionId}</TableCell>
                   <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${collection.ticker}`}>
+                    <GenericLink href={`${ROUTES.Asset}/${collection.assetId}`}>
                       {collection.name}
                     </GenericLink>
                   </TableCell>

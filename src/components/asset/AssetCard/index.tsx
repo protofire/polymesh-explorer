@@ -1,10 +1,13 @@
 import React from 'react';
-import { Box, Typography, Stack, Skeleton } from '@mui/material';
+import { Box, Typography, Stack, Skeleton, Tooltip } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import BlockIcon from '@mui/icons-material/Block';
 import { Asset } from '@/domain/entities/Asset';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { AssetTypeChip } from './AssetTypeChip';
 import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 
 interface AssetCardProps {
   asset: Asset | null | undefined;
@@ -67,15 +70,25 @@ export function AssetCard({
             </Typography>
           </Box>
           <Box flex={1}>
-            <Typography variant="body2" color="textSecondary" mb={1}>
-              Ticker
-            </Typography>
-            <Box display="flex" gap={1} alignItems="center">
-              <Typography variant="body1" fontWeight="medium">
-                {asset.ticker}
-              </Typography>
-              <CopyButton text={asset.ticker || ''} />
-            </Box>
+            <Stack direction="row" spacing={2}>
+              <Box flex={1}>
+                <Typography variant="body2" color="textSecondary" mb={1}>
+                  Ticker
+                </Typography>
+                <Box display="flex" gap={1} alignItems="center">
+                  <Typography variant="body1" fontWeight="medium">
+                    {asset.ticker}
+                  </Typography>
+                  <CopyButton text={asset.ticker || ''} />
+                </Box>
+              </Box>
+              <Box flex={1}>
+                <Typography variant="body2" color="textSecondary" mb={1}>
+                  Created
+                </Typography>
+                <FormattedDate date={asset.createdAt} />
+              </Box>
+            </Stack>
           </Box>
         </Stack>
 
@@ -91,41 +104,53 @@ export function AssetCard({
             />
           </Box>
           <Box flex={1}>
-            <Typography variant="body2" color="textSecondary" mb={1}>
-              Type
-            </Typography>
-            <Typography variant="body1" fontWeight="medium">
-              {asset.type}
-            </Typography>
+            <Stack direction="row" spacing={2}>
+              <Box flex={1}>
+                <Typography variant="body2" color="textSecondary" mb={1}>
+                  Type
+                </Typography>
+                <Typography variant="body1" fontWeight="medium">
+                  {asset.type}
+                </Typography>
+              </Box>
+              <Box flex={1}>
+                <Typography variant="body2" color="textSecondary" mb={1}>
+                  Divisibility
+                </Typography>
+                <Box display="flex" alignItems="center">
+                  <Tooltip
+                    title={asset.isDivisible ? 'Divisible' : 'Non-divisible'}
+                  >
+                    {asset.isDivisible ? (
+                      <CheckCircleOutlineIcon color="success" />
+                    ) : (
+                      <BlockIcon color="error" />
+                    )}
+                  </Tooltip>
+                </Box>
+              </Box>
+            </Stack>
           </Box>
         </Stack>
 
         <Stack direction="row" spacing={2}>
-          <Box width="25%">
+          <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
               Total Supply
             </Typography>
             <Typography variant="h4">{asset.totalSupply}</Typography>
           </Box>
-          <Box width="25%">
+          <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
               Holders
             </Typography>
             <Typography variant="h4">{asset.totalHolders}</Typography>
           </Box>
-          <Box width="25%">
+          <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
               Documents
             </Typography>
             <Typography variant="h4">{asset.totalDocuments}</Typography>
-          </Box>
-          <Box width="25%">
-            <Typography variant="body2" color="textSecondary">
-              Created
-            </Typography>
-            <Typography variant="body1">
-              {asset.createdAt.toLocaleDateString()}
-            </Typography>
           </Box>
         </Stack>
       </Stack>

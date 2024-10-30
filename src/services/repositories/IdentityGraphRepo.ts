@@ -2,7 +2,7 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { Identity } from '@/domain/entities/Identity';
 import { identityFragment, pageInfoFragment } from './fragments';
 import { IdentityListResponse, IdentityResponse, PageInfo } from './types';
-import { identityNodeToIdentity } from './transformer';
+import { identityNodeToIdentity } from '@/services/repositories/nodeTransformers';
 
 export class IdentityGraphRepo {
   constructor(private client: GraphQLClient) {}

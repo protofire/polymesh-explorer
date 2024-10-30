@@ -10,6 +10,7 @@ import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
 import { Asset } from '@/domain/entities/Asset';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
+import { uuidToHex } from '@/services/polymesh/hexToUuid';
 
 async function identifyPolymeshEntity(
   sdk: Polymesh,
@@ -41,8 +42,9 @@ async function identifyPolymeshEntity(
   }
 
   try {
-    await sdk.assets.getAsset({ ticker: identifier });
-    return PolymeshEntityType.Asset;
+    if (identifier.length >= 4) {
+      return PolymeshEntityType.Asset;
+    }
   } catch (error) {
     // if it doesn't exist, continue to the next check
   }
@@ -117,12 +119,25 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           break;
         }
         case PolymeshEntityType.Asset: {
-          const asset = await polymeshService.polymeshSdk.assets.getAsset({
-            ticker: input.searchTerm.toUpperCase(),
-          });
+          let asset;
+
+          if (input.searchTerm.length <= 12) {
+            asset = await polymeshService.polymeshSdk.assets.getAsset({
+              ticker: input.searchTerm.toUpperCase(),
+            });
+          } else {
+            let assetId = input.searchTerm;
+            if (!assetId.startsWith('0x')) {
+              assetId = uuidToHex(input.searchTerm);
+            }
+
+            asset = await polymeshService.polymeshSdk.assets.getAsset({
+              assetId,
+            });
+          }
+
           data = {
-            ticker: asset.ticker,
-            did: asset.did,
+            assetId: asset.id,
           };
           break;
         }

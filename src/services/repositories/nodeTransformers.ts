@@ -15,10 +15,12 @@ import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
+import { hexToUuid } from '../polymesh/hexToUuid';
 
 export function assetNodeToAsset(assetNode: AssetNode): Asset {
   return {
     assetId: assetNode.id,
+    assetUuid: hexToUuid(assetNode.id),
     ticker: assetNode.ticker,
     name: assetNode.name,
     type: assetNode.type,

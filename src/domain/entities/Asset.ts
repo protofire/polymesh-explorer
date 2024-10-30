@@ -1,14 +1,12 @@
 import {
-  BaseAsset,
-  MetadataEntry,
-} from '@polymeshassociation/polymesh-sdk/internal';
-import {
-  Requirement,
-  TrustedClaimIssuer,
+  AssetDocument,
+  CollectionKey,
+  SecurityIdentifier,
 } from '@polymeshassociation/polymesh-sdk/types';
 
 export interface Asset {
-  assetId: string;
+  assetId: string; // Hex format
+  assetUuid: string;
   ticker?: string;
   name: string;
   type: string;
@@ -19,47 +17,28 @@ export interface Asset {
   totalSupply: string;
   totalHolders: string;
   totalDocuments: string;
-  polymeshSdkClass?: BaseAsset;
 }
 
-export interface AssetHolder {
-  did: string;
-  balance: string;
-  percentage: number;
-}
-
-export interface AssetTransaction {
-  id: string;
-  from: string;
-  to: string;
-  amount: string;
-  timestamp: string;
-  venue: string;
-}
-
-export interface NftMetadata {
-  id: string;
-  metadata: Record<string, unknown>;
-}
-
-export interface IssuerInfo {
-  companyName: string;
-  registrationNumber: string;
-  jurisdiction: string;
-  regulatoryStatus: string;
+export interface AssetMeta {
+  name: string;
+  description?: string;
+  expiry?: Date | string | null;
+  isLocked?: string | null;
+  lockedUntil?: Date;
+  value?: string | null;
 }
 
 export interface AssetDetails extends Asset {
-  metadata: MetadataEntry[] | null;
-  compliance: {
-    requirements: Requirement[];
-    transfersAreFrozen: boolean;
-  } | null;
-  trustedClaimIssuers: TrustedClaimIssuer<true>[] | null;
-  allowedVenues?: string[];
-  agents?: string[];
-  holders?: AssetHolder[];
-  transactions?: AssetTransaction[];
-  nftMetadata?: NftMetadata[];
-  issuerInfo?: IssuerInfo;
+  details?: {
+    assetIdentifiers: SecurityIdentifier[];
+    collectionId?: number;
+    collectionKeys: CollectionKey[];
+    fundingRound: string | null;
+    metaData: AssetMeta[];
+    requiredMediators: string[];
+    venueFilteringEnabled: boolean;
+    permittedVenuesIds: string[];
+    isFrozen: boolean;
+    docs?: AssetDocument[];
+  };
 }

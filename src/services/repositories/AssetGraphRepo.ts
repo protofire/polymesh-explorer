@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Asset } from '@/domain/entities/Asset';
-import { assetNodeToAsset } from './transformer';
+import { assetNodeToAsset } from '@/services/repositories/nodeTransformers';
 import { assetFragment, pageInfoFragment } from './fragments';
 import { AssetListResponse, AssetResponse, PageInfo } from './types';
 import { AssetCriteria } from '@/domain/criteria/AssetCriteria';

@@ -7,6 +7,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
 } from '@mui/material';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
@@ -16,6 +17,7 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { NftAvatarField } from '@/components/shared/common/NftAvatarField';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface TabNftAssetsProps {
   selectedPortfolio: PortfolioWithAssets | null;
@@ -44,7 +46,7 @@ export function TabNftAssets({
           <TableHead>
             <TableRow>
               <TableCell>NFT ID</TableCell>
-              <TableCell>Collection Ticker</TableCell>
+              <TableCell>Collection Ticker or Id</TableCell>
               <TableCell>Collection Name</TableCell>
               <TableCell>Status</TableCell>
             </TableRow>
@@ -52,19 +54,24 @@ export function TabNftAssets({
           <TableBody>
             {nftAssets.length > 0 ? (
               paginatedNftAssets.map((asset) => (
-                <TableRow key={`${asset.collectionTicker}-${asset.id}`}>
+                <TableRow key={`${asset.assetId}-${asset.id}`}>
                   <TableCell>
-                    <NftAvatarField
-                      imgUrl={asset.imgUrl}
-                      alt={asset.collectionName}
-                    />
+                    <Box display="flex" alignItems="center" gap={1}>
+                      <NftAvatarField
+                        imgUrl={asset.imgUrl}
+                        alt={asset.collectionName}
+                      />
+                      {asset.id}
+                    </Box>
                   </TableCell>
-                  <TableCell>{asset.id}</TableCell>
-                  <TableCell>{asset.collectionTicker}</TableCell>
                   <TableCell>
-                    <GenericLink
-                      href={`${ROUTES.Asset}/${asset.collectionTicker}`}
-                    >
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
+                      {asset.collectionTicker ||
+                        truncateAddress(asset.assetId, 4)}
+                    </GenericLink>
+                  </TableCell>
+                  <TableCell>
+                    <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
                       {asset.collectionName}
                     </GenericLink>
                   </TableCell>
