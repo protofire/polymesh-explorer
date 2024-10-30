@@ -36,28 +36,30 @@ export class IdentityGraphRepo {
     return identityNodeToIdentity(identity);
   }
 
-  async existsByIdentifier(did: string): Promise<boolean> {
+  async existsByIdentifier(partialDid: string): Promise<Identity[]> {
     const query = gql`
+      ${identityFragment}
       query ($filter: IdentityFilter!) {
-        identities(filter: $filter, first: 1) {
+        identities(filter: $filter, first: 5) {
           nodes {
-            did
+            ...IdentityFields
           }
         }
       }
     `;
 
     const variables = {
-      filter: { did: { equalTo: did } },
+      filter: { did: { startsWith: partialDid } },
     };
 
     const response = await this.client.request<IdentityResponse>(
       query,
       variables,
     );
-    const identities = response.identities.nodes;
 
-    return identities.length > 0;
+    return response.identities.nodes.map((node) =>
+      identityNodeToIdentity(node),
+    );
   }
 
   async getIdentityList(

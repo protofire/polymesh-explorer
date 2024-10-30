@@ -44,22 +44,33 @@ async function searchEntities(
     // Identity search
     (async () => {
       if (isDid(identifier)) {
-        const exists = await identityService.existsByIdentifier(identifier);
-        if (exists) {
-          const identityData =
-            await identityService.findByIdentifier(identifier);
+        // Try exact match first
+        const identityData = await identityService.findByIdentifier(identifier);
+        if (identityData) {
           results.push({
             searchCriteria: {
               searchTerm: identifier,
               type: PolymeshEntityType.DID,
             },
-            entity: {
-              did: identifier,
-              ...identityData,
-              primaryAccount: identityData?.primaryAccount || '',
-            },
+            entity: identityData,
           });
         }
+      } else if (identifier.length >= 63) {
+        // Find similar DIDs
+        const similarIdentities = await identityService.existsByIdentifier(
+          identifier.slice(0, 63),
+        );
+
+        // Add each similar identity as a result
+        similarIdentities.forEach((identity) => {
+          results.push({
+            searchCriteria: {
+              searchTerm: identity.did,
+              type: PolymeshEntityType.DID,
+            },
+            entity: identity,
+          });
+        });
       }
     })(),
 
