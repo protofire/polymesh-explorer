@@ -8,7 +8,7 @@ import { SearchTextInput } from '@/components/shared/SearchTextInput';
 export function LayoutSearchTextInput() {
   const [searchTerm, setSearchTerm] = useState('');
   const {
-    data,
+    data: results,
     isFetching: isLoading,
     refetch,
   } = useSearchPolymeshEntity({
@@ -16,9 +16,8 @@ export function LayoutSearchTextInput() {
   });
 
   const options = useMemo(() => {
-    if (!data.searchCriteria.type) return [];
-    return [transformToOption(data)];
-  }, [data]);
+    return results.map((result) => transformToOption(result));
+  }, [results]);
 
   return (
     <SearchTextInput
