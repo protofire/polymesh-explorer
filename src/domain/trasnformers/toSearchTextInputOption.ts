@@ -47,7 +47,7 @@ export function transformToOption(
         key: asset.assetId,
         type: PolymeshEntityType.Asset,
         value: asset.assetId,
-        link: `${ROUTES.Asset}/${asset.ticker}`,
+        link: `${ROUTES.Asset}/${asset.assetId}`,
       };
     }
     default:

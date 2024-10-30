@@ -42,8 +42,9 @@ async function identifyPolymeshEntity(
   }
 
   try {
-    await sdk.assets.getAsset({ ticker: identifier });
-    return PolymeshEntityType.Asset;
+    if (identifier.length >= 4) {
+      return PolymeshEntityType.Asset;
+    }
   } catch (error) {
     // if it doesn't exist, continue to the next check
   }
@@ -136,8 +137,7 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
           }
 
           data = {
-            ticker: asset.ticker,
-            did: asset.did,
+            assetId: asset.id,
           };
           break;
         }
