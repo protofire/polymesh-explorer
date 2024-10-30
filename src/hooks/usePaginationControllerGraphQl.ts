@@ -67,6 +67,7 @@ export function usePaginationControllerGraphQl({
       ...prev,
       cursor: null,
       currentPage: 1,
+      offset: 0,
     }));
   }, []);
 

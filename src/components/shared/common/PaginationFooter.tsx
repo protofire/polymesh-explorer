@@ -82,7 +82,7 @@ export function PaginationFooter({
         pagination.goToFirstPage();
       } else if (newPage > paginationInfo.currentPage - 1) {
         pagination.goToNextPage(event, newPage);
-      } else if (newPage < paginationInfo.currentPage - 1) {
+      } else {
         pagination.goToPreviousPage();
       }
     },
