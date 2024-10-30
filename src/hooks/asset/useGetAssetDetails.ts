@@ -8,7 +8,6 @@ import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymesh
 import { Asset, AssetDetails } from '@/domain/entities/Asset';
 import { customReportError } from '@/utils/customReportError';
 import { splitCamelCase } from '@/utils/formatString';
-import { hexToUuid } from '@/services/polymesh/hexToUuid';
 
 export interface UseGetAssetDetailsReturn {
   assetDetails: AssetDetails | null;
@@ -62,7 +61,6 @@ export const useGetAssetDetails = (
           fundingRound,
           assetIdentifiers,
           docs,
-          createdAtInfo,
           meta,
           requiredMediators,
           venueFilteringDetails,
@@ -75,7 +73,6 @@ export const useGetAssetDetails = (
           assetSdk.currentFundingRound(),
           assetSdk.getIdentifiers(),
           assetSdk.documents.get(),
-          assetSdk.createdAt(),
           assetSdk.metadata.get(),
           assetSdk.getRequiredMediators(),
           assetSdk.getVenueFilteringDetails(),
@@ -107,11 +104,9 @@ export const useGetAssetDetails = (
         ).filter((entry) => entry.value !== null);
 
         return {
-          assetId: hexToUuid(assetSdk.id),
           assetIdentifiers,
           collectionId: collectionId?.toNumber(),
           collectionKeys,
-          createdAt: createdAtInfo?.blockDate || null,
           fundingRound,
           metaData,
           requiredMediators: requiredMediators.map((identity) => identity.did),

@@ -13,7 +13,8 @@ import {
   Tooltip,
   Link,
 } from '@mui/material';
-import { ContentCopy, OpenInNew } from '@mui/icons-material';
+import { OpenInNew } from '@mui/icons-material';
+import { AssetDocument } from '@polymeshassociation/polymesh-sdk/types';
 import { AssetDetails } from '@/domain/entities/Asset';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
@@ -33,12 +34,10 @@ export function DocumentsTab({
   isLoading,
   error,
 }: DocumentsTabProps): React.ReactElement {
-  const documents = assetDetails?.metadata?.filter(
-    (entry) => entry.type === 'document'
-  );
+  const documents = assetDetails?.details?.docs || [];
 
   const { paginatedItems: paginatedDocuments, ...paginationController } =
-    useLocalPagination(documents || []);
+    useLocalPagination<AssetDocument>(documents);
 
   if (isLoading) {
     return <GenericTableSkeleton columnCount={5} rowCount={5} />;
@@ -64,7 +63,7 @@ export function DocumentsTab({
           <TableBody>
             {paginatedDocuments.length > 0 ? (
               paginatedDocuments.map((doc) => (
-                <TableRow key={doc.id}>
+                <TableRow key={`doc-${doc.name}`}>
                   <TableCell>{doc.name}</TableCell>
                   <TableCell>{doc.type}</TableCell>
                   <TableCell>
@@ -82,9 +81,7 @@ export function DocumentsTab({
                       >
                         {doc.contentHash}
                       </Typography>
-                      {doc.contentHash && (
-                        <CopyButton text={doc.contentHash} size="small" />
-                      )}
+                      {doc.contentHash && <CopyButton text={doc.contentHash} />}
                     </Box>
                   </TableCell>
                   <TableCell>
@@ -101,7 +98,7 @@ export function DocumentsTab({
                       </Typography>
                       {doc.uri && (
                         <>
-                          <CopyButton text={doc.uri} size="small" />
+                          <CopyButton text={doc.uri} />
                           <Tooltip title="Open in new tab">
                             <IconButton
                               size="small"
@@ -131,4 +128,4 @@ export function DocumentsTab({
       <PaginationFooter paginationController={paginationController} />
     </>
   );
-} 
+}

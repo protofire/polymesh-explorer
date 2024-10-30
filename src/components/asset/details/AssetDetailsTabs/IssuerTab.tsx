@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, Typography, Stack } from '@mui/material';
-import { Asset } from '@/domain/entities/Asset';
+import { AssetDetails } from '@/domain/entities/Asset';
 
 interface IssuerTabProps {
-  asset: Asset;
+  asset: AssetDetails;
 }
 
 export function IssuerTab({ asset }: IssuerTabProps) {

@@ -5,7 +5,8 @@ import {
 } from '@polymeshassociation/polymesh-sdk/types';
 
 export interface Asset {
-  assetId: string;
+  assetId: string; // Hex format
+  assetUuid: string;
   ticker?: string;
   name: string;
   type: string;
@@ -29,11 +30,9 @@ export interface AssetMeta {
 
 export interface AssetDetails extends Asset {
   details?: {
-    assetId: string;
     assetIdentifiers: SecurityIdentifier[];
     collectionId?: number;
     collectionKeys: CollectionKey[];
-    createdAt: Date | null;
     fundingRound: string | null;
     metaData: AssetMeta[];
     requiredMediators: string[];
