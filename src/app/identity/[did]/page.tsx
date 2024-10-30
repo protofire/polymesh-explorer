@@ -11,6 +11,7 @@ import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { useGetIdentityAssetPermissions } from '@/hooks/identity/useGetIdentityAssetPermissions';
 
 export default function IdentityPage() {
   const { currentNetworkConfig } = useNetworkProvider();
@@ -30,6 +31,8 @@ export default function IdentityPage() {
   } = useGetSettlementInstructionsByDid({
     identity,
   });
+  const { data: assetPermissions, isFetched: isAssetPermissionsFetched } = 
+    useGetIdentityAssetPermissions({ identity });
 
   if (!identityLoading && identity === null) {
     notFound();
@@ -55,6 +58,8 @@ export default function IdentityPage() {
               isLoadingTransactions={!isTransactionDataFetched}
               settlementInstructions={settlementsInstructions}
               isLoadingSettlementInstructions={!isFetchedSettlementInstructions}
+              assetPermissions={assetPermissions}
+              isLoadingAssetPermissions={!isAssetPermissionsFetched}
             />
           </Box>
         )}

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
+import { AssetWithGroup } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { AssetTabTable } from './AssetTabTable';
@@ -20,6 +21,7 @@ interface IdentityDetailsTabsProps {
   isLoadingTransactions: boolean;
   settlementInstructions: GroupedSettlementInstructions | null | undefined;
   isLoadingSettlementInstructions: boolean;
+  assetPermissions: AssetWithGroup;
 }
 
 export function IdentityDetailsTabs({
@@ -31,6 +33,7 @@ export function IdentityDetailsTabs({
   isLoadingTransactions,
   settlementInstructions,
   isLoadingSettlementInstructions,
+  assetPermissions,
 }: IdentityDetailsTabsProps) {
   const [value, setValue] = useState(0);
   const { ownedAssets, heldAssets } = identity;
