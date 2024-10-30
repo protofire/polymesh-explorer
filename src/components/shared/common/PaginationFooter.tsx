@@ -80,9 +80,11 @@ export function PaginationFooter({
     (event: unknown, newPage: number) => {
       if (newPage === 0) {
         pagination.goToFirstPage();
+      } else if (newPage === paginationInfo.currentPage - 1) {
+        return;
       } else if (newPage > paginationInfo.currentPage - 1) {
         pagination.goToNextPage(event, newPage);
-      } else if (newPage < paginationInfo.currentPage - 1) {
+      } else {
         pagination.goToPreviousPage();
       }
     },
