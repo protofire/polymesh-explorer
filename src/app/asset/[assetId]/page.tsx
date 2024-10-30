@@ -11,7 +11,11 @@ import { useGetAssetDetails } from '@/hooks/asset/useGetAssetDetails';
 
 export default function AssetPage() {
   const { assetId } = useParams();
-  const { data: asset, isLoading, error } = useGetAsset(assetId as string);
+  const {
+    data: asset,
+    isLoading,
+    error,
+  } = useGetAsset({ assetId: assetId as string });
   const details = useGetAssetDetails(asset);
 
   if (error) {

@@ -1,7 +1,7 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { ExtrinsicResponse, PageInfo } from './types';
 import { pageInfoFragment } from './fragments';
-import { extrinsicNodeToExtrinsicTransaction } from './transformer';
+import { extrinsicNodeToExtrinsicTransaction } from '@/services/repositories/nodeTransformers';
 import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
 
 export class ExtrinsicGraphRepo {

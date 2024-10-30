@@ -1,6 +1,6 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { Venue } from '@/domain/entities/Venue';
-import { venueNodeToVenue } from './transformer';
+import { venueNodeToVenue } from '@/services/repositories/nodeTransformers';
 import { pageInfoFragment, venueFragment } from './fragments';
 import { PageInfo, VenueListResponse, VenueResponse } from './types';
 

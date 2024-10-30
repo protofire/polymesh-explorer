@@ -13,6 +13,7 @@ interface SearchFieldProps {
   isLoading?: boolean;
   onRefetch?: () => void;
   size?: 'big' | 'small';
+  paddingTop?: string;
 }
 
 export function SearchTextInput({
@@ -23,6 +24,7 @@ export function SearchTextInput({
   isLoading,
   onRefetch,
   size = 'small',
+  paddingTop,
 }: SearchFieldProps) {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] =
@@ -72,6 +74,7 @@ export function SearchTextInput({
     <StyledAutocomplete
       freeSolo
       open={open}
+      sx={paddingTop !== undefined ? { pt: paddingTop } : undefined}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
       inputValue={value}
