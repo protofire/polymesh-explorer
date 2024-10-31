@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { PortfoliosTab } from './PortfoliosTab';
@@ -12,6 +12,7 @@ import { AssetTabTable } from './AssetTabTable';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
+import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -64,17 +65,29 @@ export function IdentityDetailsTabs({
           )}
           <Tab
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
                 Portfolios
-                {isLoadingPortfolios && (
-                  <CircularProgress size="1rem" sx={{ ml: 1 }} />
-                )}
+                {isLoadingPortfolios && <LoadingDot />}
               </Box>
             }
           />
           <Tab label="History" />
-          <Tab label="Settlement Instructions" />
-          <Tab label="Assets Permissions" />
+          <Tab
+            label={
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                Settlement Instructions
+                {isLoadingSettlementInstructions && <LoadingDot />}
+              </Box>
+            }
+          />
+          <Tab
+            label={
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                Assets Permissions
+                {isLoadingAssetPermissions && <LoadingDot />}
+              </Box>
+            }
+          />
         </Tabs>
       </Box>
       <GenericTabPanel
@@ -88,7 +101,7 @@ export function IdentityDetailsTabs({
           isLoading={isLoadingTransactions}
         />
       </GenericTabPanel>
-      <GenericTabPanel value={value} index={0} labelKey="identity">
+      <GenericTabPanel value={value} index={0} labelKey="identity-assets">
         <AssetTabTable assets={heldAssets} />
       </GenericTabPanel>
       <GenericTabPanel
@@ -103,7 +116,7 @@ export function IdentityDetailsTabs({
         />
       </GenericTabPanel>
       {isAssetIssuer && (
-        <GenericTabPanel value={value} index={1} labelKey="identity">
+        <GenericTabPanel value={value} index={1} labelKey="issued-assets">
           <AssetTabTable assets={ownedAssets} />
         </GenericTabPanel>
       )}
@@ -117,7 +130,11 @@ export function IdentityDetailsTabs({
           isLoading={isLoadingSettlementInstructions}
         />
       </GenericTabPanel>
-      <GenericTabPanel value={value} index={5} labelKey="asset-permissions">
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 5 : 4}
+        labelKey="asset-permissions"
+      >
         <AssetPermissionsTab
           assetPermissions={assetPermissions}
           isLoading={isLoadingAssetPermissions}

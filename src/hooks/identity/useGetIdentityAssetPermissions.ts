@@ -11,14 +11,11 @@ import {
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from '@/domain/entities/Identity';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-
-interface Asset {
-  ticker: string;
-  id: string;
-}
+import { Asset } from '@/domain/entities/Asset';
+import { hexToUuid } from '@/services/polymesh/hexToUuid';
 
 interface AssetPermissions {
-  asset: Asset;
+  asset: Partial<Asset>;
   permissions: {
     type: string;
     description: string;
@@ -154,8 +151,14 @@ const transformPermissions = async (
 
   return {
     asset: {
-      ticker: assetDetails.ticker || '',
-      id: asset.toHuman(),
+      assetId: asset.id,
+      assetUuid: hexToUuid(asset.id),
+      ticker: assetDetails.ticker,
+      name: assetDetails.name,
+      type: assetDetails.assetType,
+      ownerDid: assetDetails.owner.did,
+      isNftCollection: assetDetails.nonFungible,
+      isDivisible: assetDetails.isDivisible,
     },
     permissions: {
       type: groupType,

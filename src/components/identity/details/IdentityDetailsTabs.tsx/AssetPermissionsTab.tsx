@@ -19,6 +19,7 @@ import { truncateAddress } from '@/services/polymesh/address';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 
 interface AssetPermissionsTabProps {
   assetPermissions?: AssetPermissions[];
@@ -90,16 +91,8 @@ export function AssetPermissionsTab({
   assetPermissions,
   isLoading,
 }: AssetPermissionsTabProps): React.ReactElement {
-  if (isLoading) {
+  if (isLoading || assetPermissions === undefined) {
     return <GenericTableSkeleton columnCount={4} rowCount={5} />;
-  }
-
-  if (!assetPermissions?.length) {
-    return (
-      <Box p={2}>
-        <Typography>No asset permissions found for this identity</Typography>
-      </Box>
-    );
   }
 
   return (
@@ -107,16 +100,23 @@ export function AssetPermissionsTab({
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell width="50px" /> {/* Column for expand/collapse */}
+            <TableCell padding="none" sx={{ width: '50px' }} />
             <TableCell>Asset</TableCell>
             <TableCell>Group Type</TableCell>
             <TableCell>Permissions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {assetPermissions.map((permission) => (
-            <Row key={permission.asset.assetId} permission={permission} />
-          ))}
+          {assetPermissions.length > 0 ? (
+            assetPermissions.map((permission) => (
+              <Row key={permission.asset.assetId} permission={permission} />
+            ))
+          ) : (
+            <NoDataAvailableTBody
+              colSpan={4}
+              message="No settlement instructions found."
+            />
+          )}
         </TableBody>
       </Table>
     </TableContainer>
