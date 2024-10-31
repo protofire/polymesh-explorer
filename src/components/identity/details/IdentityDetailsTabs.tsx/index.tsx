@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
-import { Tabs, Tab, Box, CircularProgress } from '@mui/material';
+import React from 'react';
+import { Box, Tab, Tabs } from '@mui/material';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
-import { AssetTabTable } from './AssetTabTable';
 import { PortfoliosTab } from './PortfoliosTab';
 import { TransactionsTabTable } from './TransactionsTab';
-import { CounterBadge } from '@/components/shared/common/CounterBadge';
-import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { SettlementInstructionsTab } from './SettlementInstructionsTab';
+import { AssetPermissionsTab } from './AssetPermissionsTab';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
-import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs.tsx/SettlementInstructionsTab';
+import { CounterBadge } from '@/components/shared/common/CounterBadge';
+import { AssetTabTable } from './AssetTabTable';
+import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { AssetPermissions } from '@/domain/entities/AssetPermissions';
+import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -20,6 +23,8 @@ interface IdentityDetailsTabsProps {
   isLoadingTransactions: boolean;
   settlementInstructions: GroupedSettlementInstructions | null | undefined;
   isLoadingSettlementInstructions: boolean;
+  assetPermissions?: AssetPermissions[];
+  isLoadingAssetPermissions: boolean;
 }
 
 export function IdentityDetailsTabs({
@@ -31,12 +36,14 @@ export function IdentityDetailsTabs({
   isLoadingTransactions,
   settlementInstructions,
   isLoadingSettlementInstructions,
-}: IdentityDetailsTabsProps) {
-  const [value, setValue] = useState(0);
+  assetPermissions,
+  isLoadingAssetPermissions,
+}: IdentityDetailsTabsProps): React.ReactElement {
+  const [value, setValue] = React.useState(0);
   const { ownedAssets, heldAssets } = identity;
   const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
@@ -58,36 +65,43 @@ export function IdentityDetailsTabs({
           )}
           <Tab
             label={
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
                 Portfolios
-                {isLoadingPortfolios && (
-                  <CircularProgress size="1rem" sx={{ ml: 1 }} />
-                )}
+                {isLoadingPortfolios && <LoadingDot />}
               </Box>
             }
           />
           <Tab label="History" />
-          <Tab label="Settlement Instructions" />
+          <Tab
+            label={
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                Settlement Instructions
+                {isLoadingSettlementInstructions && <LoadingDot />}
+              </Box>
+            }
+          />
+          <Tab
+            label={
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                Assets Permissions
+                {isLoadingAssetPermissions && <LoadingDot />}
+              </Box>
+            }
+          />
         </Tabs>
       </Box>
-      <GenericTabPanel
-        value={value}
-        index={isAssetIssuer ? 3 : 2}
-        labelKey="identity"
-      >
-        <TransactionsTabTable
-          paginatedTransactions={paginatedTransactions}
-          subscanUrl={subscanUrl}
-          isLoading={isLoadingTransactions}
-        />
-      </GenericTabPanel>
-      <GenericTabPanel value={value} index={0} labelKey="identity">
+      <GenericTabPanel value={value} index={0} labelKey="identity-assets">
         <AssetTabTable assets={heldAssets} />
       </GenericTabPanel>
+      {isAssetIssuer && (
+        <GenericTabPanel value={value} index={1} labelKey="issued-assets">
+          <AssetTabTable assets={ownedAssets} />
+        </GenericTabPanel>
+      )}
       <GenericTabPanel
         value={value}
         index={isAssetIssuer ? 2 : 1}
-        labelKey="identity"
+        labelKey="identity-portfolios"
       >
         <PortfoliosTab
           portfolios={portfolios}
@@ -95,19 +109,35 @@ export function IdentityDetailsTabs({
           subscanUrl={subscanUrl}
         />
       </GenericTabPanel>
-      {isAssetIssuer && (
-        <GenericTabPanel value={value} index={1} labelKey="identity">
-          <AssetTabTable assets={ownedAssets} />
-        </GenericTabPanel>
-      )}
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 3 : 2}
+        labelKey="identity-transactions-history"
+      >
+        <TransactionsTabTable
+          paginatedTransactions={paginatedTransactions}
+          subscanUrl={subscanUrl}
+          isLoading={isLoadingTransactions}
+        />
+      </GenericTabPanel>
       <GenericTabPanel
         value={value}
         index={isAssetIssuer ? 4 : 3}
-        labelKey="identity"
+        labelKey="identity-settlement-instructions"
       >
         <SettlementInstructionsTab
           instructions={settlementInstructions}
           isLoading={isLoadingSettlementInstructions}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 5 : 4}
+        labelKey="asset-permissions"
+      >
+        <AssetPermissionsTab
+          assetPermissions={assetPermissions}
+          isLoading={isLoadingAssetPermissions}
         />
       </GenericTabPanel>
     </Box>
