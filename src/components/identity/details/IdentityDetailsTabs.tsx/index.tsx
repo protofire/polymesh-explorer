@@ -1,53 +1,26 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, CircularProgress, Tab, Tabs } from '@mui/material';
 import { Identity } from '@/domain/entities/Identity';
-import { Portfolio } from '@/domain/entities/Portfolio';
+import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { PortfoliosTab } from './PortfoliosTab';
-import { TransactionsTab } from './TransactionsTab';
+import { TransactionsTabTable } from './TransactionsTab';
 import { SettlementInstructionsTab } from './SettlementInstructionsTab';
 import { AssetPermissionsTab } from './AssetPermissionsTab';
-import { PaginatedTransactionHistory } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { PaginatedResult } from '@/hooks/usePaginationControllerGraphQl';
-import { SettlementInstruction } from '@/domain/entities/SettlementInstruction';
 import { AssetPermissions } from '@/types/asset';
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
+import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
+import { CounterBadge } from '@/components/shared/common/CounterBadge';
+import { AssetTabTable } from './AssetTabTable';
+import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
   subscanUrl: string;
-  portfolios: Portfolio[];
+  portfolios: PortfolioWithAssets[];
   isLoadingPortfolios: boolean;
-  paginatedTransactions?: PaginatedTransactionHistory;
+  paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
   isLoadingTransactions: boolean;
-  settlementInstructions?: PaginatedResult<SettlementInstruction>;
+  settlementInstructions: GroupedSettlementInstructions | null | undefined;
   isLoadingSettlementInstructions: boolean;
   assetPermissions?: AssetPermissions[];
   isLoadingAssetPermissions: boolean;
@@ -66,6 +39,8 @@ export function IdentityDetailsTabs({
   isLoadingAssetPermissions,
 }: IdentityDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
+  const { ownedAssets, heldAssets } = identity;
+  const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -74,43 +49,80 @@ export function IdentityDetailsTabs({
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="identity details tabs"
-        >
-          <Tab label="Portfolios" {...a11yProps(0)} />
-          <Tab label="Transactions" {...a11yProps(1)} />
-          <Tab label="Settlement Instructions" {...a11yProps(2)} />
-          <Tab label="Asset Permissions" {...a11yProps(3)} />
+        <Tabs value={value} onChange={handleChange} aria-label="asset tabs">
+          <Tab label="Assets" />
+          {isAssetIssuer && (
+            <Tab
+              label={
+                <Box sx={{ paddingRight: '20px' }}>
+                  <CounterBadge count={ownedAssets.length}>
+                    Issued Assets
+                  </CounterBadge>
+                </Box>
+              }
+            />
+          )}
+          <Tab
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                Portfolios
+                {isLoadingPortfolios && (
+                  <CircularProgress size="1rem" sx={{ ml: 1 }} />
+                )}
+              </Box>
+            }
+          />
+          <Tab label="History" />
+          <Tab label="Settlement Instructions" />
+          <Tab label="Assets Permissions" />
         </Tabs>
       </Box>
-      <TabPanel value={value} index={0}>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 3 : 2}
+        labelKey="identity"
+      >
+        <TransactionsTabTable
+          paginatedTransactions={paginatedTransactions}
+          subscanUrl={subscanUrl}
+          isLoading={isLoadingTransactions}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel value={value} index={0} labelKey="identity">
+        <AssetTabTable assets={heldAssets} />
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 2 : 1}
+        labelKey="identity"
+      >
         <PortfoliosTab
           portfolios={portfolios}
           isLoading={isLoadingPortfolios}
-          identity={identity}
-        />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <TransactionsTab
-          paginatedTransactions={paginatedTransactions}
-          isLoading={isLoadingTransactions}
           subscanUrl={subscanUrl}
         />
-      </TabPanel>
-      <TabPanel value={value} index={2}>
+      </GenericTabPanel>
+      {isAssetIssuer && (
+        <GenericTabPanel value={value} index={1} labelKey="identity">
+          <AssetTabTable assets={ownedAssets} />
+        </GenericTabPanel>
+      )}
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 4 : 3}
+        labelKey="identity"
+      >
         <SettlementInstructionsTab
-          settlementInstructions={settlementInstructions}
+          instructions={settlementInstructions}
           isLoading={isLoadingSettlementInstructions}
         />
-      </TabPanel>
-      <TabPanel value={value} index={3}>
+      </GenericTabPanel>
+      <GenericTabPanel value={value} index={5} labelKey="asset-permissions">
         <AssetPermissionsTab
           assetPermissions={assetPermissions}
           isLoading={isLoadingAssetPermissions}
         />
-      </TabPanel>
+      </GenericTabPanel>
     </Box>
   );
 }

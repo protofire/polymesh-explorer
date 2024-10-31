@@ -31,7 +31,7 @@ export default function IdentityPage() {
   } = useGetSettlementInstructionsByDid({
     identity,
   });
-  const { data: assetPermissions, isFetched: isAssetPermissionsFetched } = 
+  const { data: assetPermissions, isFetched: isAssetPermissionsFetched } =
     useGetIdentityAssetPermissions({ identity });
 
   if (!identityLoading && identity === null) {

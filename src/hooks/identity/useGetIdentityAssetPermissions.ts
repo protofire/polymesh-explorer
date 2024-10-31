@@ -3,18 +3,27 @@ import {
   AssetWithGroup,
   KnownPermissionGroup,
   CustomPermissionGroup,
+  GroupPermissions,
+  TxTag,
+  ModuleName,
+  TransactionPermissions,
+  PermissionGroupType,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from '@/domain/entities/Identity';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 
 interface Asset {
   ticker: string;
-  did: string;
+  id: string;
 }
 
 interface AssetPermissions {
   asset: Asset;
-  permissions: string[];
+  permissions: {
+    type: string;
+    description: string;
+    details: string[];
+  };
   groupType:
     | 'Full'
     | 'Custom'
@@ -22,8 +31,6 @@ interface AssetPermissions {
     | 'PolymeshV1Caa'
     | 'PolymeshV1Pia';
 }
-
-type PermissionGroup = KnownPermissionGroup | CustomPermissionGroup;
 
 interface UseGetIdentityAssetPermissionsProps {
   identity?: Identity | null;
@@ -36,47 +43,124 @@ interface UseGetIdentityAssetPermissionsReturn {
   error: Error | null;
 }
 
-const transformPermissions = (
-  assetWithGroup: AssetWithGroup,
-): AssetPermissions => {
-  const { asset, group } = assetWithGroup;
+const isCustomPermissionGroup = (
+  group: KnownPermissionGroup | CustomPermissionGroup,
+): group is CustomPermissionGroup => {
+  return 'id' in group;
+};
 
-  let permissions: string[] = [];
+const getKnownGroupDescription = (
+  type: PermissionGroupType,
+): { description: string; details: string[] } => {
+  switch (type) {
+    case 'Full':
+      return {
+        description: 'Full Access',
+        details: ['Can execute all asset transactions'],
+      };
+    case 'ExceptMeta':
+      return {
+        description: 'All except meta transactions',
+        details: [
+          'Can execute all asset transactions except meta transactions',
+        ],
+      };
+    case 'PolymeshV1Caa':
+      return {
+        description: 'Corporate Actions Agent',
+        details: [
+          'Can execute corporate actions',
+          'Can manage corporate ballots',
+          'Can handle capital distribution',
+        ],
+      };
+    case 'PolymeshV1Pia':
+      return {
+        description: 'Primary Issuance Agent',
+        details: [
+          'Can issue tokens',
+          'Can redeem tokens',
+          'Can perform controller transfers',
+          'Can manage STOs (except investing)',
+        ],
+      };
+    default:
+      return {
+        description: 'Unknown Permission Group',
+        details: [],
+      };
+  }
+};
+
+const formatCustomPermissions = (
+  permissions: GroupPermissions,
+): { description: string; details: string[] } => {
+  const details: string[] = [];
+
+  if (permissions.transactions) {
+    const txPerms = permissions.transactions as TransactionPermissions;
+    const { values, type } = txPerms;
+
+    if (type === 'Include') {
+      details.push(
+        ...values.map((v: TxTag | ModuleName) => `Can execute: ${String(v)}`),
+      );
+    } else {
+      details.push(
+        ...values.map(
+          (v: TxTag | ModuleName) => `Cannot execute: ${String(v)}`,
+        ),
+      );
+    }
+
+    if (txPerms.exceptions) {
+      details.push(
+        ...txPerms.exceptions.map((v: TxTag) => `Exception: ${String(v)}`),
+      );
+    }
+  }
+
+  if (permissions.transactionGroups) {
+    details.push(
+      ...permissions.transactionGroups.map(
+        (group) => `Has all permissions in group: ${group}`,
+      ),
+    );
+  }
+
+  return {
+    description: 'Custom Permissions Group',
+    details: details.length ? details : ['No specific permissions defined'],
+  };
+};
+
+const transformPermissions = async (
+  assetWithGroup: AssetWithGroup,
+): Promise<AssetPermissions> => {
+  const { asset, group } = assetWithGroup;
+  const assetDetails = await asset.details();
+
+  let permissionsInfo: { description: string; details: string[] };
   let groupType: AssetPermissions['groupType'] = 'Full';
 
-  if ('permissions' in group) {
-    permissions = group.permissions.values;
+  if (isCustomPermissionGroup(group)) {
+    const groupPermissions = await group.getPermissions();
+    permissionsInfo = formatCustomPermissions(groupPermissions);
     groupType = 'Custom';
   } else {
-    switch (group.type) {
-      case 'Full':
-        permissions = ['Full Access'];
-        groupType = 'Full';
-        break;
-      case 'ExceptMeta':
-        permissions = ['All except meta transactions'];
-        groupType = 'ExceptMeta';
-        break;
-      case 'PolymeshV1Caa':
-        permissions = ['Corporate Actions'];
-        groupType = 'PolymeshV1Caa';
-        break;
-      case 'PolymeshV1Pia':
-        permissions = ['Primary Issuance'];
-        groupType = 'PolymeshV1Pia';
-        break;
-      default:
-        permissions = ['Unknown'];
-        groupType = 'Full';
-    }
+    groupType = group.type;
+    permissionsInfo = getKnownGroupDescription(group.type);
   }
 
   return {
     asset: {
-      ticker: asset.ticker || '',
-      did: asset.did || '',
+      ticker: assetDetails.ticker || '',
+      id: asset.toHuman(),
     },
-    permissions,
+    permissions: {
+      type: groupType,
+      ...permissionsInfo,
+    },
     groupType,
   };
 };
@@ -99,7 +183,10 @@ export const useGetIdentityAssetPermissions = ({
         });
 
       const assetPermissions = await polymeshIdentity.assetPermissions.get();
-      return assetPermissions.map(transformPermissions);
+      const transformedPermissions = await Promise.all(
+        assetPermissions.map(transformPermissions),
+      );
+      return transformedPermissions;
     },
     enabled: !!identity && !!polymeshService?.polymeshSdk,
   });
