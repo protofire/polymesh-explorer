@@ -20,6 +20,8 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import { useLocalPagination } from '@/hooks/useLocalPagination';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface AssetPermissionsTabProps {
   assetPermissions?: AssetPermissions[];
@@ -91,34 +93,41 @@ export function AssetPermissionsTab({
   assetPermissions,
   isLoading,
 }: AssetPermissionsTabProps): React.ReactElement {
+  const { paginatedItems, ...paginationController } = useLocalPagination(
+    assetPermissions || [],
+  );
+
   if (isLoading || assetPermissions === undefined) {
     return <GenericTableSkeleton columnCount={4} rowCount={5} />;
   }
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell padding="none" sx={{ width: '50px' }} />
-            <TableCell>Asset</TableCell>
-            <TableCell>Group Type</TableCell>
-            <TableCell>Permissions</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {assetPermissions.length > 0 ? (
-            assetPermissions.map((permission) => (
-              <Row key={permission.asset.assetId} permission={permission} />
-            ))
-          ) : (
-            <NoDataAvailableTBody
-              colSpan={4}
-              message="No settlement instructions found."
-            />
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell padding="none" sx={{ width: '50px' }} />
+              <TableCell>Asset</TableCell>
+              <TableCell>Group Type</TableCell>
+              <TableCell>Permissions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {assetPermissions.length > 0 ? (
+              assetPermissions.map((permission) => (
+                <Row key={permission.asset.assetId} permission={permission} />
+              ))
+            ) : (
+              <NoDataAvailableTBody
+                colSpan={4}
+                message="No settlement instructions found."
+              />
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <PaginationFooter paginationController={paginationController} />
+    </>
   );
 }

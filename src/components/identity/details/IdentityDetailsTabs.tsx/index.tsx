@@ -90,30 +90,8 @@ export function IdentityDetailsTabs({
           />
         </Tabs>
       </Box>
-      <GenericTabPanel
-        value={value}
-        index={isAssetIssuer ? 3 : 2}
-        labelKey="identity"
-      >
-        <TransactionsTabTable
-          paginatedTransactions={paginatedTransactions}
-          subscanUrl={subscanUrl}
-          isLoading={isLoadingTransactions}
-        />
-      </GenericTabPanel>
       <GenericTabPanel value={value} index={0} labelKey="identity-assets">
         <AssetTabTable assets={heldAssets} />
-      </GenericTabPanel>
-      <GenericTabPanel
-        value={value}
-        index={isAssetIssuer ? 2 : 1}
-        labelKey="identity"
-      >
-        <PortfoliosTab
-          portfolios={portfolios}
-          isLoading={isLoadingPortfolios}
-          subscanUrl={subscanUrl}
-        />
       </GenericTabPanel>
       {isAssetIssuer && (
         <GenericTabPanel value={value} index={1} labelKey="issued-assets">
@@ -122,8 +100,30 @@ export function IdentityDetailsTabs({
       )}
       <GenericTabPanel
         value={value}
+        index={isAssetIssuer ? 2 : 1}
+        labelKey="identity-portfolios"
+      >
+        <PortfoliosTab
+          portfolios={portfolios}
+          isLoading={isLoadingPortfolios}
+          subscanUrl={subscanUrl}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={value}
+        index={isAssetIssuer ? 3 : 2}
+        labelKey="identity-transactions-history"
+      >
+        <TransactionsTabTable
+          paginatedTransactions={paginatedTransactions}
+          subscanUrl={subscanUrl}
+          isLoading={isLoadingTransactions}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={value}
         index={isAssetIssuer ? 4 : 3}
-        labelKey="identity"
+        labelKey="identity-settlement-instructions"
       >
         <SettlementInstructionsTab
           instructions={settlementInstructions}
