@@ -6,12 +6,12 @@ import { PortfoliosTab } from './PortfoliosTab';
 import { TransactionsTabTable } from './TransactionsTab';
 import { SettlementInstructionsTab } from './SettlementInstructionsTab';
 import { AssetPermissionsTab } from './AssetPermissionsTab';
-import { AssetPermissions } from '@/types/asset';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { AssetTabTable } from './AssetTabTable';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
 import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
