@@ -11,9 +11,11 @@ import { splitCamelCase } from '@/utils/formatString';
 
 export interface UseGetAssetDetailsReturn {
   assetDetails: AssetDetails | null;
+  assetSdk: AssetSdk | undefined;
   status: {
     isLoadingSdkClass: boolean;
     isLoadingDetails: boolean;
+    isFetchedDetails: boolean;
   };
   error: {
     sdkClassError: Error | null;
@@ -134,9 +136,11 @@ export const useGetAssetDetails = (
 
   return {
     assetDetails,
+    assetSdk,
     status: {
       isLoadingSdkClass: sdkClassQuery.isLoading,
       isLoadingDetails: assetDetailsQuery.isLoading,
+      isFetchedDetails: assetDetailsQuery.isFetched,
     },
     error: {
       sdkClassError: sdkClassQuery.error as Error | null,

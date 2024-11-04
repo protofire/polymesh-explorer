@@ -8,6 +8,7 @@ import {
   PortfolioMovementNode,
   VenueNode,
   ExtrinsicNode,
+  AssetHolderNode,
 } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
@@ -16,6 +17,7 @@ import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
 import { hexToUuid } from '../polymesh/hexToUuid';
+import { AssetHolder } from '@/domain/entities/AssetHolder';
 
 export function assetNodeToAsset(assetNode: AssetNode): Asset {
   return {
@@ -25,15 +27,18 @@ export function assetNodeToAsset(assetNode: AssetNode): Asset {
     name: assetNode.name,
     type: assetNode.type,
     totalSupply:
-      assetNode.totalSupply &&
-      balanceToBigNumber(
-        assetNode.totalSupply as unknown as Balance,
-      ).toString(),
+      !assetNode.isNftCollection && assetNode.totalSupply
+        ? balanceToBigNumber(
+            assetNode.totalSupply as unknown as Balance,
+          ).toString()
+        : assetNode.totalSupply,
     ownerDid: assetNode.owner.did,
     isNftCollection: assetNode.isNftCollection,
     isDivisible: assetNode.isDivisible,
-    totalHolders: assetNode.holders.totalCount.toString(),
-    createdAt: new Date(`${assetNode.createdAt}Z`),
+    totalHolders: assetNode.isNftCollection
+      ? assetNode.nftHolders.totalCount.toString()
+      : assetNode.holders.totalCount.toString(),
+    createdAt: new Date(`${assetNode.createdBlock.datetime}Z`),
     totalDocuments: assetNode.documents.totalCount.toString(),
   };
 }
@@ -143,5 +148,16 @@ export function extrinsicNodeToExtrinsicTransaction(
       hash: node.block.hash,
       datetime: new Date(`${node.block.datetime}Z`),
     },
+  };
+}
+
+export function assetHolderNodeToAssetHolder(
+  node: AssetHolderNode,
+): AssetHolder {
+  return {
+    identityDid: node.identityId,
+    balance:
+      node.amount &&
+      balanceToBigNumber(node.amount as unknown as Balance).toString(),
   };
 }

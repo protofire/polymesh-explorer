@@ -22,6 +22,7 @@ import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import CopyButton from '@/components/shared/common/CopyButton';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface DocumentsTabProps {
   assetDetails: AssetDetails | null;
@@ -71,16 +72,7 @@ export function DocumentsTab({
                   </TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center" gap={1}>
-                      <Typography
-                        variant="body2"
-                        sx={{
-                          maxWidth: '200px',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {doc.contentHash}
-                      </Typography>
+                      {truncateAddress(doc.contentHash, 5)}
                       {doc.contentHash && <CopyButton text={doc.contentHash} />}
                     </Box>
                   </TableCell>
