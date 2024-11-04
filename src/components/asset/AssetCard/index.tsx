@@ -1,7 +1,17 @@
-import React from 'react';
-import { Box, Typography, Stack, Skeleton, Tooltip } from '@mui/material';
+import React, { useState } from 'react';
+import {
+  Box,
+  Typography,
+  Stack,
+  Skeleton,
+  Tooltip,
+  IconButton,
+  SvgIcon,
+} from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import BlockIcon from '@mui/icons-material/Block';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { BigNumber } from '@polymeshassociation/polymesh-sdk';
 import { Asset } from '@/domain/entities/Asset';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
@@ -18,6 +28,8 @@ export function AssetCard({
   asset,
   isLoading,
 }: AssetCardProps): React.ReactElement {
+  const [showUuid, setShowUuid] = useState(true);
+
   if (isLoading || !asset) {
     return (
       <Box>
@@ -50,11 +62,26 @@ export function AssetCard({
       <Box display="flex" alignItems="center" mt={2}>
         <Box display="flex" flexDirection="column">
           <Typography variant="body1" color="textSecondary">
-            Asset ID:
+            {showUuid ? 'Asset Id:' : 'Asset Id (Hex format):'}
           </Typography>
-          <Box display="flex" gap={1}>
-            <Typography variant="body1">{asset.assetId}</Typography>
-            <CopyButton text={asset.assetId || ''} />
+          <Box display="flex" gap={1} alignItems="center">
+            <Typography variant="body1">
+              {showUuid ? asset.assetUuid : asset.assetId}
+            </Typography>
+            <CopyButton
+              text={showUuid ? asset.assetUuid || '' : asset.assetId || ''}
+            />
+            <Tooltip
+              title={`Display ${showUuid ? 'Asset Id Hex format' : 'Asset Id'}`}
+            >
+              <IconButton size="small" onClick={() => setShowUuid(!showUuid)}>
+                <SvgIcon
+                  component={SwapHorizIcon}
+                  inheritViewBox
+                  sx={{ fontSize: '1.1rem', color: '#bdbdbd' }}
+                />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Box>
       </Box>
@@ -133,12 +160,14 @@ export function AssetCard({
           </Box>
         </Stack>
 
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} pb={2}>
           <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
               Total Supply
             </Typography>
-            <Typography variant="h4">{asset.totalSupply}</Typography>
+            <Typography variant="h4">
+              {new BigNumber(asset.totalSupply).toFormat()}
+            </Typography>
           </Box>
           <Box flex={1}>
             <Typography variant="body2" color="textSecondary">

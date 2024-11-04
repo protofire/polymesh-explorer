@@ -10,7 +10,6 @@ export interface AssetNode {
   name: string;
   type: string;
   totalSupply: string;
-  createdAt: string;
   isNftCollection: boolean;
   isDivisible: boolean;
   owner: {
@@ -21,6 +20,13 @@ export interface AssetNode {
   };
   holders: {
     totalCount: number;
+  };
+  nftHolders: {
+    totalCount: number;
+  };
+  createdBlock: {
+    blockId: string;
+    datetime: string;
   };
 }
 
@@ -35,6 +41,36 @@ export interface AssetListResponse {
     totalCount: number;
     pageInfo: PageInfo;
     nodes: AssetNode[];
+  };
+}
+
+// Asset Holders
+export interface AssetHolderNode {
+  identityId: string;
+  amount: string;
+  assetId: string;
+}
+
+export interface AssetHoldersResponse {
+  assetHolders: {
+    totalCount: number;
+    pageInfo: PageInfo;
+    nodes: AssetHolderNode[];
+  };
+}
+
+// Nft Holders
+export interface NftHoldersNode {
+  identityId: string;
+  nftIds: Array<string>;
+  assetId: string;
+}
+
+export interface NftHoldersResponse {
+  nftHolders: {
+    totalCount: number;
+    pageInfo: PageInfo;
+    nodes: NftHoldersNode[];
   };
 }
 

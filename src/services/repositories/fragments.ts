@@ -7,7 +7,6 @@ export const assetFragment = gql`
     name
     type
     totalSupply
-    createdAt
     isNftCollection
     isDivisible
     owner {
@@ -18,6 +17,14 @@ export const assetFragment = gql`
     }
     holders {
       totalCount
+    }
+    nftHolders {
+      totalCount
+    }
+    createdBlock {
+      blockId
+      datetime
+      hash
     }
   }
 `;
