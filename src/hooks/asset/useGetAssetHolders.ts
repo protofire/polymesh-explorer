@@ -1,5 +1,4 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { Asset as AssetSdk } from '@polymeshassociation/polymesh-sdk/types';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
 import { useCallback, useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
