@@ -1,35 +1,35 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
-import { PortfolioMovementsGraphRepo } from '@/services/repositories/PortfolioMovementsGraphRepo';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { AssetTransactionGraphRepo } from '@/services/repositories/AssetTransactionGraphRepo';
 
-export type UseListAssetTransactionsReturn = PaginatedData<AssetTransaction[]>;
+export type UseListPortfolioAssetsTransactionsReturn = PaginatedData<
+  AssetTransaction[]
+>;
 
-interface UseListAssetTransactionsParams {
+interface UseListPortfolioAssetsTransactionsParams {
   portfolioId: Portfolio['id'] | null;
   portfolios: Portfolio[];
   nonFungible: boolean;
 }
 
-export function useListAssetTransactions({
+export function useListPortfolioAssetsTransactions({
   portfolioId,
   portfolios,
   nonFungible,
-}: UseListAssetTransactionsParams): UseQueryResult<UseListAssetTransactionsReturn> {
+}: UseListPortfolioAssetsTransactionsParams): UseQueryResult<UseListPortfolioAssetsTransactionsReturn> {
   const { graphQlClient } = usePolymeshSdkService();
-  const portfolioMovementsRepo = useMemo(() => {
+  const assetTransactionsRepo = useMemo(() => {
     if (!graphQlClient) return null;
-    return new PortfolioMovementsGraphRepo(graphQlClient);
+    return new AssetTransactionGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  const paginationController = usePaginationControllerGraphQl({
-    useOffset: true,
-  });
+  const paginationController = usePaginationControllerGraphQl();
 
   const portfoliosMap = useMemo(() => {
     return portfolios.reduce(
@@ -46,18 +46,18 @@ export function useListAssetTransactions({
   }, [portfolios]);
 
   const fetchAssetTransactions = useCallback(async () => {
-    if (!portfolioMovementsRepo || !portfolioId) {
+    if (!assetTransactionsRepo || !portfolioId) {
       throw new Error(
         'PortfolioMovementsRepo is not initialized or portfolioId is null',
       );
     }
 
     try {
-      const result = await portfolioMovementsRepo.getAssetTransactions(
-        portfolioId,
+      const result = await assetTransactionsRepo.getAssetTransactions(
+        { portfolioId },
         paginationController.paginationInfo.pageSize,
+        paginationController.paginationInfo.cursor || undefined,
         nonFungible,
-        paginationController.paginationInfo.offset,
       );
 
       paginationController.setPageInfo({
@@ -78,21 +78,25 @@ export function useListAssetTransactions({
       throw e;
     }
   }, [
-    portfolioMovementsRepo,
+    assetTransactionsRepo,
     portfolioId,
     paginationController,
     nonFungible,
     portfoliosMap,
   ]);
 
-  return useQuery<AssetTransaction[], Error, UseListAssetTransactionsReturn>({
+  return useQuery<
+    AssetTransaction[],
+    Error,
+    UseListPortfolioAssetsTransactionsReturn
+  >({
     queryKey: [
       'useListAssetTransactions',
       graphQlClient,
       portfolioId,
       nonFungible,
       paginationController.paginationInfo.pageSize,
-      paginationController.paginationInfo.offset,
+      paginationController.paginationInfo.cursor,
     ],
     queryFn: fetchAssetTransactions,
     select: useCallback(
@@ -102,6 +106,6 @@ export function useListAssetTransactions({
       }),
       [paginationController],
     ),
-    enabled: !!graphQlClient && !!portfolioMovementsRepo && !!portfolioId,
+    enabled: !!graphQlClient && !!assetTransactionsRepo && !!portfolioId,
   });
 }

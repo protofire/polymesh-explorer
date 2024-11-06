@@ -205,6 +205,10 @@ export interface AssetTransactionNode {
   eventId: string;
   instructionId: string | null;
   instructionMemo: string | null;
+  fundingRound: string | null;
+  instruction: null | {
+    venueId: string;
+  };
 }
 
 export interface AssetTransactionsResponse {

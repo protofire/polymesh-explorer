@@ -36,8 +36,8 @@ importers:
         specifier: ^0.41.1
         version: 0.41.1(@babel/core@7.25.2)(@polkadot/keyring@13.1.1(@polkadot/util-crypto@12.6.2(@polkadot/util@12.6.2))(@polkadot/util@12.6.2))(@polkadot/util-crypto@12.6.2(@polkadot/util@12.6.2))(@polkadot/util@12.6.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@polymeshassociation/polymesh-sdk':
-        specifier: 26.0.0-beta.3
-        version: 26.0.0-beta.3(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
+        specifier: 26.1.0
+        version: 26.1.0(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)
       '@tanstack/react-query':
         specifier: ^5.55.4
         version: 5.55.4(react@18.3.1)
@@ -1275,8 +1275,8 @@ packages:
     resolution: {integrity: sha512-cGZWo7K5eRRQCRl2LrcyCYsrc3lRbTlixZh3AzgU8uX4wASVGRlNWi/Hf4TtHNe1ExCDmxabJzdIsABIfrr7xw==}
     engines: {node: '>=18'}
 
-  '@polymeshassociation/polymesh-sdk@26.0.0-beta.3':
-    resolution: {integrity: sha512-ylxgLimDVZFEZymHlTg/26ZIUl/Ui2hUph3G+AfTevQxIf+ShRjXnZk+RZIrplHhUTFdRA31RcxZiTZePigpIg==}
+  '@polymeshassociation/polymesh-sdk@26.1.0':
+    resolution: {integrity: sha512-0I6/CwAFxE67Rb8JenEiHnzZObTou4dKpnR4esQZpiRh+DLnzrplk1OMihfccsTFISVYGGf2OdYiNGasGuaMSw==}
 
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
@@ -5107,7 +5107,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@polymeshassociation/polymesh-sdk@26.0.0-beta.3(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
+  '@polymeshassociation/polymesh-sdk@26.1.0(@types/react@18.3.5)(bufferutil@4.0.8)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(utf-8-validate@5.0.10)':
     dependencies:
       '@apollo/client': 3.11.8(@types/react@18.3.5)(graphql@16.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@polkadot/api': 11.2.1(bufferutil@4.0.8)(utf-8-validate@5.0.10)

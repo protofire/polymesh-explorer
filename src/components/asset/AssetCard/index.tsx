@@ -62,7 +62,7 @@ export function AssetCard({
       <Box display="flex" alignItems="center" mt={2}>
         <Box display="flex" flexDirection="column">
           <Typography variant="body1" color="textSecondary">
-            {showUuid ? 'Asset Id:' : 'Asset Id (Hex format):'}
+            {showUuid ? 'Asset Id:' : 'Asset Id (0x hex format):'}
           </Typography>
           <Box display="flex" gap={1} alignItems="center">
             <Typography variant="body1">
@@ -72,7 +72,7 @@ export function AssetCard({
               text={showUuid ? asset.assetUuid || '' : asset.assetId || ''}
             />
             <Tooltip
-              title={`Display ${showUuid ? 'Asset Id Hex format' : 'Asset Id'}`}
+              title={`${showUuid ? 'Asset Id in 0x + 32 hex format' : 'Asset Id in UUID 8-4-4-4-12 format'}`}
             >
               <IconButton size="small" onClick={() => setShowUuid(!showUuid)}>
                 <SvgIcon

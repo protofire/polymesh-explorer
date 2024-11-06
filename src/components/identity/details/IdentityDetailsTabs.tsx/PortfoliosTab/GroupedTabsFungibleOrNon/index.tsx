@@ -7,10 +7,10 @@ import { TabAssetTransactionsTable } from './TabAssetTransactionsTable';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { UseListPortfolioMovementsReturn } from '@/hooks/portfolio/useListPortfolioMovements';
-import { UseListAssetTransactionsReturn } from '@/hooks/portfolio/useListAssetTransactions';
 import { useGetIdentityNfts } from '@/hooks/identity/useGetIdentityNfts';
 import { TabNftAssets } from './TabNftAssets';
 import { TabNftCollections } from './TabNftCollections';
+import { UseListPortfolioAssetsTransactionsReturn } from '@/hooks/portfolio/useListPortfolioAssetsTransactions';
 
 interface GroupedTabsFungibleOrNonProps {
   assetType: AssetTypeSelected;
@@ -20,7 +20,7 @@ interface GroupedTabsFungibleOrNonProps {
   portfolioMovements: UseListPortfolioMovementsReturn | undefined;
   isLoadingMovements: boolean;
   isFetchingMovements: boolean;
-  assetTransactions: UseListAssetTransactionsReturn | undefined;
+  assetTransactions: UseListPortfolioAssetsTransactionsReturn | undefined;
   isLoadingTransactions: boolean;
   isFetchingTransactions: boolean;
 }

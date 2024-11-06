@@ -21,7 +21,7 @@ export interface UseListAssetsReturn extends PaginatedData<Asset[]> {
 }
 
 export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
-  const { graphQlClient } = usePolymeshSdkService();
+  const { graphQlClient, polymeshService } = usePolymeshSdkService();
   const assetService = useMemo(() => {
     if (!graphQlClient) return null;
     return new AssetGraphRepo(graphQlClient);
@@ -57,7 +57,7 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
       customReportError(e);
       throw e;
     }
-  }, [assetService, paginationController, criteriaController]);
+  }, [assetService, criteriaController, paginationController]);
 
   return useQuery<Asset[], Error, UseListAssetsReturn>({
     queryKey: [
@@ -76,6 +76,6 @@ export function useListAssets(): UseQueryResult<UseListAssetsReturn> {
       }),
       [paginationController, criteriaController],
     ),
-    enabled: !!graphQlClient && !!assetService,
+    enabled: !!graphQlClient && !!assetService && !!polymeshService,
   });
 }

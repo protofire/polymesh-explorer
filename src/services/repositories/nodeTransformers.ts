@@ -126,6 +126,7 @@ export function assetTransactionNodeToAssetTransaction(
     eventIdx: node.eventIdx,
     eventId: node.eventId,
     instructionId: node.instructionId || undefined,
+    venueId: node.instruction?.venueId || undefined,
     memo: node.instructionMemo || undefined,
   };
 }

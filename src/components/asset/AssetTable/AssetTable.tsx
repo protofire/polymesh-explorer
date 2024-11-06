@@ -85,7 +85,7 @@ export function AssetTable({
               <TableCell>Asset Type</TableCell>
               <TableCell>Total Supply</TableCell>
               <TableCell>Owner</TableCell>
-              <TableCell>Documents</TableCell>
+              <TableCell>Holders</TableCell>
               <TableCell>Created At</TableCell>
             </TableRow>
           </TableHead>
@@ -135,7 +135,7 @@ export function AssetTable({
                       {truncateAddress(asset.ownerDid, 5)}
                     </GenericLink>
                   </TableCell>
-                  <TableCell>{asset.totalDocuments}</TableCell>
+                  <TableCell>{asset.totalHolders}</TableCell>
                   <TableCell>
                     <FormattedDate date={asset.createdAt} />
                   </TableCell>
