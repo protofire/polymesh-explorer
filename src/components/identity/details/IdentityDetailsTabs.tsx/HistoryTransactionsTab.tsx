@@ -19,17 +19,17 @@ import { ROUTES } from '@/config/routes';
 import { truncateAddress } from '@/services/polymesh/address';
 import { CheckBooleanField } from '@/components/shared/fieldAttributes/CheckBooleanField';
 
-interface TransactionsTabTableProps {
+interface HistoryTransactionsTabTableProps {
   paginatedTransactions: PaginatedData<ExtrinsicTransaction[]> | undefined;
   isLoading: boolean;
   subscanUrl: string;
 }
 
-export function TransactionsTabTable({
+export function HistoryTransactionsTabTable({
   paginatedTransactions,
   isLoading,
   subscanUrl,
-}: TransactionsTabTableProps) {
+}: HistoryTransactionsTabTableProps) {
   if (isLoading || paginatedTransactions === undefined) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
   }

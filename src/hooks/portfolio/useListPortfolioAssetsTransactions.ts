@@ -29,9 +29,7 @@ export function useListPortfolioAssetsTransactions({
     return new AssetTransactionGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
-  const paginationController = usePaginationControllerGraphQl({
-    useOffset: true,
-  });
+  const paginationController = usePaginationControllerGraphQl();
 
   const portfoliosMap = useMemo(() => {
     return portfolios.reduce(
@@ -56,10 +54,10 @@ export function useListPortfolioAssetsTransactions({
 
     try {
       const result = await assetTransactionsRepo.getAssetTransactions(
-        portfolioId,
+        { portfolioId },
         paginationController.paginationInfo.pageSize,
+        paginationController.paginationInfo.cursor || undefined,
         nonFungible,
-        paginationController.paginationInfo.offset,
       );
 
       paginationController.setPageInfo({
@@ -98,7 +96,7 @@ export function useListPortfolioAssetsTransactions({
       portfolioId,
       nonFungible,
       paginationController.paginationInfo.pageSize,
-      paginationController.paginationInfo.offset,
+      paginationController.paginationInfo.cursor,
     ],
     queryFn: fetchAssetTransactions,
     select: useCallback(

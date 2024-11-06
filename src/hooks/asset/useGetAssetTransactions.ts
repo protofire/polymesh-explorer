@@ -1,59 +1,25 @@
 import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import {
-  Asset as AssetSdk,
-  HistoricAssetTransaction,
-  HistoricNftTransaction,
-  ResultSet,
-  DefaultPortfolio,
-  NumberedPortfolio,
-  Nft,
-  EventIdEnum,
   VenueFilteringDetails,
+  Asset as AssetSdk,
 } from '@polymeshassociation/polymesh-sdk/types';
-import { BigNumber } from '@polymeshassociation/polymesh-sdk';
-import { useCallback } from 'react';
+import { useMemo } from 'react';
 import { Asset } from '@/domain/entities/Asset';
 import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '../usePaginationControllerGraphQl';
 import { PaginationController } from '@/domain/ui/PaginationInfo';
-
-export interface AssetTransactionFromAsset {
-  transactionId: string;
-  timestamp: Date;
-  from: string | null;
-  to: string | null;
-  amount: string;
-  event: EventIdEnum;
-  venue?: string;
-  fundingRound?: string;
-  instructionId?: string;
-  instructionMemo?: string;
-  nfts?: string[];
-}
+import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
+import { AssetTransactionGraphRepo } from '@/services/repositories/AssetTransactionGraphRepo';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 interface Props {
   asset: Asset;
   assetSdk: AssetSdk | undefined;
 }
 
-const getPortfolioDid = (
-  portfolio: DefaultPortfolio | NumberedPortfolio | null,
-): string | null => {
-  if (!portfolio) return null;
-  return portfolio.owner.did;
-};
-
-const generateTransactionId = (
-  blockNumber: BigNumber,
-  eventIndex: BigNumber,
-  extrinsicIndex: BigNumber,
-): string => {
-  return `${blockNumber.toString()}-${eventIndex.toString()}-${extrinsicIndex.toString()}`;
-};
-
 export interface UseGetAssetTransactionsReturn {
   transactions: {
-    data: AssetTransactionFromAsset[] | undefined;
+    data: AssetTransaction[] | undefined;
     isLoading: boolean;
     error: Error | null;
   };
@@ -71,136 +37,74 @@ export const useGetAssetTransactions = ({
   asset,
   assetSdk,
 }: Props): UseGetAssetTransactionsReturn => {
+  const { graphQlClient } = usePolymeshSdkService();
+  const assetTransactionsRepo = useMemo(() => {
+    if (!graphQlClient) return null;
+    return new AssetTransactionGraphRepo(graphQlClient);
+  }, [graphQlClient]);
   const paginationController = usePaginationControllerGraphQl({
     useOffset: true,
   });
 
-  const transformNftTransaction = useCallback(
-    (tx: HistoricNftTransaction): AssetTransactionFromAsset => {
-      return {
-        transactionId: generateTransactionId(
-          tx.blockNumber,
-          tx.eventIndex,
-          tx.extrinsicIndex,
-        ),
-        timestamp: tx.blockDate,
-        from: getPortfolioDid(tx.from),
-        to: getPortfolioDid(tx.to),
-        amount: tx.nfts.length.toString(),
-        event: tx.event,
-        venue: tx.asset.id.toString(),
-        fundingRound: tx.fundingRound,
-        instructionId: tx.instructionId?.toString(),
-        instructionMemo: tx.instructionMemo,
-        nfts: tx.nfts.map((nft: Nft) => nft.id.toString()),
-      };
-    },
-    [],
-  );
-
-  const transformFungibleTransaction = useCallback(
-    (tx: HistoricAssetTransaction): AssetTransactionFromAsset => {
-      return {
-        transactionId: generateTransactionId(
-          tx.blockNumber,
-          tx.eventIndex,
-          tx.extrinsicIndex,
-        ),
-        timestamp: tx.blockDate,
-        from: getPortfolioDid(tx.from),
-        to: getPortfolioDid(tx.to),
-        amount: tx.amount.toString(),
-        event: tx.event,
-        venue: tx.asset.id.toString(),
-        fundingRound: tx.fundingRound,
-        instructionId: tx.instructionId?.toString(),
-        instructionMemo: tx.instructionMemo,
-      };
-    },
-    [],
-  );
-
   const results = useQueries({
     queries: [
       {
-        queryKey: ['venueFiltering', assetSdk?.toHuman()],
+        queryKey: ['venueFiltering', asset.assetId],
         queryFn: async () => {
           if (!assetSdk) {
             throw new Error('Asset SDK not initialized');
           }
           return assetSdk.getVenueFilteringDetails();
         },
-        enabled: !!assetSdk,
+        enabled: !!asset.assetId && !!assetSdk,
       },
       {
         queryKey: [
           'assetTransactions',
-          asset?.assetId,
+          asset.assetId,
           paginationController.paginationInfo.pageSize,
           paginationController.paginationInfo.cursor,
         ],
         queryFn: async () => {
-          if (!assetSdk) {
-            throw new Error('Asset SDK not initialized');
+          if (!assetTransactionsRepo) {
+            throw new Error('AssetTransactionGraphRepo not initialized');
           }
 
           try {
-            const history = await assetSdk.getTransactionHistory({
-              size: new BigNumber(paginationController.paginationInfo.pageSize),
-              start: paginationController.paginationInfo.offset
-                ? new BigNumber(paginationController.paginationInfo.offset)
-                : undefined,
+            const result = await assetTransactionsRepo.getAssetTransactions(
+              { assetId: asset.assetId },
+              paginationController.paginationInfo.pageSize,
+              paginationController.paginationInfo.cursor || undefined,
+              false,
+            );
+
+            paginationController.setPageInfo({
+              totalCount: result.totalCount,
+              hasNextPage: result.pageInfo.hasNextPage,
+              hasPreviousPage: result.pageInfo.hasPreviousPage,
+              startCursor: result.pageInfo.startCursor,
+              endCursor: result.pageInfo.endCursor,
             });
 
-            if ('count' in history) {
-              paginationController.setPageInfo({
-                totalCount: history.count?.toNumber() || 0,
-                hasNextPage: history.next !== null,
-                hasPreviousPage:
-                  paginationController.paginationInfo.offset !== 0,
-                startCursor: history.next?.toString() || null,
-                endCursor: history.next?.toString() || null,
-              });
-            }
-
-            const transactions = asset.isNftCollection
-              ? (history as ResultSet<HistoricNftTransaction>).data.map(
-                  transformNftTransaction,
-                )
-              : (history as ResultSet<HistoricAssetTransaction>).data.map(
-                  transformFungibleTransaction,
-                );
-
-            return transactions;
+            return result.transactions;
           } catch (error) {
             customReportError(error);
             throw error;
           }
         },
-        enabled: !!assetSdk || !!asset || !!paginationController,
+        enabled: !!asset.assetId && !!assetTransactionsRepo,
       },
     ],
   }) as [
     UseQueryResult<VenueFilteringDetails, Error>,
-    UseQueryResult<AssetTransactionFromAsset[], Error>,
+    UseQueryResult<AssetTransaction[], Error>,
   ];
 
   const [venueFilteringQuery, transactionsQuery] = results;
 
-  const filteredTransactions =
-    transactionsQuery.data && venueFilteringQuery.data?.isEnabled
-      ? transactionsQuery.data.filter(
-          (tx) =>
-            tx.venue &&
-            venueFilteringQuery.data.allowedVenues.some(
-              (v) => v.toString() === tx.venue,
-            ),
-        )
-      : transactionsQuery.data;
-
   return {
     transactions: {
-      data: filteredTransactions,
+      data: transactionsQuery.data,
       isLoading: transactionsQuery.isLoading,
       error: transactionsQuery.error,
     },

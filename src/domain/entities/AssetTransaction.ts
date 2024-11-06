@@ -18,5 +18,7 @@ export interface AssetTransaction {
   eventIdx: number;
   eventId: string;
   instructionId?: string;
+  venueId?: string;
   memo?: string;
+  fundingRound?: string;
 }

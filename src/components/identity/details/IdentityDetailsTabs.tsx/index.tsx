@@ -3,7 +3,6 @@ import { Box, Tab, Tabs } from '@mui/material';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { PortfoliosTab } from './PortfoliosTab';
-import { TransactionsTabTable } from './TransactionsTab';
 import { SettlementInstructionsTab } from './SettlementInstructionsTab';
 import { AssetPermissionsTab } from './AssetPermissionsTab';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
@@ -13,6 +12,7 @@ import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransac
 import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
+import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -114,7 +114,7 @@ export function IdentityDetailsTabs({
         index={isAssetIssuer ? 3 : 2}
         labelKey="identity-transactions-history"
       >
-        <TransactionsTabTable
+        <HistoryTransactionsTabTable
           paginatedTransactions={paginatedTransactions}
           subscanUrl={subscanUrl}
           isLoading={isLoadingTransactions}

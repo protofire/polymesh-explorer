@@ -4,34 +4,63 @@ import { AssetTransactionsResponse, PageInfo } from './types';
 import { pageInfoFragment } from './fragments';
 import { assetTransactionNodeToAssetTransaction } from '@/services/repositories/nodeTransformers';
 
+type FilterType = {
+  portfolioId?: string;
+  assetId?: string;
+};
+
 export class AssetTransactionGraphRepo {
   constructor(private client: GraphQLClient) {}
 
+  private static buildFilter(filter: FilterType, nonFungible: boolean) {
+    if (filter.portfolioId) {
+      return `
+        or: [
+          {fromPortfolioId: {equalTo: "${filter.portfolioId}"}}
+          {toPortfolioId: {equalTo: "${filter.portfolioId}"}}
+        ]
+        amount: {
+          isNull: ${nonFungible}
+        }
+      `;
+    }
+
+    if (filter.assetId) {
+      return `
+        assetId: {equalTo: "${filter.assetId}"}
+        amount: {
+          isNull: ${nonFungible}
+        }
+      `;
+    }
+
+    throw new Error('Must provide portfolioId or assetId');
+  }
+
   async getAssetTransactions(
-    portfolioId: string,
+    filter: FilterType,
     pageSize: number,
+    after?: string,
     nonFungible: boolean = false,
-    offset: number = 0,
   ): Promise<{
     transactions: AssetTransaction[];
     totalCount: number;
     pageInfo: PageInfo;
   }> {
+    const filterConditions = AssetTransactionGraphRepo.buildFilter(
+      filter,
+      nonFungible,
+    );
+
     const query = gql`
       ${pageInfoFragment}
-      query ($pageSize: Int!, $offset: Int!) {
+      query ($pageSize: Int!, $after: Cursor) {
         assetTransactions(
           first: $pageSize
-          offset: $offset
+          after: $after
           orderBy: CREATED_AT_DESC
           filter: {
-            or: [
-              {fromPortfolioId: {equalTo: "${portfolioId}"}}
-              {toPortfolioId: {equalTo: "${portfolioId}"}}
-            ]
-            amount: {
-              isNull: ${nonFungible}
-            }
+            ${filterConditions}
           }
         ) {
           totalCount
@@ -53,8 +82,12 @@ export class AssetTransactionGraphRepo {
             eventId
             toPortfolioId
             fromPortfolioId
+            fundingRound
             instructionId
             instructionMemo
+    		instruction {
+				venueId
+			}
           }
         }
       }
@@ -62,7 +95,7 @@ export class AssetTransactionGraphRepo {
 
     const variables = {
       pageSize,
-      offset,
+      after,
     };
 
     const response = await this.client.request<AssetTransactionsResponse>(

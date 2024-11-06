@@ -30,6 +30,10 @@ import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSke
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { UseGetAssetTransactionsReturn } from '@/hooks/asset/useGetAssetTransactions';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
@@ -173,15 +177,17 @@ interface TransactionsTabProps {
   asset: Asset;
   assetTransactionsData: UseGetAssetTransactionsReturn;
   isLoadingSdkClass: boolean;
+  subscanUrl: string | undefined;
 }
 
 export function AssetTransactionsTab({
   asset,
   assetTransactionsData,
   isLoadingSdkClass,
+  subscanUrl,
 }: TransactionsTabProps): React.ReactElement {
   const [selectedVenue, setSelectedVenue] = useState<string>('all');
-  const [page, setPage] = useState(0);
+  const [, setPage] = useState(0);
 
   const {
     transactions: { data: transactionsData },
@@ -194,7 +200,7 @@ export function AssetTransactionsTab({
   const uniqueVenues = useMemo(() => {
     if (!transactionsData) return [];
     const venues = new Set(
-      transactionsData.map((tx) => tx.venue).filter(Boolean),
+      transactionsData.map((tx) => tx.venueId).filter(Boolean),
     );
     return Array.from(venues);
   }, [transactionsData]);
@@ -202,7 +208,7 @@ export function AssetTransactionsTab({
   const filteredTransactions = useMemo(() => {
     if (!transactionsData) return [];
     if (selectedVenue === 'all') return transactionsData;
-    return transactionsData.filter((tx) => tx.venue === selectedVenue);
+    return transactionsData.filter((tx) => tx.venueId === selectedVenue);
   }, [transactionsData, selectedVenue]);
 
   if (isLoading || isLoadingSdkClass) {
@@ -223,24 +229,31 @@ export function AssetTransactionsTab({
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Typography variant="h6">Asset Transactions</Typography>
         {uniqueVenues.length > 0 && (
-          <FormControl size="small" sx={{ minWidth: 200 }}>
-            <InputLabel>Filter by Venue</InputLabel>
-            <Select
-              value={selectedVenue}
-              onChange={(e) => {
-                setSelectedVenue(e.target.value);
-                setPage(0);
-              }}
-              label="Filter by Venue"
-            >
-              <MenuItem value="all">All Venues</MenuItem>
-              {uniqueVenues.map((venue) => (
-                <MenuItem key={venue} value={venue}>
-                  Venue {venue}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Box display="flex" alignItems="center">
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filter by Venue</InputLabel>
+              <Select
+                value={selectedVenue}
+                onChange={(e) => {
+                  setSelectedVenue(e.target.value);
+                  setPage(0);
+                }}
+                label="Filter by Venue"
+              >
+                <MenuItem value="all">All Venues</MenuItem>
+                {uniqueVenues.map((venue) => (
+                  <MenuItem key={venue} value={venue}>
+                    Venue {venue}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Tooltip title="Filtering applies only to the records shown in the table, not all blockchain transactions.">
+              <IconButton size="small">
+                <InfoIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </Box>
         )}
       </Box>
 
@@ -256,12 +269,13 @@ export function AssetTransactionsTab({
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell>Instruction</TableCell>
+                <TableCell>Venue</TableCell>
                 <TableCell>Date</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>From</TableCell>
                 <TableCell>To</TableCell>
                 <TableCell align="right">Amount</TableCell>
-                <TableCell>Venue</TableCell>
                 <TableCell align="center">Details</TableCell>
               </TableRow>
             </TableHead>
@@ -274,14 +288,32 @@ export function AssetTransactionsTab({
                 </TableRow>
               ) : (
                 filteredTransactions.map((tx) => {
-                  const eventInfo = getEventLabel(tx.event);
+                  const eventInfo = getEventLabel(tx.eventId as EventIdEnum);
+                  const fromDid = tx.fromId?.split('/')[0] || '';
+                  const toDid = tx.toId?.split('/')[0] || '';
+
                   return (
-                    <TableRow key={tx.transactionId} hover>
+                    <TableRow key={tx.id} hover>
                       <TableCell>
-                        {new Intl.DateTimeFormat('default', {
-                          dateStyle: 'medium',
-                          timeStyle: 'short',
-                        }).format(tx.timestamp)}
+                        <GenericLink
+                          href={`${subscanUrl}/block/${tx.createdBlock.blockId}?tab=event&event=${tx.id.replace('/', '-')}`}
+                          tooltipText="See on subscan"
+                          isExternal
+                        >
+                          {tx.instructionId}
+                        </GenericLink>
+                      </TableCell>
+                      <TableCell>
+                        {tx.venueId ? (
+                          <GenericLink href={`${ROUTES.Venue}/${tx.venueId}`}>
+                            {tx.venueId}
+                          </GenericLink>
+                        ) : (
+                          <EmptyDash />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <FormattedDate date={tx.createdBlock.datetime} />
                       </TableCell>
                       <TableCell>
                         <Chip
@@ -291,21 +323,17 @@ export function AssetTransactionsTab({
                         />
                       </TableCell>
                       <TableCell>
-                        {tx.from ? (
-                          <AccountOrDidTextField value={tx.from} isIdentity />
+                        {fromDid ? (
+                          <AccountOrDidTextField value={fromDid} isIdentity />
                         ) : (
-                          <Typography variant="body2" color="text.secondary">
-                            -
-                          </Typography>
+                          <EmptyDash />
                         )}
                       </TableCell>
                       <TableCell>
-                        {tx.to ? (
-                          <AccountOrDidTextField value={tx.to} isIdentity />
+                        {toDid ? (
+                          <AccountOrDidTextField value={toDid} isIdentity />
                         ) : (
-                          <Typography variant="body2" color="text.secondary">
-                            -
-                          </Typography>
+                          <EmptyDash />
                         )}
                       </TableCell>
                       <TableCell align="right">
@@ -317,23 +345,16 @@ export function AssetTransactionsTab({
                         >
                           {tx.amount}
                           {asset.isNftCollection &&
-                            tx.nfts &&
-                            tx.nfts.length > 0 && <NftTooltip nfts={tx.nfts} />}
+                            tx.nftIds &&
+                            tx.nftIds.length > 0 && (
+                              <NftTooltip nfts={tx.nftIds} />
+                            )}
                         </Stack>
-                      </TableCell>
-                      <TableCell>
-                        {tx.venue ? (
-                          `Venue ${tx.venue}`
-                        ) : (
-                          <Typography variant="body2" color="text.secondary">
-                            -
-                          </Typography>
-                        )}
                       </TableCell>
                       <TableCell align="center">
                         <TransactionDetailsTooltip
                           instructionId={tx.instructionId}
-                          instructionMemo={tx.instructionMemo}
+                          instructionMemo={tx.memo}
                           fundingRound={tx.fundingRound}
                         />
                       </TableCell>
