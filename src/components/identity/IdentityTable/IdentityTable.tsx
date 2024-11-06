@@ -25,6 +25,8 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { UseTransactionHistoryDidsAccountsResult } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { TransactionHistoryField } from './TransactionHistoryField';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity[]>;
@@ -43,6 +45,7 @@ export function IdentityTable({
     return <Typography color="error">Error: {error.message}</Typography>;
 
   const { data: identities, paginationController } = paginatedIdentities;
+  debugger;
 
   return (
     <Box>
@@ -91,38 +94,11 @@ export function IdentityTable({
                   {!isTransactionHistoryFetched ? (
                     <Skeleton variant="text" width={100} animation="wave" />
                   ) : (
-                    transactionHistory?.[identity.did]?.extrinsics?.[0] && (
-                      <Tooltip
-                        title={format(
-                          transactionHistory[identity.did].extrinsics[0].block
-                            .datetime,
-                          'PPpp',
-                        )}
-                      >
-                        <Box display="flex" alignItems="center">
-                          <Typography variant="body2" noWrap>
-                            {
-                              transactionHistory[identity.did].extrinsics[0]
-                                .moduleId
-                            }
-                          </Typography>
-                          {transactionHistory[identity.did].extrinsics[0]
-                            .success ? (
-                            <CheckCircleIcon
-                              color="success"
-                              fontSize="small"
-                              sx={{ ml: 1 }}
-                            />
-                          ) : (
-                            <CancelIcon
-                              color="error"
-                              fontSize="small"
-                              sx={{ ml: 1 }}
-                            />
-                          )}
-                        </Box>
-                      </Tooltip>
-                    )
+                    <TransactionHistoryField
+                      transaction={
+                        transactionHistory?.[identity.did]?.extrinsics?.[0]
+                      }
+                    />
                   )}
                 </TableCell>
               </TableRow>

@@ -78,7 +78,9 @@ export interface NftHoldersResponse {
 export interface IdentityNode {
   did: string;
   primaryAccount: string;
-  createdAt: string;
+  createdBlock: {
+    createdAt: string;
+  };
   secondaryAccounts: {
     totalCount: number;
     nodes: { address: string }[];
