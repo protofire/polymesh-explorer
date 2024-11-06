@@ -11,6 +11,8 @@ import { HoldersTab } from './HoldersTab';
 import { AssetTransactionsTab } from './AssetTransactionsTab';
 import { useGetAssetTransactions } from '@/hooks/asset/useGetAssetTransactions';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
+import { AssetPermissionsTab } from './AssetPermissionsTab';
+import { useGetAssetPermissions } from '@/hooks/asset/useGetAssetPermissions';
 
 interface AssetDetailsTabsProps {
   asset: Asset;
@@ -28,6 +30,15 @@ export function AssetDetailsTabs({
     asset,
     assetSdk,
   });
+  const {
+    data: assetPermissions,
+    isLoading: loadingPermissions,
+    isFetched: isFetchedPermissions,
+  } = useGetAssetPermissions({
+    asset,
+    assetSdk,
+  });
+  const isLoadingPermissions = loadingPermissions || !isFetchedPermissions;
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -68,6 +79,14 @@ export function AssetDetailsTabs({
             </Box>
           }
         />
+        <Tab
+          label={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              Asset Permissions
+              {(isLoadingDetails || isLoadingPermissions) && <LoadingDot />}
+            </Box>
+          }
+        />
       </Tabs>
 
       <GenericTabPanel value={value} index={0} labelKey="overview">
@@ -97,6 +116,12 @@ export function AssetDetailsTabs({
           assetDetails={assetDetails}
           isLoading={!status.isFetchedDetails || status.isLoadingDetails}
           error={error.detailsError || error.sdkClassError}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel value={value} index={4} labelKey="Permissions">
+        <AssetPermissionsTab
+          assetPermissions={assetPermissions}
+          isLoading={isLoadingDetails || isLoadingPermissions}
         />
       </GenericTabPanel>
     </>
