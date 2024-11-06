@@ -19,7 +19,7 @@
     "@mui/toolpad-core": "^0.1.51",
     "@polkadot/types": "^11.2.1",
     "@polkadot/ui-identicon": "^0.41.1",
-    "@polymeshassociation/polymesh-sdk": "26.0.0-beta.3",
+    "@polymeshassociation/polymesh-sdk": "26.1.0",
     "@tanstack/react-query": "^5.55.4",
     "@toolpad/core": "^0.7.0",
     "@toolpad/studio-runtime": "^0.7.0",

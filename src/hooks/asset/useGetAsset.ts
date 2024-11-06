@@ -27,13 +27,15 @@ export function useGetAsset({
         throw new Error('Asset service not initialized');
       }
 
-      if (!validation.isValid) {
+      if (!validation.isValid || !validation.normalizedId) {
         customReportError(validation.error);
         return null;
       }
 
       try {
-        const assetNode = await assetService.findByAssetId(assetId);
+        const assetNode = await assetService.findByAssetId(
+          validation.normalizedId,
+        );
         return assetNode;
       } catch (e) {
         customReportError(e);

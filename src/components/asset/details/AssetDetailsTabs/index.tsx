@@ -8,6 +8,8 @@ import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { useGetAssetHolders } from '@/hooks/asset/useGetAssetHolders';
 import { HoldersTab } from './HoldersTab';
+import { AssetTransactionsTab } from './AssetTransactionsTab';
+import { useGetAssetTransactions } from '@/hooks/asset/useGetAssetTransactions';
 
 interface AssetDetailsTabsProps {
   asset: Asset;
@@ -17,9 +19,13 @@ export function AssetDetailsTabs({
   asset,
 }: AssetDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
-  const { assetDetails, status, error } = useGetAssetDetails(asset);
+  const { assetDetails, assetSdk, status, error } = useGetAssetDetails(asset);
   const isLoadingDetails = !status.isFetchedDetails || status.isLoadingDetails;
   const { data: assetHolders } = useGetAssetHolders({ asset });
+  const assetTransactionsData = useGetAssetTransactions({
+    asset,
+    assetSdk,
+  });
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -44,7 +50,14 @@ export function AssetDetailsTabs({
             </Box>
           }
         />
-        <Tab label="Transactions" />
+        <Tab
+          label={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              Transactions
+              {isLoadingDetails && <LoadingDot />}
+            </Box>
+          }
+        />
         <Tab
           label={
             <Box sx={{ position: 'relative', display: 'inline-block' }}>
@@ -69,9 +82,13 @@ export function AssetDetailsTabs({
           isLoading={isLoadingDetails}
         />
       </GenericTabPanel>
-      {/* <GenericTabPanel value={value} index={2} labelKey="Transactions">
-        <TransactionsTab asset={asset} />
-      </GenericTabPanel> */}
+      <GenericTabPanel value={value} index={2} labelKey="Transactions">
+        <AssetTransactionsTab
+          asset={asset}
+          assetTransactionsData={assetTransactionsData}
+          isLoadingSdkClass={isLoadingDetails}
+        />
+      </GenericTabPanel>
       <GenericTabPanel value={value} index={3} labelKey="Documents">
         <DocumentsTab
           assetDetails={assetDetails}

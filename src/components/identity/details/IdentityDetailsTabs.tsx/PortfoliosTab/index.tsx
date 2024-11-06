@@ -9,13 +9,13 @@ import {
 } from '@mui/material';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
-import { useListAssetTransactions } from '@/hooks/portfolio/useListAssetTransactions';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
 import {
   AssetTypeSelected,
   AssetTypeToggleButton,
 } from './AssetTypeToggleButton';
 import { GroupedTabsFungibleOrNon } from './GroupedTabsFungibleOrNon';
+import { useListPortfolioAssetsTransactions } from '@/hooks/portfolio/useListPortfolioAssetsTransactions';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -45,7 +45,7 @@ export function PortfoliosTab({
     data: assetTransactions,
     isLoading: isLoadingTransactions,
     isFetching: isFetchingTransactions,
-  } = useListAssetTransactions({
+  } = useListPortfolioAssetsTransactions({
     portfolios,
     portfolioId: selectedPortfolio?.id || null,
     nonFungible: assetType === 'NonFungible',
