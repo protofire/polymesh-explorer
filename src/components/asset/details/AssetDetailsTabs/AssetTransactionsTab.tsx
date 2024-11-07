@@ -153,27 +153,6 @@ function TransactionDetailsTooltip({
   );
 }
 
-function NftTooltip({ nfts }: { nfts: string[] }): React.ReactElement {
-  return (
-    <Tooltip
-      title={
-        <Box>
-          <Typography variant="subtitle2">NFT IDs:</Typography>
-          {nfts.map((id) => (
-            <Typography key={id} variant="body2">
-              {id}
-            </Typography>
-          ))}
-        </Box>
-      }
-    >
-      <IconButton size="small">
-        <InfoIcon fontSize="small" />
-      </IconButton>
-    </Tooltip>
-  );
-}
-
 interface TransactionsTabProps {
   asset: Asset;
   assetTransactionsData: UseGetAssetTransactionsReturn;

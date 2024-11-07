@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Identity } from '@/domain/entities/Identity';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
-import { agentWithGroupToAssetPermissions, assetWithGroupToAssetPermissions } from '@/services/transformers/assetPermissionsTransformer';
+import { assetWithGroupToAssetPermissions } from '@/services/transformers/assetPermissionsTransformer';
 
 interface UseGetIdentityAssetPermissionsProps {
   identity?: Identity | null;
