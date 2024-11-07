@@ -45,7 +45,9 @@ export const identityFragment = gql`
   fragment IdentityFields on Identity {
     did
     primaryAccount
-    createdAt
+    createdBlock {
+      createdAt
+    }
     secondaryAccounts {
       totalCount
       nodes {

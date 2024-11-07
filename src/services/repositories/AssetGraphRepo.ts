@@ -59,7 +59,7 @@ export class AssetGraphRepo {
         assets(
           first: $first
           after: $after
-          orderBy: [CREATED_BLOCK_ID_DESC]
+          orderBy: [CREATED_AT_DESC]
           filter: { isNftCollection: { equalTo: $isNftCollection } }
         ) {
           totalCount
@@ -77,7 +77,7 @@ export class AssetGraphRepo {
       ${assetFragment}
       ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
-        assets(first: $first, after: $after, orderBy: [CREATED_BLOCK_ID_DESC]) {
+        assets(first: $first, after: $after, orderBy: [CREATED_AT_DESC]) {
           totalCount
           pageInfo {
             ...PageInfoFields

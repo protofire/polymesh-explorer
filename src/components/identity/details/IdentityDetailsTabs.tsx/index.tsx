@@ -4,7 +4,7 @@ import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { PortfoliosTab } from './PortfoliosTab';
 import { SettlementInstructionsTab } from './SettlementInstructionsTab';
-import { AssetPermissionsTab } from './AssetPermissionsTab';
+import { IdentityAssetPermissionsTab } from './IdentityAssetPermissionsTab';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { AssetTabTable } from './AssetTabTable';
@@ -135,7 +135,7 @@ export function IdentityDetailsTabs({
         index={isAssetIssuer ? 5 : 4}
         labelKey="asset-permissions"
       >
-        <AssetPermissionsTab
+        <IdentityAssetPermissionsTab
           assetPermissions={assetPermissions}
           isLoading={isLoadingAssetPermissions}
         />

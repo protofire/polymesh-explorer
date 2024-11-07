@@ -50,7 +50,7 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     secondaryAccounts: node.secondaryAccounts.nodes
       .filter((account) => account.address !== node.primaryAccount)
       .map((account) => account.address),
-    createdAt: new Date(`{node.createdAt}Z`),
+    createdAt: new Date(`${node.createdBlock.createdAt}Z`),
     claimsCount: node.claimsByTargetId.totalCount,
     assetsCount: node.heldAssets.totalCount + node.heldNfts.totalCount,
     venuesCount: node.venuesByOwnerId.totalCount,

@@ -23,7 +23,7 @@ import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailable
 import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
-interface AssetPermissionsTabProps {
+interface IdentityAssetPermissionsTabProps {
   assetPermissions?: AssetPermissions[];
   isLoading: boolean;
 }
@@ -89,10 +89,10 @@ function Row({ permission }: RowProps) {
   );
 }
 
-export function AssetPermissionsTab({
+export function IdentityAssetPermissionsTab({
   assetPermissions,
   isLoading,
-}: AssetPermissionsTabProps): React.ReactElement {
+}: IdentityAssetPermissionsTabProps): React.ReactElement {
   const { paginatedItems, ...paginationController } = useLocalPagination(
     assetPermissions || [],
   );

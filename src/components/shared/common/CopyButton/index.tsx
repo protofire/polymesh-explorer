@@ -19,7 +19,7 @@ function CopyButton({
   text: string;
   className?: string;
   children?: ReactNode;
-  initialToolTipText?: string;
+  initialToolTipText?: React.ReactNode;
   // eslint-disable-next-line react/no-unused-prop-types
   ariaLabel?: string;
   onCopy?: () => void;
@@ -63,7 +63,7 @@ function CopyButton({
       }}
     >
       <IconButton
-        aria-label={initialToolTipText}
+        aria-label={initialToolTipText as string}
         onClick={handleCopy}
         size="small"
         className={className}
