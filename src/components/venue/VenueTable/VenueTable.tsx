@@ -17,6 +17,7 @@ import { ROUTES } from '@/config/routes';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import { GenericLink } from '@/components/shared/common/GenericLink';
 
 interface VenueTableProps {
   paginatedVenues: PaginatedData<Venue[]>;
@@ -32,7 +33,7 @@ export function VenueTable({ paginatedVenues, error }: VenueTableProps) {
   return (
     <Box>
       <TableContainer component={Paper}>
-        <Table size="small">
+        <Table>
           <TableHead>
             <TableRow>
               <TableCell>ID</TableCell>
@@ -46,14 +47,16 @@ export function VenueTable({ paginatedVenues, error }: VenueTableProps) {
             {venues.map((venue) => (
               <TableRow key={venue.id}>
                 <TableCell>
-                  <Link href={`${ROUTES.Venue}/${venue.id}`}>{venue.id}</Link>
+                  <GenericLink href={`${ROUTES.Venue}/${venue.id}`}>
+                    {venue.id}
+                  </GenericLink>
                 </TableCell>
                 <TableCell>{venue.type}</TableCell>
                 <TableCell>{venue.details}</TableCell>
                 <TableCell>
-                  <Link href={`${ROUTES.Identity}/${venue.ownerId}`}>
+                  <GenericLink href={`${ROUTES.Identity}/${venue.ownerId}`}>
                     {truncateAddress(venue.ownerId)}
-                  </Link>
+                  </GenericLink>
                 </TableCell>
                 <TableCell>
                   <FormattedDate date={venue.createdAt} />

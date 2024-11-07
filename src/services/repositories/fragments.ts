@@ -36,8 +36,12 @@ export const venueFragment = gql`
     details
     type
     ownerId
-    createdAt
     type
+    createdBlock {
+      blockId
+      datetime
+      hash
+    }
   }
 `;
 
@@ -45,9 +49,6 @@ export const identityFragment = gql`
   fragment IdentityFields on Identity {
     did
     primaryAccount
-    createdBlock {
-      createdAt
-    }
     secondaryAccounts {
       totalCount
       nodes {
@@ -96,6 +97,11 @@ export const identityFragment = gql`
       nodes {
         parentId
       }
+    }
+    createdBlock {
+      blockId
+      datetime
+      hash
     }
   }
   ${assetFragment}

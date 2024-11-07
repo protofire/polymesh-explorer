@@ -9,8 +9,8 @@ import { LoadingSkeletonCard } from '@/components/shared/LoadingSkeletonCard/Loa
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 
 export default function VenueDetailPage() {
-  const { id } = useParams();
-  const { data: venue, isLoading, error } = useGetVenue(id as string);
+  const { venueId } = useParams();
+  const { data: venue, isLoading, error } = useGetVenue(venueId as string);
 
   if (error) {
     return <Typography color="error">Error: {error.message}</Typography>;
