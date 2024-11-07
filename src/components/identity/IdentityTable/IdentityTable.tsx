@@ -11,12 +11,8 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Tooltip,
   Skeleton,
 } from '@mui/material';
-import CancelIcon from '@mui/icons-material/Cancel';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import { format } from 'date-fns';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';
 import { Identity } from '@/domain/entities/Identity';
@@ -25,7 +21,6 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { UseTransactionHistoryDidsAccountsResult } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
-import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { TransactionHistoryField } from './TransactionHistoryField';
 
 interface IdentityTableProps {
@@ -45,7 +40,6 @@ export function IdentityTable({
     return <Typography color="error">Error: {error.message}</Typography>;
 
   const { data: identities, paginationController } = paginatedIdentities;
-  debugger;
 
   return (
     <Box>

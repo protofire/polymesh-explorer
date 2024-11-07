@@ -75,7 +75,7 @@ export const useGetAssetTransactions = ({
               { assetId: asset.assetId },
               paginationController.paginationInfo.pageSize,
               paginationController.paginationInfo.cursor || undefined,
-              false,
+              asset.isNftCollection,
             );
 
             paginationController.setPageInfo({

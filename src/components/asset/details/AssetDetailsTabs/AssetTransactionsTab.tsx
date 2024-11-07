@@ -34,6 +34,7 @@ import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
+import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
@@ -275,7 +276,9 @@ export function AssetTransactionsTab({
               <TableCell>Type</TableCell>
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
-              <TableCell align="right">Amount</TableCell>
+              <TableCell align="right">
+                {asset.isNftCollection ? 'Nft Ids' : 'Amount'}
+              </TableCell>
               <TableCell align="center">Details</TableCell>
             </TableRow>
           </TableHead>
@@ -347,12 +350,13 @@ export function AssetTransactionsTab({
                         justifyContent="flex-end"
                         alignItems="center"
                       >
-                        {tx.amount}
                         {asset.isNftCollection &&
-                          tx.nftIds &&
-                          tx.nftIds.length > 0 && (
-                            <NftTooltip nfts={tx.nftIds} />
-                          )}
+                        tx.nftIds &&
+                        tx.nftIds.length > 0 ? (
+                          <NftIdsDisplay nftIds={tx.nftIds} />
+                        ) : (
+                          tx.amount
+                        )}
                       </Stack>
                     </TableCell>
                     <TableCell align="center">

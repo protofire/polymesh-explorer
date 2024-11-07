@@ -14,7 +14,6 @@ import {
   AssetPermissions,
 } from '@/domain/entities/AssetPermissions';
 import { hexToUuid } from '../polymesh/hexToUuid';
-import { Asset } from '@/domain/entities/Asset';
 
 const isCustomPermissionGroup = (
   group: KnownPermissionGroup | CustomPermissionGroup,

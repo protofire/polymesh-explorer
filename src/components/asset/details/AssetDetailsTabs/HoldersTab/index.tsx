@@ -17,6 +17,7 @@ import {
   isAssetNonFungibleHolder,
 } from '@/domain/entities/AssetHolder';
 import { Asset } from '@/domain/entities/Asset';
+import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
 
 interface HoldersTabProps {
   assetHolders: PaginatedData<AssetHolder[]> | undefined;
@@ -72,7 +73,7 @@ export function HoldersTab({
                 </TableCell>
                 {isAssetNonFungibleHolder(holder) && (
                   <TableCell align="right">
-                    {holder.nftIds.join(', ')}
+                    <NftIdsDisplay nftIds={holder.nftIds} maxIdsToShow={5} />
                   </TableCell>
                 )}
                 <TableCell align="right">{holder.balance}</TableCell>
