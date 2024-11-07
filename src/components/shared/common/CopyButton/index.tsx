@@ -63,7 +63,7 @@ function CopyButton({
       }}
     >
       <IconButton
-        aria-label={initialToolTipText}
+        aria-label={initialToolTipText as string}
         onClick={handleCopy}
         size="small"
         className={className}
