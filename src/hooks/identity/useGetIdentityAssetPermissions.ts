@@ -3,6 +3,7 @@ import { Identity } from '@/domain/entities/Identity';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { assetWithGroupToAssetPermissions } from '@/services/transformers/assetPermissionsTransformer';
+import { customReportError } from '@/utils/customReportError';
 
 interface UseGetIdentityAssetPermissionsProps {
   identity?: Identity | null;
@@ -23,20 +24,25 @@ export const useGetIdentityAssetPermissions = ({
   const query = useQuery({
     queryKey: ['identityAssetPermissions', identity?.did],
     queryFn: async (): Promise<AssetPermissions[]> => {
-      if (!polymeshService?.polymeshSdk || !identity) {
-        throw new Error('Polymesh SDK not initialized');
+      try {
+        if (!polymeshService?.polymeshSdk || !identity) {
+          throw new Error('Polymesh SDK not initialized');
+        }
+
+        const polymeshIdentity =
+          await polymeshService.polymeshSdk.identities.getIdentity({
+            did: identity.did,
+          });
+
+        const assetPermissions = await polymeshIdentity.assetPermissions.get();
+        const transformedPermissions = await Promise.all(
+          assetPermissions.map(assetWithGroupToAssetPermissions),
+        );
+        return transformedPermissions;
+      } catch (error) {
+        customReportError(error);
+        throw error;
       }
-
-      const polymeshIdentity =
-        await polymeshService.polymeshSdk.identities.getIdentity({
-          did: identity.did,
-        });
-
-      const assetPermissions = await polymeshIdentity.assetPermissions.get();
-      const transformedPermissions = await Promise.all(
-        assetPermissions.map(assetWithGroupToAssetPermissions),
-      );
-      return transformedPermissions;
     },
     enabled: !!identity && !!polymeshService?.polymeshSdk,
   });
