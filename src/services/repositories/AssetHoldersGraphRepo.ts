@@ -67,7 +67,7 @@ export class AssetHoldersGraphRepo {
           first: $first
           after: $after
           orderBy: NFT_IDS_DESC
-          filter: { assetId: { equalTo: $assetId } }
+          filter: { assetId: { equalTo: $assetId }, nftIds: { notEqualTo: [] } }
         ) {
           totalCount
           pageInfo {

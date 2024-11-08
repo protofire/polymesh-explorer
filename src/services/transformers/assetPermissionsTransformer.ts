@@ -13,7 +13,7 @@ import {
   AssetIdentityPermissions,
   AssetPermissions,
 } from '@/domain/entities/AssetPermissions';
-import { hexToUuid } from '../polymesh/hexToUuid';
+import { uuidToHex } from '../polymesh/hexToUuid';
 
 const isCustomPermissionGroup = (
   group: KnownPermissionGroup | CustomPermissionGroup,
@@ -126,8 +126,8 @@ export const assetWithGroupToAssetPermissions = async (
 
   return {
     asset: {
-      assetId: asset.id,
-      assetUuid: hexToUuid(asset.id),
+      assetId: uuidToHex(asset.id),
+      assetUuid: asset.id,
       ticker: assetDetails.ticker,
       name: assetDetails.name,
       type: assetDetails.assetType,

@@ -19,6 +19,7 @@ import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
@@ -64,13 +65,17 @@ export function TabAssetTransactionsTable({
                 return (
                   <TableRow key={transaction.id}>
                     <TableCell>
-                      <GenericLink
-                        href={`${subscanUrl}/block/${transaction.createdBlock.blockId}?tab=event&event=${transaction.id.replace('/', '-')}`}
-                        tooltipText="See on subscan"
-                        isExternal
-                      >
-                        {transaction.instructionId}
-                      </GenericLink>
+                      {transaction.instructionId ? (
+                        <GenericLink
+                          href={`${subscanUrl}/block/${transaction.createdBlock.blockId}?tab=event&event=${transaction.id.replace('/', '-')}`}
+                          tooltipText="See on subscan"
+                          isExternal
+                        >
+                          {transaction.instructionId}
+                        </GenericLink>
+                      ) : (
+                        <EmptyDash />
+                      )}
                     </TableCell>
                     <TableCell>
                       <FormattedDate date={transaction.createdBlock.datetime} />
