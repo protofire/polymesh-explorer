@@ -35,8 +35,8 @@ export function AssetCard({
       <Box>
         <Typography variant="h4">Asset Details</Typography>
         <Box mt={2}>
-          <Skeleton variant="circular" width={42} height={42} />
           <Skeleton width="60%" />
+          <Skeleton width="40%" />
           <Skeleton width="40%" />
         </Box>
       </Box>

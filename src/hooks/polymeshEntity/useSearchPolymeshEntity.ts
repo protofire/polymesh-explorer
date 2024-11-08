@@ -11,6 +11,7 @@ import { Venue } from '@/domain/entities/Venue';
 import { Asset } from '@/domain/entities/Asset';
 import { IdentityGraphRepo } from '@/services/repositories/IdentityGraphRepo';
 import { uuidToHex } from '@/services/polymesh/hexToUuid';
+import { SettlementInstruction } from '@/domain/entities/SettlementInstruction';
 
 async function searchEntities(
   sdk: Polymesh,
@@ -98,6 +99,29 @@ async function searchEntities(
       }
     })(),
 
+    // Settlement Instruction search
+    (async () => {
+      if (Number(identifier)) {
+        try {
+          const instruction = await sdk.settlements.getInstruction({
+            id: new BigNumber(identifier),
+          });
+
+          results.push({
+            searchCriteria: {
+              searchTerm: identifier,
+              type: PolymeshEntityType.Settlement,
+            },
+            entity: {
+              id: instruction.id.toString(),
+            },
+          });
+        } catch (error) {
+          // Ignore error if venue is not found
+        }
+      }
+    })(),
+
     // Asset search
     (async () => {
       try {
@@ -151,7 +175,12 @@ async function searchEntities(
 
 export interface UseSearchPolymeshEntityResult {
   searchCriteria: SearchCriteria;
-  entity?: Partial<Account> | Identity | Venue | Partial<Asset>;
+  entity?:
+    | Partial<Account>
+    | Identity
+    | Venue
+    | Partial<Asset>
+    | Partial<SettlementInstruction>;
 }
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {

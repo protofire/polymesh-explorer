@@ -4,6 +4,7 @@ export const ROUTES = {
   Asset: '/asset',
   Identity: '/identity',
   Venue: '/venue',
+  Settlement: '/settlement',
 } as const;
 
 export type RouteKeys = keyof typeof ROUTES;

@@ -3,10 +3,17 @@ import { PageInfo } from '@/domain/ui/PaginationInfo';
 
 export type { PageInfo };
 
+interface CreatedBlockFields {
+  blockId: string;
+  datetime: string;
+  hash: string;
+}
+
 // Assets
 export interface AssetNode {
   id: string;
   ticker: string;
+  createdBlock: CreatedBlockFields;
   name: string;
   type: string;
   totalSupply: string;
@@ -23,10 +30,6 @@ export interface AssetNode {
   };
   nftHolders: {
     totalCount: number;
-  };
-  createdBlock: {
-    blockId: string;
-    datetime: string;
   };
 }
 
@@ -78,9 +81,7 @@ export interface NftHoldersResponse {
 export interface IdentityNode {
   did: string;
   primaryAccount: string;
-  createdBlock: {
-    createdAt: string;
-  };
+  createdBlock: CreatedBlockFields;
   secondaryAccounts: {
     totalCount: number;
     nodes: { address: string }[];
@@ -141,10 +142,10 @@ export interface IdentityListResponse {
 // Venue
 export interface VenueNode {
   id: string;
+  createdBlock: CreatedBlockFields;
   details: string;
   type: string;
   ownerId: string;
-  createdAt: string;
 }
 
 export interface VenueResponse {
@@ -243,4 +244,45 @@ export interface ExtrinsicResponse {
   totalCount: number;
   nodes: ExtrinsicNode[];
   pageInfo: PageInfo;
+}
+
+// Instruction
+export interface RawInstructionEvent {
+  id: string;
+  event: string;
+  createdBlock: {
+    id: string;
+    datetime: string;
+    hash: string;
+  };
+}
+
+export interface RawInstructionNode {
+  id: string;
+  status: string;
+  venue: {
+    id: string;
+    details: string;
+  };
+  createdBlock: {
+    id: string;
+    datetime: string;
+    hash: string;
+  };
+  events: {
+    nodes: RawInstructionEvent[];
+  };
+}
+
+export interface InstructionResponse {
+  instructions: {
+    nodes: RawInstructionNode[];
+  };
+}
+export interface InstructionListResponse {
+  instructions: {
+    totalCount: number;
+    nodes: RawInstructionNode[];
+    pageInfo: PageInfo;
+  };
 }

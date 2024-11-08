@@ -19,8 +19,7 @@ export default function NotFound() {
         Page Not Found
       </Typography>
       <Typography variant="body1" gutterBottom>
-        Sorry, the account you are looking for seems to be unassigned, <br />
-        it means that you do not have any associated identity.
+        Sorry, the account you are looking for seems no valid account address.
       </Typography>
       <Button
         component={Link}

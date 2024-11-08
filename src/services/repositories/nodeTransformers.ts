@@ -50,7 +50,7 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     secondaryAccounts: node.secondaryAccounts.nodes
       .filter((account) => account.address !== node.primaryAccount)
       .map((account) => account.address),
-    createdAt: new Date(`${node.createdBlock.createdAt}Z`),
+    createdAt: new Date(`${node.createdBlock.datetime}Z`),
     claimsCount: node.claimsByTargetId.totalCount,
     assetsCount: node.heldAssets.totalCount + node.heldNfts.totalCount,
     venuesCount: node.venuesByOwnerId.totalCount,
@@ -74,7 +74,7 @@ export function venueNodeToVenue(node: VenueNode): Venue {
     details: node.details,
     type: node.type,
     ownerId: node.ownerId,
-    createdAt: new Date(`${node.createdAt}Z`),
+    createdAt: new Date(`${node.createdBlock.datetime}Z`),
   };
 }
 

@@ -16,7 +16,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
@@ -28,6 +28,7 @@ import {
 } from '@/domain/entities/SettlementInstruction';
 import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 
 interface SettlementInstructionsTabProps {
   instructions: GroupedSettlementInstructions | null | undefined;
@@ -51,7 +52,11 @@ function Row({
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
         </TableCell>
-        <TableCell>{instruction.id}</TableCell>
+        <TableCell>
+          <GenericLink href={`${ROUTES.Settlement}/${instruction.id}`}>
+            {instruction.id}
+          </GenericLink>
+        </TableCell>
         <TableCell>
           <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
             {instruction.venueId}
@@ -64,7 +69,7 @@ function Row({
           {instruction.createdAt ? (
             <FormattedDate date={instruction.createdAt.toISOString()} />
           ) : (
-            '-'
+            <EmptyDash />
           )}
         </TableCell>
         <TableCell>
@@ -92,7 +97,7 @@ function Row({
                 <TableBody>
                   {instruction.legs.map((leg: SettlementLeg) => (
                     <TableRow
-                      key={`leg-${instruction.venueId}-${instruction.id}`}
+                      key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
                     >
                       <TableCell>
                         <SettlementLegDirectionField
@@ -109,7 +114,11 @@ function Row({
                           {leg.to.name}
                         </GenericLink>
                       </TableCell>
-                      <TableCell>{leg.asset}</TableCell>
+                      <TableCell>
+                        <GenericLink href={`${ROUTES.Asset}/${leg.asset}`}>
+                          {leg.asset}
+                        </GenericLink>
+                      </TableCell>
                       <TableCell>{leg.amount}</TableCell>
                     </TableRow>
                   ))}
