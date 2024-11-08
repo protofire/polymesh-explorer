@@ -20,8 +20,8 @@ export const useGetIdentityPortfolios = ({ identity }: Props) => {
 
     [...(identity.heldAssets || []), ...(identity.ownedAssets || [])].forEach(
       (asset) => {
-        if (!map.has(asset.assetId)) {
-          map.set(asset.assetId, asset);
+        if (!map.has(asset.assetUuid)) {
+          map.set(asset.assetUuid, asset);
         }
       },
     );
@@ -56,7 +56,7 @@ export const useGetIdentityPortfolios = ({ identity }: Props) => {
         throw error;
       }
     },
-    enabled: !!identity && !!polymeshService,
+    enabled: !!identity && !!polymeshService && !!assetsMap,
   });
 
   return queryResult;
