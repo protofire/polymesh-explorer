@@ -64,8 +64,7 @@ export function SettlementCard({
     return <LoadingSkeletonCard title="Settlement Instrucion" />;
   }
 
-  const { id, createdAt, settlementType, status } = instruction;
-  const isExecuted = status === 'Success';
+  const { id, createdAt, settlementType, status, isExecuted } = instruction;
   const lastEventTime = rawInstruction
     ? `${getLastEventDateTime(rawInstruction)}Z`
     : null;
