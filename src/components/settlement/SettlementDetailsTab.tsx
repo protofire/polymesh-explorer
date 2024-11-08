@@ -14,7 +14,6 @@ import {
 import { UseGetSettlementInstructionByIdReturn } from '@/hooks/settlement/useGetSettlementInstructionById';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
-import { SettlementLegDirectionField } from '@/components/shared/common/SettlementLegDirectionField';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { AccountOrDidTextField } from '../shared/fieldAttributes/AccountOrDidTextField';
@@ -51,7 +50,6 @@ export function SettlementDetailsTab({
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Direction</TableCell>
                 <TableCell>Sending </TableCell>
                 <TableCell>Receiving </TableCell>
                 <TableCell>Asset</TableCell>
@@ -63,9 +61,6 @@ export function SettlementDetailsTab({
                 <TableRow
                   key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
                 >
-                  <TableCell>
-                    <SettlementLegDirectionField direction={leg.direction} />
-                  </TableCell>
                   <TableCell>
                     <AccountOrDidTextField
                       value={leg.from.id}

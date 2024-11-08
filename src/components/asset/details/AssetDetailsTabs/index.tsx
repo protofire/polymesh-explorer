@@ -13,6 +13,7 @@ import { useGetAssetTransactions } from '@/hooks/asset/useGetAssetTransactions';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { AssetPermissionsTab } from './AssetPermissionsTab';
 import { useGetAssetPermissions } from '@/hooks/asset/useGetAssetPermissions';
+import { ComplianceTab } from './ComplianceTab';
 
 interface AssetDetailsTabsProps {
   asset: Asset;
@@ -87,6 +88,14 @@ export function AssetDetailsTabs({
             </Box>
           }
         />
+        <Tab
+          label={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              Compliance Rules
+              {isLoadingDetails && <LoadingDot />}
+            </Box>
+          }
+        />
       </Tabs>
 
       <GenericTabPanel value={value} index={0} labelKey="overview">
@@ -123,6 +132,9 @@ export function AssetDetailsTabs({
           assetPermissions={assetPermissions}
           isLoading={isLoadingDetails || isLoadingPermissions}
         />
+      </GenericTabPanel>
+      <GenericTabPanel value={value} index={5} labelKey="compliance">
+        <ComplianceTab assetSdk={assetSdk} isLoading={isLoadingDetails} />
       </GenericTabPanel>
     </>
   );

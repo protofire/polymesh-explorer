@@ -28,7 +28,7 @@ export default function AccountExplorer() {
         Search on Polymesh Explorer
       </Typography>
       <SearchTextInput
-        label="Search by DID / Venue / Asset / Portfolio"
+        label="Search by DID / Venue / Asset / Settlement"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         options={options}
