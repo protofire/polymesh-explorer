@@ -49,7 +49,7 @@ export interface ComplianceData {
 
 export const useGetAssetCompliance = (assetSdk?: AssetSdk) => {
   return useQuery({
-    queryKey: ['assetCompliance', assetSdk?.ticker],
+    queryKey: ['assetCompliance'],
     queryFn: async (): Promise<ComplianceData> => {
       if (!assetSdk) {
         throw new Error('Asset SDK not initialized');

@@ -22,7 +22,7 @@ export function LayoutSearchTextInput() {
   return (
     <SearchTextInput
       paddingTop="0.6rem"
-      label="Search by DID / Venue / Asset / Portfolio"
+      label="Search by DID / Venue / Asset / Settlement"
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
       options={options}

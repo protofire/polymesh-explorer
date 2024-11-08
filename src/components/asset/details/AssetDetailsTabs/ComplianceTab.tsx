@@ -16,6 +16,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Divider,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import VerifiedIcon from '@mui/icons-material/Verified';
@@ -112,8 +113,10 @@ export function ComplianceTab({
           </Table>
         </TableContainer>
       ) : (
-        <Alert severity="info">No default trusted claim issuers</Alert>
+        <Typography>No default trusted claim issuers</Typography>
       )}
+
+      <Divider sx={{ my: 3 }} />
 
       <Typography variant="h6" gutterBottom sx={{ mt: 4 }}>
         <RuleIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
@@ -168,8 +171,10 @@ export function ComplianceTab({
           </Accordion>
         ))
       ) : (
-        <Alert severity="info">No compliance rules configured</Alert>
+        <Typography>No compliance rules configured</Typography>
       )}
+
+      <Divider sx={{ my: 3 }} />
 
       <Typography variant="h6" gutterBottom>
         <LockIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
