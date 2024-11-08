@@ -9,7 +9,7 @@ import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '@/hooks/usePaginationControllerGraphQl';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { AssetTypeSelected } from '@/components/identity/details/IdentityDetailsTabs.tsx/PortfoliosTab/AssetTypeToggleButton';
+import { AssetTypeSelected } from '@/components/identity/details/IdentityDetailsTabs/PortfoliosTab/AssetTypeToggleButton';
 
 export type UseListPortfolioMovementsReturn = PaginatedData<
   PortfolioMovement[]

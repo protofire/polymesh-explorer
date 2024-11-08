@@ -245,3 +245,31 @@ export interface ExtrinsicResponse {
   nodes: ExtrinsicNode[];
   pageInfo: PageInfo;
 }
+
+// Instruction
+export interface RawInstructionNode {
+  id: string;
+  status: string;
+  venue: {
+    id: string;
+    details: string;
+  };
+  createdBlock: {
+    id: string;
+    datetime: string;
+    hash: string;
+  };
+}
+
+export interface InstructionResponse {
+  instructions: {
+    nodes: RawInstructionNode[];
+  };
+}
+export interface InstructionListResponse {
+  instructions: {
+    totalCount: number;
+    nodes: RawInstructionNode[];
+    pageInfo: PageInfo;
+  };
+}

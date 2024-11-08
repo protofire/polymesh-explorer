@@ -5,27 +5,30 @@ import { useParams, notFound } from 'next/navigation';
 import { Typography } from '@mui/material';
 import { useGetVenue } from '@/hooks/venue/useGetVenue';
 import { VenueCard } from '@/components/venue/VenueCard/VenueCard';
-import { LoadingSkeletonCard } from '@/components/shared/LoadingSkeletonCard/LoadingSkeletonCard';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
+import { VenueDetailsTabs } from '@/components/venue/VenueDetailsTabs';
 
 export default function VenueDetailPage() {
   const { venueId } = useParams();
-  const { data: venue, isLoading, error } = useGetVenue(venueId as string);
+  const { venueDetails, status, error } = useGetVenue(venueId as string);
 
-  if (error) {
-    return <Typography color="error">Error: {error.message}</Typography>;
+  if (error.getVenueError) {
+    return (
+      <Typography color="error">
+        Error: {String(error.getVenueError)}
+      </Typography>
+    );
   }
 
-  if (venue === null) {
+  if (venueDetails === null) {
     notFound();
   }
 
   return (
     <MainWrapper>
-      {isLoading || venue === undefined ? (
-        <LoadingSkeletonCard />
-      ) : (
-        <VenueCard venue={venue} />
+      <VenueCard venue={venueDetails} isLoading={!status.isFetchedVenue} />
+      {venueDetails?.id && (
+        <VenueDetailsTabs venue={venueDetails} error={error} status={status} />
       )}
     </MainWrapper>
   );

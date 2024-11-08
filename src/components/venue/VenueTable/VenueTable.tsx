@@ -10,7 +10,6 @@ import {
   Box,
   Typography,
 } from '@mui/material';
-import Link from 'next/link';
 import { Venue } from '@/domain/entities/Venue';
 import { truncateAddress } from '@/services/polymesh/address';
 import { ROUTES } from '@/config/routes';

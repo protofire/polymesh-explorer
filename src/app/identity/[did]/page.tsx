@@ -6,11 +6,11 @@ import { notFound, useParams } from 'next/navigation';
 import { IdentityCard } from '@/components/identity/details/IdentityCard';
 import { useGetIdentity } from '@/hooks/identity/useGetIdentity';
 import { useGetIdentityPortfolios } from '@/hooks/identity/useGetIdentityPortfolios';
-import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetailsTabs.tsx';
+import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetailsTabs';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { useGetSettlementInstructionsByOwner } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
 import { useGetIdentityAssetPermissions } from '@/hooks/identity/useGetIdentityAssetPermissions';
 
 export default function IdentityPage() {
@@ -28,7 +28,7 @@ export default function IdentityPage() {
   const {
     data: settlementsInstructions,
     isFetched: isFetchedSettlementInstructions,
-  } = useGetSettlementInstructionsByDid({
+  } = useGetSettlementInstructionsByOwner({
     identity,
   });
   const { data: assetPermissions, isFetched: isAssetPermissionsFetched } =

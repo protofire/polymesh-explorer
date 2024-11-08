@@ -25,12 +25,13 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { TruncatedText } from '@/components/shared/fieldAttributes/TruncatedText';
-import { AssetTypeToggleButton } from '@/components/identity/details/IdentityDetailsTabs.tsx/PortfoliosTab/AssetTypeToggleButton';
+import { AssetTypeToggleButton } from '@/components/identity/details/IdentityDetailsTabs/PortfoliosTab/AssetTypeToggleButton';
 import { AssetTokenType } from '@/domain/criteria/AssetCriteria';
 import { UseListAssetsReturn } from '@/hooks/asset/useListAssets';
 import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
 import { CsvExporter } from '@/services/csv/CsvExporter';
 import { AssetCsvExportService } from '@/domain/services/exports/AssetCsvExportService';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 
 interface AssetTableProps {
   paginatedAssets: PaginatedData<Asset[]>;
@@ -107,7 +108,11 @@ export function AssetTable({
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography variant="body2">{asset.type}</Typography>
+                    {asset.type ? (
+                      <Typography variant="body2">{asset.type}</Typography>
+                    ) : (
+                      <EmptyDash />
+                    )}
                   </TableCell>
                   <TableCell>
                     <Tooltip

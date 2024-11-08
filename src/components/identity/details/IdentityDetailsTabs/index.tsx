@@ -9,7 +9,7 @@ import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { AssetTabTable } from './AssetTabTable';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';

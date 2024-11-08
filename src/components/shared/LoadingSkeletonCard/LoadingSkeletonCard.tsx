@@ -1,26 +1,23 @@
 import React from 'react';
-import { Box, Card, CardContent, Skeleton, Stack } from '@mui/material';
+import { Box, Skeleton, Typography } from '@mui/material';
 
-export function LoadingSkeletonCard(): React.ReactElement {
+export function LoadingSkeletonCard({
+  title,
+}: {
+  title: string;
+}): React.ReactElement {
   return (
-    <Card>
-      <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
-          <Skeleton variant="circular" width={56} height={56} sx={{ mr: 2 }} />
-          <Skeleton width="40%" height={40} />
-        </Box>
-        <Stack spacing={2}>
-          {Array.from({ length: 5 }, (_, i) => (
-            <Box key={`skeleton-item-${i}`}>
-              <Skeleton width="30%" height={20} sx={{ mb: 1 }} />
-              <Skeleton
-                width={`${Math.floor(Math.random() * 40) + 40}%`}
-                height={24}
-              />
-            </Box>
-          ))}
-        </Stack>
-      </CardContent>
-    </Card>
+    <Box>
+      {title ? <Typography variant="h4">{title}</Typography> : null}
+      <Box display="flex" alignItems="center" mb={2}>
+        <Skeleton variant="circular" width={56} height={56} sx={{ mr: 2 }} />
+        <Skeleton width="40%" height={40} />
+      </Box>
+      <Box mt={2}>
+        <Skeleton width="60%" />
+        <Skeleton width="40%" />
+        <Skeleton width="40%" />
+      </Box>
+    </Box>
   );
 }

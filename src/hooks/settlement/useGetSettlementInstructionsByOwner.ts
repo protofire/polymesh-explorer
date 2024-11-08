@@ -19,7 +19,7 @@ interface Props {
   identity?: Identity | null;
 }
 
-export const useGetSettlementInstructionsByDid = ({ identity }: Props) => {
+export const useGetSettlementInstructionsByOwner = ({ identity }: Props) => {
   const { polymeshService } = usePolymeshSdkService();
 
   const queryResult = useQuery<GroupedSettlementInstructions | null, Error>({

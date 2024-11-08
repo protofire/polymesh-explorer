@@ -31,6 +31,13 @@ export const useGetAccountDetails = (
             throw new Error('Polymesh SDK or Account SDK not initialized');
           }
           try {
+            if (
+              account.identityRelationship === 'MultiSigSigner' ||
+              account.identityRelationship === 'Unassigned'
+            ) {
+              return null;
+            }
+
             return await account.polymeshSdkClass.getPermissions();
           } catch (error) {
             customReportError(error);

@@ -9,6 +9,7 @@ import CopyButton from '@/components/shared/common/CopyButton';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
+import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 
 interface AccountCardProps {
   account: Account | undefined | null;
@@ -19,6 +20,8 @@ export function AccountCard({
   account,
   isLoading,
 }: AccountCardProps): React.ReactElement {
+  const { currentNetworkConfig } = useNetworkProvider();
+
   if (!account || isLoading) {
     return <IdentityCardSkeleton textField="Account Details" />;
   }
@@ -87,7 +90,11 @@ export function AccountCard({
               {key}
             </Typography>
             <CopyButton text={key} />
-            <PolymeshExplorerLink hash={key} />
+            <PolymeshExplorerLink
+              baseUrl={currentNetworkConfig?.subscanUrl}
+              path="account"
+              hash={key}
+            />
           </Box>
         </Box>
       </Box>

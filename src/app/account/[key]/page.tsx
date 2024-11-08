@@ -8,6 +8,7 @@ import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { AccountDetailsTabs } from '@/components/account/details/AccountDetailsTabs';
 import { AccountCard } from '@/components/account/AccountCard';
 import { useGetAccountDetails } from '@/hooks/account/useGetAccountDetails';
+import { INVALID_ADDRESS } from '@/domain/errors/AccountErrors';
 
 export default function AccountDetailPage() {
   const { key } = useParams();
@@ -21,6 +22,10 @@ export default function AccountDetailPage() {
     status,
     error: errorAccountDetails,
   } = useGetAccountDetails(account);
+
+  if (error?.message === INVALID_ADDRESS) {
+    return notFound();
+  }
 
   if (error) {
     return <Typography color="error">Error: {error.message}</Typography>;
