@@ -6,6 +6,7 @@ import { Typography } from '@mui/material';
 import { useGetSettlementInstructionById } from '@/hooks/settlement/useGetSettlementInstructionById';
 import { SettlementCard } from '@/components/settlement/SettlementCard';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
+import { SettlementDetailsTab } from '@/components/settlement/SettlementDetailsTab';
 
 export default function SettlementDetailPage() {
   const { instructionId } = useParams();
@@ -29,6 +30,16 @@ export default function SettlementDetailPage() {
         rawInstruction={rawInstruction}
         isLoading={!status.isFetchedSdk}
       />
+      {instruction && !instruction.isExecuted && (
+        <SettlementDetailsTab
+          settlementData={{
+            instruction,
+            rawInstruction,
+            status,
+            error,
+          }}
+        />
+      )}
     </MainWrapper>
   );
 }

@@ -6,6 +6,7 @@ import { Venue } from '../entities/Venue';
 import { Asset } from '../entities/Asset';
 import { ROUTES } from '@/config/routes';
 import { SearchTextInputOption } from '../ui/SearchTextInputOption';
+import { SettlementInstruction } from '../entities/SettlementInstruction';
 
 export function transformToOption(
   data: UseSearchPolymeshEntityResult,
@@ -48,6 +49,15 @@ export function transformToOption(
         type: PolymeshEntityType.Asset,
         value: data.searchCriteria.searchTerm,
         link: `${ROUTES.Asset}/${asset.assetId}`,
+      };
+    }
+    case PolymeshEntityType.Settlement: {
+      const instruction = data.entity as SettlementInstruction;
+      return {
+        key: instruction.id,
+        type: PolymeshEntityType.Settlement,
+        value: data.searchCriteria.searchTerm,
+        link: `${ROUTES.Settlement}/${instruction.id}`,
       };
     }
     default:

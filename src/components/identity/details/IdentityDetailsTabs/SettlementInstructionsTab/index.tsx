@@ -97,7 +97,7 @@ function Row({
                 <TableBody>
                   {instruction.legs.map((leg: SettlementLeg) => (
                     <TableRow
-                      key={`leg-${instruction.venueId}-${instruction.id}`}
+                      key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
                     >
                       <TableCell>
                         <SettlementLegDirectionField

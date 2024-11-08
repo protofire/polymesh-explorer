@@ -55,10 +55,12 @@ function getLegAmount(leg: FungibleLeg | NftLeg | OffChainLeg): string {
 function transformLeg(
   leg: FungibleLeg | NftLeg | OffChainLeg,
   currentIdentityDid: string,
+  index: number,
 ): SettlementLeg {
   const from = getPortfolioFromParty(leg.from);
   const to = getPortfolioFromParty(leg.to);
   return {
+    index,
     from,
     to,
     asset: getLegAsset(leg),
@@ -76,7 +78,7 @@ function getSettlementType(details: InstructionDetails): string {
 
 export function transformSettlementInstruction(
   instruction: Instruction,
-  details: InstructionDetails,
+  details: InstructionDetails & { isExecuted: boolean },
   legs: Leg[],
   affirmations: InstructionAffirmation[],
   currentIdentityDid: string,
@@ -97,6 +99,7 @@ export function transformSettlementInstruction(
     counterparties: uniqueCounterparties.size,
     affirmedBy: affirmations.filter((a) => a.status === 'Affirmed').length,
     settlementType: getSettlementType(details),
-    legs: legs.map((leg) => transformLeg(leg, currentIdentityDid)),
+    legs: legs.map((leg, i) => transformLeg(leg, currentIdentityDid, i)),
+    isExecuted: details.isExecuted,
   };
 }

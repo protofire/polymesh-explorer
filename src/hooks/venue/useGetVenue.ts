@@ -67,12 +67,13 @@ export function useGetVenue(venueId: string): UseGetVenueReturn {
                 const details = await instruction.details();
                 const legs = await instruction.getLegs();
                 const affirmations = await instruction.getAffirmations();
+                const isExecuted = await instruction.isExecuted();
 
                 return {
                   status: status as InstructionStatus,
                   instruction: transformSettlementInstruction(
                     instruction,
-                    details,
+                    { ...details, isExecuted },
                     legs.data,
                     affirmations.data,
                     polymeshDetails.owner.did,

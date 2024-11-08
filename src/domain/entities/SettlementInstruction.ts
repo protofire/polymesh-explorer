@@ -2,6 +2,7 @@ import { InstructionStatus } from '@polymeshassociation/polymesh-sdk/types';
 import { Portfolio } from './Portfolio';
 
 export interface SettlementLeg {
+  index: number;
   from: Portfolio;
   to: Portfolio;
   asset: string;
@@ -19,4 +20,5 @@ export interface SettlementInstruction {
   affirmedBy: number;
   settlementType: string;
   legs: SettlementLeg[];
+  isExecuted: boolean;
 }

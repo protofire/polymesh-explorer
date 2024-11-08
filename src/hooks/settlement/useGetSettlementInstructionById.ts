@@ -60,7 +60,7 @@ export function useGetSettlementInstructionById(
 
             return transformSettlementInstruction(
               instructionClass,
-              details,
+              { ...details, isExecuted },
               legs.data,
               affirmations.data,
               '',
