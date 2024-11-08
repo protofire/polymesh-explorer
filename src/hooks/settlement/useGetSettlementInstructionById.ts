@@ -54,7 +54,7 @@ export function useGetSettlementInstructionById(
             const isExecuted = await instructionClass.isExecuted();
             const [details, legs, affirmations] = await Promise.all([
               instructionClass.details(),
-              instructionClass.getLegs(),
+              isExecuted ? { data: [] } : instructionClass.getLegs(),
               isExecuted ? { data: [] } : instructionClass.getAffirmations(),
             ]);
 

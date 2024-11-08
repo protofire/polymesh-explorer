@@ -11,7 +11,41 @@ import CopyButton from '@/components/shared/common/CopyButton';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
-import { RawInstructionNode } from '@/services/repositories/types';
+import {
+  RawInstructionEvent,
+  RawInstructionNode,
+} from '@/services/repositories/types';
+
+export function getLastEventDateTime(instruction: RawInstructionNode): string {
+  const sortedEvents = [...instruction.events.nodes].sort(
+    (a, b) =>
+      new Date(b.createdBlock.datetime).getTime() -
+      new Date(a.createdBlock.datetime).getTime(),
+  );
+  return sortedEvents[0]?.createdBlock.datetime;
+}
+
+export function getLastEvent(
+  instruction: RawInstructionNode,
+): RawInstructionEvent | undefined {
+  return [...instruction.events.nodes].sort(
+    (a, b) =>
+      new Date(b.createdBlock.datetime).getTime() -
+      new Date(a.createdBlock.datetime).getTime(),
+  )[0];
+}
+
+export function generateLinkToUse(
+  isExecuted: boolean,
+  lasEvent: RawInstructionEvent | null | undefined,
+  rawInstruction: RawInstructionNode | null | undefined,
+): string {
+  if (!rawInstruction) return '';
+
+  return isExecuted && lasEvent
+    ? `${lasEvent.createdBlock.id.toString()}?tab=event&event=${lasEvent.id.replace('/', '-')}`
+    : rawInstruction?.createdBlock.id.toString() || '';
+}
 
 interface SettlementCardProps {
   instruction?: SettlementInstruction | undefined;
@@ -30,7 +64,14 @@ export function SettlementCard({
     return <LoadingSkeletonCard title="Settlement Instrucion" />;
   }
 
-  const { id, createdAt, settlementType } = instruction;
+  const { id, createdAt, settlementType, status } = instruction;
+  const isExecuted = status === 'Success';
+  const lastEventTime = rawInstruction
+    ? `${getLastEventDateTime(rawInstruction)}Z`
+    : null;
+  const lasEvent = rawInstruction ? getLastEvent(rawInstruction) : null;
+  const dateToUse = isExecuted ? lastEventTime : createdAt?.toISOString();
+  const linkToUse = generateLinkToUse(isExecuted, lasEvent, rawInstruction);
 
   return (
     <>
@@ -52,17 +93,17 @@ export function SettlementCard({
               <PolymeshExplorerLink
                 baseUrl={currentNetworkConfig?.subscanUrl}
                 path="block"
-                hash={rawInstruction?.createdBlock.id.toString() || ''}
+                hash={linkToUse}
               />
             </Box>
           </Box>
 
           <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
-              Created At:
+              {status === 'Success' ? 'Execution Date' : 'Created At:'}
             </Typography>
-            {createdAt ? (
-              <FormattedDate date={createdAt?.toISOString()} variant="body1" />
+            {dateToUse ? (
+              <FormattedDate date={dateToUse} variant="body1" />
             ) : (
               <EmptyDash />
             )}
@@ -75,9 +116,13 @@ export function SettlementCard({
             <Typography variant="body2" color="textSecondary">
               Venue:
             </Typography>
-            <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-              {instruction.venueId}, {rawInstruction?.venue.details ?? '-'}
-            </GenericLink>
+            {isExecuted ? (
+              <EmptyDash />
+            ) : (
+              <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
+                {instruction.venueId}, {rawInstruction?.venue.details ?? '-'}
+              </GenericLink>
+            )}
           </Box>
 
           <Box flex={1}>

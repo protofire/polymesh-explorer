@@ -247,6 +247,16 @@ export interface ExtrinsicResponse {
 }
 
 // Instruction
+export interface RawInstructionEvent {
+  id: string;
+  event: string;
+  createdBlock: {
+    id: string;
+    datetime: string;
+    hash: string;
+  };
+}
+
 export interface RawInstructionNode {
   id: string;
   status: string;
@@ -258,6 +268,9 @@ export interface RawInstructionNode {
     id: string;
     datetime: string;
     hash: string;
+  };
+  events: {
+    nodes: RawInstructionEvent[];
   };
 }
 

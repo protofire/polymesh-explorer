@@ -25,6 +25,17 @@ export class InstructionGraphRepo {
               datetime
               hash
             }
+            events {
+              nodes {
+                id
+                event
+                createdBlock {
+                  id
+                  datetime
+                  hash
+                }
+              }
+            }
           }
         }
       }
