@@ -18,7 +18,7 @@ export const assetFragment = gql`
     holders {
       totalCount
     }
-    nftHolders {
+    nftHolders(filter: { nftIds: { notEqualTo: [] } }) {
       totalCount
     }
     createdBlock {

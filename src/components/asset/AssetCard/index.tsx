@@ -113,7 +113,7 @@ export function AssetCard({
                 <Typography variant="body2" color="textSecondary" mb={1}>
                   Created
                 </Typography>
-                <FormattedDate date={asset.createdAt} />
+                <FormattedDate date={asset.createdAt} variant="body1" />
               </Box>
             </Stack>
           </Box>
