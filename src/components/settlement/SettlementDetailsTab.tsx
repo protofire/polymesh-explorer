@@ -14,7 +14,6 @@ import {
 import { UseGetSettlementInstructionByIdReturn } from '@/hooks/settlement/useGetSettlementInstructionById';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
-import { SettlementLegDirectionField } from '@/components/shared/common/SettlementLegDirectionField';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { AccountOrDidTextField } from '../shared/fieldAttributes/AccountOrDidTextField';
