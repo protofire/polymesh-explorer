@@ -51,7 +51,6 @@ export function SettlementDetailsTab({
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>Direction</TableCell>
                 <TableCell>Sending </TableCell>
                 <TableCell>Receiving </TableCell>
                 <TableCell>Asset</TableCell>
@@ -63,9 +62,6 @@ export function SettlementDetailsTab({
                 <TableRow
                   key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
                 >
-                  <TableCell>
-                    <SettlementLegDirectionField direction={leg.direction} />
-                  </TableCell>
                   <TableCell>
                     <AccountOrDidTextField
                       value={leg.from.id}
