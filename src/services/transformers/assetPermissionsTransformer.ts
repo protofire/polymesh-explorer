@@ -13,7 +13,7 @@ import {
   AssetIdentityPermissions,
   AssetPermissions,
 } from '@/domain/entities/AssetPermissions';
-import { hexToUuid, uuidToHex } from '../polymesh/hexToUuid';
+import { uuidToHex } from '../polymesh/hexToUuid';
 
 const isCustomPermissionGroup = (
   group: KnownPermissionGroup | CustomPermissionGroup,
