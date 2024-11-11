@@ -65,7 +65,10 @@ export function useGetNftById({
           ownerData?.ownerPortfolioId || '',
         );
 
-        return nftDetails;
+        return {
+          ...nftDetails,
+          id: nftSdk.id.toNumber(),
+        };
       } catch (e) {
         customReportError(e);
         throw e;

@@ -6,7 +6,11 @@ import {
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Portfolio } from '@polymeshassociation/polymesh-sdk/api/entities/Portfolio';
 import { Nft } from '@polymeshassociation/polymesh-sdk/internal';
-import { NftAsset, NftAssetWithMetadata, NftCollection } from '@/domain/entities/NftData';
+import {
+  NftAsset,
+  NftAssetWithMetadata,
+  NftCollection,
+} from '@/domain/entities/NftData';
 
 const IPFS_PROVIDER_URL = 'https://ipfs.io/ipfs';
 const imageUrlCache = new Map();
