@@ -10,6 +10,7 @@ import {
   TableContainer,
   TableRow,
   Table,
+  Tooltip,
 } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
@@ -80,13 +81,21 @@ export function NftDetailsCard({
           <Typography variant="h4">NFT Details</Typography>
           <DocumentationIconButton polymeshEntity="nft" />
         </Box>
-        <Chip
-          icon={nft.isLocked ? <LockIcon /> : <LockOpenIcon />}
-          label={nft.isLocked ? 'Locked' : 'Unlocked'}
-          color={nft.isLocked ? 'error' : 'success'}
-          variant="outlined"
-          size="small"
-        />
+        <Tooltip
+          title={
+            nft.isLocked
+              ? 'When an NFT is locked, it cannot be transferred. This state is commonly used for NFTs representing assets that temporarily should not change ownership.'
+              : 'This NFT can be freely transferred between wallets, subject to applicable compliance rules.'
+          }
+          arrow
+        >
+          <Chip
+            icon={nft.isLocked ? <LockIcon /> : <LockOpenIcon />}
+            label={nft.isLocked ? 'Locked' : 'Unlocked'}
+            color={nft.isLocked ? 'error' : 'success'}
+            variant="outlined"
+          />
+        </Tooltip>
       </Box>
 
       <Stack spacing={3} mt={4}>

@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Box, Typography, IconButton, Collapse } from '@mui/material';
+import { Box, Typography, IconButton } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { Count } from '@polymeshassociation/polymesh-sdk/api/entities/Asset/Fungible/TransferRestrictions/Count';
 import { GenericLink } from './common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { CounterBadge } from './common/CounterBadge';
