@@ -18,13 +18,38 @@ import { DocumentationIconButton } from '@/components/shared/fieldAttributes/Doc
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { GenericLink } from '@/components/shared/common/GenericLink';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { truncateAddress } from '@/services/polymesh/address';
+import { Asset } from '@/domain/entities/Asset';
+import { ROUTES } from '@/config/routes';
 
 interface NftDetailsCardProps {
   nft?: NftAssetWithMetadata | null;
   isLoading: boolean;
+  collection: Asset | null | undefined;
+  isLoadingCollection: boolean;
 }
 
-export function NftDetailsCard({ nft, isLoading }: NftDetailsCardProps) {
+function EmptyOrCollectionLink({
+  collection,
+}: {
+  collection: Asset | null | undefined;
+}) {
+  if (!collection) return <EmptyDash />;
+
+  return (
+    <GenericLink href={`${ROUTES.Asset}/${collection.assetId}`}>
+      {collection.ticker || truncateAddress(collection.assetUuid)}
+    </GenericLink>
+  );
+}
+
+export function NftDetailsCard({
+  nft,
+  isLoading,
+  collection,
+  isLoadingCollection,
+}: NftDetailsCardProps) {
   if (isLoading) {
     return (
       <Box>
@@ -116,19 +141,27 @@ export function NftDetailsCard({ nft, isLoading }: NftDetailsCardProps) {
                 <Typography variant="body2" color="textSecondary" mb={1}>
                   Owner
                 </Typography>
-                <AccountOrDidTextField
-                  value={nft.ownerDid || ''}
-                  showIdenticon
-                  isIdentity
-                />
+                {nft.ownerDid ? (
+                  <AccountOrDidTextField
+                    value={nft.ownerDid}
+                    showIdenticon
+                    isIdentity
+                  />
+                ) : (
+                  <EmptyDash />
+                )}
               </Box>
               <Box flex={1}>
                 <Typography variant="body2" color="textSecondary" mb={1}>
                   Owner Portfolio Id
                 </Typography>
-                <Typography variant="body1">
-                  {nft.ownerPortfolioId || 'default'}
-                </Typography>
+                {nft.ownerPortfolioId ? (
+                  <Typography variant="body1">
+                    {nft.ownerPortfolioId}
+                  </Typography>
+                ) : (
+                  <EmptyDash />
+                )}
               </Box>
             </Stack>
 
@@ -159,6 +192,17 @@ export function NftDetailsCard({ nft, isLoading }: NftDetailsCardProps) {
                 </Box>
               )}
             </Stack>
+
+            <Box>
+              <Typography variant="body2" color="textSecondary" mb={1}>
+                Collection
+              </Typography>
+              {isLoadingCollection ? (
+                <Skeleton width="40%" />
+              ) : (
+                <EmptyOrCollectionLink collection={collection} />
+              )}
+            </Box>
           </Stack>
         </Stack>
 

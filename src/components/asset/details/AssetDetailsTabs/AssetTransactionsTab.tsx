@@ -332,7 +332,10 @@ export function AssetTransactionsTab({
                         {asset.isNftCollection &&
                         tx.nftIds &&
                         tx.nftIds.length > 0 ? (
-                          <NftIdsDisplay nftIds={tx.nftIds} />
+                          <NftIdsDisplay
+                            nftIds={tx.nftIds}
+                            assetId={asset.assetId}
+                          />
                         ) : (
                           tx.amount
                         )}

@@ -5,6 +5,7 @@ export const ROUTES = {
   Identity: '/identity',
   Venue: '/venue',
   Settlement: '/settlement',
+  NftView: '/nft',
 } as const;
 
 export type RouteKeys = keyof typeof ROUTES;

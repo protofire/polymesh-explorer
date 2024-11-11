@@ -73,7 +73,11 @@ export function HoldersTab({
                 </TableCell>
                 {isAssetNonFungibleHolder(holder) && (
                   <TableCell align="right">
-                    <NftIdsDisplay nftIds={holder.nftIds} maxIdsToShow={5} />
+                    <NftIdsDisplay
+                      nftIds={holder.nftIds}
+                      maxIdsToShow={5}
+                      assetId={asset.assetId}
+                    />
                   </TableCell>
                 )}
                 <TableCell align="right">{holder.balance}</TableCell>

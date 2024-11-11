@@ -1,5 +1,6 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
+import { Details } from '@mui/icons-material';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { customReportError } from '@/utils/customReportError';
 import { validateAssetId } from '@/services/polymesh/validation/assetIdValidator';
