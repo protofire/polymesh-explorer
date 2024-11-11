@@ -10,12 +10,14 @@ interface AccountOrDidTextFieldProps {
   value: string;
   showIdenticon?: boolean;
   isIdentity?: boolean;
+  sideLength?: number;
 }
 
 export function AccountOrDidTextField({
   value,
   showIdenticon = false,
   isIdentity = false,
+  sideLength = 5,
 }: AccountOrDidTextFieldProps): React.ReactElement {
   const identiconTheme = isIdentity ? 'jdenticon' : 'polkadot';
   const pathUrl = isIdentity ? ROUTES.Identity : ROUTES.Account;
@@ -32,7 +34,7 @@ export function AccountOrDidTextField({
       )}
       <Typography variant="body1">
         <GenericLink href={`${pathUrl}/${value}`}>
-          {truncateAddress(value)}
+          {truncateAddress(value, sideLength)}
         </GenericLink>
       </Typography>
       <CopyButton text={value} />

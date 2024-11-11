@@ -23,7 +23,11 @@ function WithCounterBadge({
 }) {
   if (!enable) return children;
 
-  return <CounterBadge count={length}>{children}</CounterBadge>;
+  return (
+    <CounterBadge count={length} right={-3}>
+      {children}
+    </CounterBadge>
+  );
 }
 
 function NftIdsDisplay({
