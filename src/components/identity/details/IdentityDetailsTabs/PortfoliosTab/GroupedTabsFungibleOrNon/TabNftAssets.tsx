@@ -61,7 +61,11 @@ export function TabNftAssets({
                         imgUrl={asset.imgUrl}
                         alt={asset.collectionName}
                       />
-                      {asset.id}
+                      <GenericLink
+                        href={`${ROUTES.Asset}/${asset.assetId}${ROUTES.NftView}/${asset.id}`}
+                      >
+                        {asset.id}
+                      </GenericLink>
                     </Box>
                   </TableCell>
                   <TableCell>
