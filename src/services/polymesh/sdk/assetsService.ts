@@ -1,11 +1,12 @@
 import {
+  CollectionKey,
   DefaultPortfolio,
   NumberedPortfolio,
   PortfolioCollection,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Portfolio } from '@polymeshassociation/polymesh-sdk/api/entities/Portfolio';
 import { Nft } from '@polymeshassociation/polymesh-sdk/internal';
-import { NftAsset, NftCollection } from '@/domain/entities/NftData';
+import { NftAsset, NftAssetWithMetadata, NftCollection } from '@/domain/entities/NftData';
 
 const IPFS_PROVIDER_URL = 'https://ipfs.io/ipfs';
 const imageUrlCache = new Map();
@@ -140,3 +141,137 @@ export async function getNftAssetsFromPortfolio(
   );
   return parsedNftsList.flat();
 }
+
+function processProperty(attr: {
+  trait_type?: string;
+  value?: string | number | boolean;
+}): {
+  metaKey: string;
+  metaValue: string | number | boolean;
+} {
+  const { trait_type: metaKey, value: metaValue } = attr;
+
+  if (!metaKey || metaValue === undefined || metaValue === null) {
+    return {
+      metaKey: metaKey || 'unknown property',
+      metaValue: typeof attr === 'object' ? JSON.stringify(attr) : attr,
+    };
+  }
+  if (typeof metaValue === 'object') {
+    return { metaKey, metaValue: JSON.stringify(metaValue) };
+  }
+  return { metaKey, metaValue };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function processProperties(data: any[] | Record<string, any> | undefined): {
+  metaKey: string;
+  metaValue: string | number | boolean;
+}[] {
+  if (!data) {
+    return [];
+  }
+
+  if (Array.isArray(data)) {
+    return data.map((attr) => processProperty(attr));
+  }
+  if (typeof data === 'object') {
+    return Object.entries(data).map(([key, value]) => {
+      return processProperty({ trait_type: key, value });
+    });
+  }
+
+  return [];
+}
+
+export const getNftDetails = async (
+  nft: Nft,
+  isLocked: boolean,
+  collectionKeys: CollectionKey[],
+  ownerDid: string,
+  ownerPortfolioId: string,
+): Promise<NftAssetWithMetadata> => {
+  const tokenUri = (await getNftTokenUri(nft)) || '';
+
+  const parsedNft = {
+    tokenUri,
+    isLocked,
+    ownerDid,
+    ownerPortfolioId,
+  } as NftAssetWithMetadata;
+
+  // get off-chain args
+  if (tokenUri) {
+    const { body, status } = await fetch(tokenUri);
+    if (body && status === 200) {
+      const reader = body.pipeThrough(new TextDecoderStream()).getReader();
+      const rawData = await reader?.read();
+      if (rawData.value) {
+        const parsedData = JSON.parse(rawData.value);
+        const {
+          image: imageUri,
+          attributes: rawAttributes,
+          properties: rawProperties,
+          name: rawName,
+          description: rawDescription,
+          ...rawOtherProperties
+        } = parsedData;
+
+        parsedNft.imgUrl = (await getNftImageUrl(nft, imageUri)) || '';
+
+        if (rawAttributes) {
+          const attributes = processProperties(rawAttributes);
+          parsedNft.offChainDetails = parsedNft.offChainDetails
+            ? parsedNft.offChainDetails.concat(attributes)
+            : attributes;
+        }
+
+        if (rawProperties) {
+          const properties = processProperties(rawProperties);
+          parsedNft.offChainDetails = parsedNft.offChainDetails
+            ? parsedNft.offChainDetails.concat(properties)
+            : properties;
+        }
+
+        if (rawOtherProperties) {
+          const otherProperties = processProperties(rawOtherProperties);
+          parsedNft.offChainDetails = parsedNft.offChainDetails
+            ? parsedNft.offChainDetails.concat(otherProperties)
+            : otherProperties;
+        }
+
+        if (rawName) {
+          parsedNft.name = rawName;
+        }
+        if (rawDescription) {
+          parsedNft.description = rawDescription;
+        }
+      }
+    }
+  } else {
+    parsedNft.imgUrl = (await getNftImageUrl(nft)) || '';
+  }
+
+  // get on-chain args
+  if (collectionKeys?.length) {
+    const nftMeta = await nft.getMetadata();
+
+    const args = nftMeta.length
+      ? nftMeta.map((meta) => {
+          const metaKey = collectionKeys.find(
+            (key) =>
+              key.id.toNumber() === meta.key.id.toNumber() &&
+              key.type === meta.key.type,
+          );
+          return {
+            metaKey: metaKey?.name || 'key',
+            metaValue: meta.value,
+            metaDescription: metaKey?.specs.description,
+          };
+        })
+      : [];
+    parsedNft.onChainDetails = args;
+  }
+
+  return parsedNft;
+};
