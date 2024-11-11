@@ -238,7 +238,7 @@ export function AssetTransactionsTab({
           )}
         </Box>
 
-        {venueFiltering && (
+        {venueFiltering?.isEnabled && (
           <VenueFilteringStatus
             enabled={venueFiltering.isEnabled}
             allowedVenues={venueFiltering.allowedVenues}
