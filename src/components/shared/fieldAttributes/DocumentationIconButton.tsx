@@ -6,7 +6,8 @@ export type PolymeshEntity =
   | 'identity'
   | 'account'
   | 'venue'
-  | 'settlement';
+  | 'settlement'
+  | 'nft';
 
 const POLYMESH_DOC_BASE_URL =
   'https://developers.polymesh.network/polymesh-docs/primitives';
@@ -31,6 +32,10 @@ const DOCS_URLS: Record<PolymeshEntity, { name: string; link: string }> = {
   settlement: {
     name: 'Settlement',
     link: `${POLYMESH_DOC_BASE_URL}/settlement`,
+  },
+  nft: {
+    name: 'Nft Metadata',
+    link: `${POLYMESH_DOC_BASE_URL}/nfts/#metadata-schema`,
   },
 };
 

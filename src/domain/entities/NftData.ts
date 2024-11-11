@@ -22,3 +22,19 @@ export interface NftData {
   collections: NftCollection[];
   nftAssets: NftAsset[];
 }
+
+export interface INftArgs {
+  metaKey: string;
+  metaValue: string | number | boolean;
+  metaDescription?: string;
+}
+
+export interface NftAssetWithMetadata extends NftAsset {
+  name?: string;
+  tokenUri?: string;
+  description?: string;
+  onChainDetails?: INftArgs[];
+  offChainDetails?: INftArgs[];
+  ownerDid?: string;
+  ownerPortfolioId?: string;
+}
