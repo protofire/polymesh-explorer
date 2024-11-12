@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Box, Card, CardContent, Typography, Skeleton } from '@mui/material';
 import { SummaryIdentitySkeleton } from './SummaryIdentitySkeleton';
 import { IdentitiesByMonthChart } from './IdentitiesByMonthChart';
@@ -32,14 +32,6 @@ export function SummaryIdentitiesCard({
   nMonths,
   totalIdentities,
 }: SummaryIdentitiesCardProps) {
-  const lastValidTotalIdentitiesRef = useRef<number | undefined>(undefined);
-
-  useEffect(() => {
-    if (totalIdentities !== undefined) {
-      lastValidTotalIdentitiesRef.current = totalIdentities;
-    }
-  }, [totalIdentities]);
-
   const renderChartContent = () => {
     if (isLoading) return <SummaryIdentitySkeleton />;
     if (error) return renderError(error);
@@ -47,8 +39,14 @@ export function SummaryIdentitiesCard({
     return <IdentitiesByMonthChart chartData={chartData} />;
   };
 
-  const renderTotalIdentities = (value: number, showSkeleton: boolean) => {
+  const renderTotalIdentities = (
+    value: number | undefined,
+    showSkeleton: boolean,
+  ) => {
     if (showSkeleton) {
+      return <Skeleton variant="text" width="60%" height={60} />;
+    }
+    if (value === undefined || value === 0) {
       return <Skeleton variant="text" width="60%" height={60} />;
     }
     return <Typography variant="h3">{value.toLocaleString()}</Typography>;
@@ -84,10 +82,7 @@ export function SummaryIdentitiesCard({
             <Typography variant="h6" gutterBottom>
               Total Identities Created (Last {nMonths} Months)
             </Typography>
-            {renderTotalIdentities(
-              totalVerifiedIdentities,
-              isLoading || totalVerifiedIdentities === 0,
-            )}
+            {renderTotalIdentities(totalVerifiedIdentities, isLoading)}
           </CardContent>
         </Card>
         <Card sx={{ flex: 1 }}>
@@ -102,10 +97,7 @@ export function SummaryIdentitiesCard({
             <Typography variant="h6" gutterBottom>
               Total Identities Created (All Time)
             </Typography>
-            {renderTotalIdentities(
-              lastValidTotalIdentitiesRef.current ?? 0,
-              lastValidTotalIdentitiesRef.current === undefined,
-            )}
+            {renderTotalIdentities(totalIdentities, isLoading)}
           </CardContent>
         </Card>
       </Box>
