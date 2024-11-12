@@ -1,3 +1,4 @@
+import { InstructionStatusEnum } from '@polymeshassociation/polymesh-sdk/types';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { PageInfo } from '@/domain/ui/PaginationInfo';
 
@@ -247,28 +248,66 @@ export interface ExtrinsicResponse {
 }
 
 // Instruction
+export interface RawBlock {
+  id: string;
+  blockId?: number;
+  datetime: string;
+  hash: string;
+}
+
 export interface RawInstructionEvent {
   id: string;
   event: string;
-  createdBlock: {
-    id: string;
-    datetime: string;
-    hash: string;
-  };
+  createdBlock: RawBlock;
+}
+
+export interface RawLegNode {
+  legIndex: number;
+  legType: string;
+  from: string;
+  fromPortfolio: number;
+  to: string;
+  toPortfolio: number;
+  assetId: string;
+  ticker: string;
+  amount: string;
+  nftIds: string[] | null;
+  addresses: string[];
+}
+
+export interface RawAffirmationNode {
+  identity: string;
+  isAutomaticallyAffirmed: boolean;
+  isMediator: boolean;
+  createdAt: string;
+  createdBlockId: string;
+  status: string;
+  portfolios: number[] | null;
 }
 
 export interface RawInstructionNode {
   id: string;
-  status: string;
+  status: InstructionStatusEnum;
   venue: {
     id: string;
     details: string;
   };
-  createdBlock: {
-    id: string;
-    datetime: string;
-    hash: string;
+  type: string;
+  endBlock: string | null;
+  endAfterBlock: string | null;
+  tradeDate: string | null;
+  valueDate: string | null;
+  legs: {
+    nodes: RawLegNode[];
   };
+  memo: string | null;
+  affirmations: {
+    nodes: RawAffirmationNode[];
+  };
+  mediators: string[];
+  failureReason: string | null;
+  createdBlock: RawBlock;
+  updatedBlock: RawBlock;
   events: {
     nodes: RawInstructionEvent[];
   };

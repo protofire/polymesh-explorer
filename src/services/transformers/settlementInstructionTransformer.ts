@@ -63,7 +63,7 @@ function transformLeg(
     index,
     from,
     to,
-    asset: getLegAsset(leg),
+    assetId: getLegAsset(leg),
     amount: getLegAmount(leg),
     direction: from.id === currentIdentityDid ? 'Sending' : 'Receiving',
   };

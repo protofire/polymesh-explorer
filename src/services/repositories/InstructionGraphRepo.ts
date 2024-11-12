@@ -5,11 +5,13 @@ import {
   PageInfo,
   RawInstructionNode,
 } from './types';
+import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
+import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
 
 export class InstructionGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  async findById(id: string): Promise<RawInstructionNode | null> {
+  async findById(id: string): Promise<SettlementInstructionWithEvents | null> {
     const query = gql`
       query ($filter: InstructionFilter!) {
         instructions(filter: $filter, first: 1) {
@@ -20,10 +22,51 @@ export class InstructionGraphRepo {
               id
               details
             }
+            type
+            endBlock
+            endAfterBlock
+            tradeDate
+            valueDate
+            legs {
+              nodes {
+                legIndex
+                legType
+                from
+                fromPortfolio
+                to
+                toPortfolio
+                assetId
+                ticker
+                amount
+                nftIds
+                addresses
+              }
+            }
+            memo
+            affirmations {
+              nodes {
+                identity
+                isAutomaticallyAffirmed
+                isMediator
+                createdAt
+                createdBlockId
+                status
+                portfolios
+              }
+            }
+            mediators
+            failureReason
             createdBlock {
               id
+              blockId
               datetime
               hash
+            }
+            updatedBlock {
+              id
+              blockId
+              hash
+              datetime
             }
             events {
               nodes {
@@ -49,7 +92,9 @@ export class InstructionGraphRepo {
       query,
       variables,
     );
-    const instructions = response.instructions.nodes;
+    const instructions = response.instructions.nodes.map(
+      rawInstructiontoSettlementInstruction,
+    );
 
     if (instructions.length === 0) return null;
 

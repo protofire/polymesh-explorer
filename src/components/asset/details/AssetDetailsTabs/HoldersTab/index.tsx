@@ -18,6 +18,9 @@ import {
 } from '@/domain/entities/AssetHolder';
 import { Asset } from '@/domain/entities/Asset';
 import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { AssetHoldersCsvExportService } from '@/domain/services/exports/AssetHoldersCsvExportService';
 
 interface HoldersTabProps {
   assetHolders: PaginatedData<AssetHolder[]> | undefined;
@@ -40,6 +43,14 @@ export function HoldersTab({
   }
 
   const { data: holders, paginationController } = assetHolders;
+
+  const handleExport = () => {
+    const csvExporter = new CsvExporter<AssetHolder>(
+      AssetHoldersCsvExportService.getHolderColumns(asset.isNftCollection),
+    );
+    const exportService = new AssetHoldersCsvExportService(csvExporter);
+    exportService.exportHolders(holders, asset);
+  };
 
   return (
     <Box p={2}>
@@ -89,7 +100,15 @@ export function HoldersTab({
           )}
         </TableBody>
       </Table>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={!holders?.length}
+          />
+        }
+      />
     </Box>
   );
 }

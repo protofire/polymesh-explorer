@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Container, styled } from '@mui/material';
+import { Box, Container, styled, Typography } from '@mui/material';
 
 import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
@@ -8,9 +8,36 @@ import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
 import { APP_BACKGROUD } from '@/config/images';
+import { GenericLink } from '../common/GenericLink';
+import { POLYMESH_DOCS } from '@/config/constant';
 
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
+  display: 'flex',
+  flexDirection: 'column',
+  flex: 1,
+  minHeight: '100%',
+}));
+
+const ContentWrapper = styled(Box)(() => ({
+  flex: 1,
+  display: 'flex',
+  flexDirection: 'column',
+}));
+
+const Footer = styled(Box)(() => ({
+  color: '#fff',
+  padding: '20px 0',
+  textAlign: 'center',
+  width: '100%',
+  background:
+    'linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%)',
+  backdropFilter: 'blur(5px)',
+  marginTop: 'auto',
+  height: '80px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 interface Props {
@@ -50,16 +77,48 @@ export function AppLayout({
         backgroundSize: 'cover',
         backgroundAttachment: 'fixed',
         minHeight: '100vh',
+        height: '100vh',
         width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <DashboardLayout
-        slots={{
-          toolbarActions: () => barActions,
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
+          height: '100%',
         }}
       >
-        <MainContainer maxWidth="lg">{children}</MainContainer>
-      </DashboardLayout>
+        <DashboardLayout
+          slots={{
+            toolbarActions: () => barActions,
+          }}
+        >
+          <MainContainer maxWidth="lg">
+            <ContentWrapper>{children}</ContentWrapper>
+          </MainContainer>
+        </DashboardLayout>
+        <Footer>
+          <Box
+            component="span"
+            sx={{
+              '& a': {
+                color: '#fff',
+                textDecoration: 'none',
+                '&:hover': {
+                  textDecoration: 'underline',
+                },
+              },
+            }}
+          >
+            <Typography variant="caption">
+              <GenericLink href={POLYMESH_DOCS}>Polymesh Docs</GenericLink>
+            </Typography>
+          </Box>
+        </Footer>
+      </Box>
     </Box>
   );
 }

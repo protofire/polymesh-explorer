@@ -1,6 +1,8 @@
 import { NetworkConfig, NetworkType } from '@/domain/services/NetworkType';
 import { IS_DEVELOPMENT } from './environment';
 
+export const POLYMESH_DOCS = 'https://developers.polymesh.network/docs/';
+
 // network config nodes
 export const POLYMESH_RPC_URL = 'wss://mainnet-rpc.polymesh.network';
 export const GRAPHQL_ENDPOINT = 'https://mainnet-graphql.polymesh.network';

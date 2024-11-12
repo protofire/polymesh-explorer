@@ -115,8 +115,8 @@ function Row({
                         </GenericLink>
                       </TableCell>
                       <TableCell>
-                        <GenericLink href={`${ROUTES.Asset}/${leg.asset}`}>
-                          {leg.asset}
+                        <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
+                          {leg.assetId}
                         </GenericLink>
                       </TableCell>
                       <TableCell>{leg.amount}</TableCell>

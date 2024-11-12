@@ -118,6 +118,7 @@ export function IdentityDetailsTabs({
           paginatedTransactions={paginatedTransactions}
           subscanUrl={subscanUrl}
           isLoading={isLoadingTransactions}
+          did={identity.did}
         />
       </GenericTabPanel>
       <GenericTabPanel

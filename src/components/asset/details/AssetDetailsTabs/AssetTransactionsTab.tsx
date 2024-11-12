@@ -36,6 +36,9 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { AssetTransactionsCsvExportService } from '@/domain/services/exports/AssetTransactionsCsvExportService';
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
@@ -191,6 +194,16 @@ export function AssetTransactionsTab({
     if (selectedVenue === 'all') return transactionsData;
     return transactionsData.filter((tx) => tx.venueId === selectedVenue);
   }, [transactionsData, selectedVenue]);
+
+  const handleExport = () => {
+    const csvExporter = new CsvExporter(
+      AssetTransactionsCsvExportService.getTransactionColumns(
+        asset.isNftCollection,
+      ),
+    );
+    const exportService = new AssetTransactionsCsvExportService(csvExporter);
+    exportService.exportTransactions(filteredTransactions, asset);
+  };
 
   if (isLoading || isLoadingSdkClass) {
     return <GenericTableSkeleton columnCount={7} rowCount={5} />;
@@ -364,7 +377,15 @@ export function AssetTransactionsTab({
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={filteredTransactions.length === 0}
+          />
+        }
+      />
     </>
   );
 }
