@@ -7,16 +7,16 @@ import { useGetSettlementInstructionById } from '@/hooks/settlement/useGetSettle
 import { SettlementCard } from '@/components/settlement/SettlementCard';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { SettlementDetailsTab } from '@/components/settlement/SettlementDetailsTab';
+import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 
 export default function SettlementDetailPage() {
   const { instructionId } = useParams();
-  const { instruction, rawInstruction, status, error } =
+  const { instruction, isLoading, isFetched, error } =
     useGetSettlementInstructionById(instructionId as string);
+  const { currentNetworkConfig } = useNetworkProvider();
 
-  if (error.sdkError) {
-    return (
-      <Typography color="error">Error: {error.sdkError?.message}</Typography>
-    );
+  if (error) {
+    return <Typography color="error">Error: {error.message}</Typography>;
   }
 
   if (instruction === null) {
@@ -25,19 +25,12 @@ export default function SettlementDetailPage() {
 
   return (
     <MainWrapper>
-      <SettlementCard
-        instruction={instruction}
-        rawInstruction={rawInstruction}
-        isLoading={!status.isFetchedSdk}
-      />
-      {instruction && !instruction.isExecuted && (
+      <SettlementCard instruction={instruction} isLoading={!isFetched} />
+      {instruction && (
         <SettlementDetailsTab
-          settlementData={{
-            instruction,
-            rawInstruction,
-            status,
-            error,
-          }}
+          instruction={instruction}
+          isLoading={!isFetched || isLoading}
+          subscanUrl={currentNetworkConfig?.subscanUrl || ''}
         />
       )}
     </MainWrapper>

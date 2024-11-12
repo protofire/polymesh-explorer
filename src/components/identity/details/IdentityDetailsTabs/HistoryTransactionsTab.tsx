@@ -18,23 +18,36 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { ROUTES } from '@/config/routes';
 import { truncateAddress } from '@/services/polymesh/address';
 import { CheckBooleanField } from '@/components/shared/fieldAttributes/CheckBooleanField';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { TransactionHistoryCsvExportService } from '@/domain/services/exports/TransactionHistoryCsvExportService';
 
 interface HistoryTransactionsTabTableProps {
   paginatedTransactions: PaginatedData<ExtrinsicTransaction[]> | undefined;
   isLoading: boolean;
   subscanUrl: string;
+  did: string;
 }
 
 export function HistoryTransactionsTabTable({
   paginatedTransactions,
   isLoading,
   subscanUrl,
+  did,
 }: HistoryTransactionsTabTableProps) {
   if (isLoading || paginatedTransactions === undefined) {
     return <GenericTableSkeleton columnCount={6} rowCount={3} />;
   }
 
   const { data: transactions, paginationController } = paginatedTransactions;
+
+  const handleExport = () => {
+    const csvExporter = new CsvExporter<ExtrinsicTransaction>(
+      TransactionHistoryCsvExportService.getTransactionColumns(),
+    );
+    const exportService = new TransactionHistoryCsvExportService(csvExporter);
+    exportService.exportTransactions(transactions, did);
+  };
 
   return (
     <>
@@ -91,7 +104,15 @@ export function HistoryTransactionsTabTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={transactions.length === 0}
+          />
+        }
+      />
     </>
   );
 }

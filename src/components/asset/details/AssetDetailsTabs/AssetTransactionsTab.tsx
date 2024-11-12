@@ -35,6 +35,10 @@ import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
+import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { AssetTransactionsCsvExportService } from '@/domain/services/exports/AssetTransactionsCsvExportService';
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
@@ -191,6 +195,16 @@ export function AssetTransactionsTab({
     return transactionsData.filter((tx) => tx.venueId === selectedVenue);
   }, [transactionsData, selectedVenue]);
 
+  const handleExport = () => {
+    const csvExporter = new CsvExporter(
+      AssetTransactionsCsvExportService.getTransactionColumns(
+        asset.isNftCollection,
+      ),
+    );
+    const exportService = new AssetTransactionsCsvExportService(csvExporter);
+    exportService.exportTransactions(filteredTransactions, asset);
+  };
+
   if (isLoading || isLoadingSdkClass) {
     return <GenericTableSkeleton columnCount={7} rowCount={5} />;
   }
@@ -238,7 +252,7 @@ export function AssetTransactionsTab({
           )}
         </Box>
 
-        {venueFiltering && (
+        {venueFiltering?.isEnabled && (
           <VenueFilteringStatus
             enabled={venueFiltering.isEnabled}
             allowedVenues={venueFiltering.allowedVenues}
@@ -278,13 +292,20 @@ export function AssetTransactionsTab({
                   <TableRow key={tx.id} hover>
                     <TableCell>
                       {tx.instructionId ? (
-                        <GenericLink
-                          href={`${subscanUrl}/block/${tx.createdBlock.blockId}?tab=event&event=${tx.id.replace('/', '-')}`}
-                          tooltipText="See on subscan"
-                          isExternal
-                        >
-                          {tx.instructionId}
-                        </GenericLink>
+                        <>
+                          <Typography variant="caption">
+                            {tx.instructionId}
+                          </Typography>
+                          <PolymeshExplorerLink
+                            baseUrl={subscanUrl}
+                            path="block"
+                            hash={`${tx.createdBlock.blockId}?tab=event&event=${tx.id.replace('/', '-')}`}
+                            sx={{
+                              ml: 0.2,
+                              padding: '2px',
+                            }}
+                          />
+                        </>
                       ) : (
                         <EmptyDash />
                       )}
@@ -335,6 +356,7 @@ export function AssetTransactionsTab({
                           <NftIdsDisplay
                             nftIds={tx.nftIds}
                             assetId={asset.assetId}
+                            maxIdsToShow={3}
                           />
                         ) : (
                           tx.amount
@@ -355,7 +377,15 @@ export function AssetTransactionsTab({
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={filteredTransactions.length === 0}
+          />
+        }
+      />
     </>
   );
 }

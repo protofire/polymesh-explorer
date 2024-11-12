@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Stack, Typography } from '@mui/material';
-import { SettlementInstruction } from '@/domain/entities/SettlementInstruction';
+import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
 import { StatusBadge } from '@/components/shared/common/StatusBadge';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
@@ -11,13 +11,12 @@ import CopyButton from '@/components/shared/common/CopyButton';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
-import {
-  RawInstructionEvent,
-  RawInstructionNode,
-} from '@/services/repositories/types';
+import { RawInstructionEvent } from '@/services/repositories/types';
 
-export function getLastEventDateTime(instruction: RawInstructionNode): string {
-  const sortedEvents = [...instruction.events.nodes].sort(
+export function getLastEventDateTime(
+  instruction: SettlementInstructionWithEvents,
+): string {
+  const sortedEvents = [...instruction.events].sort(
     (a, b) =>
       new Date(b.createdBlock.datetime).getTime() -
       new Date(a.createdBlock.datetime).getTime(),
@@ -26,9 +25,9 @@ export function getLastEventDateTime(instruction: RawInstructionNode): string {
 }
 
 export function getLastEvent(
-  instruction: RawInstructionNode,
+  instruction: SettlementInstructionWithEvents,
 ): RawInstructionEvent | undefined {
-  return [...instruction.events.nodes].sort(
+  return [...instruction.events].sort(
     (a, b) =>
       new Date(b.createdBlock.datetime).getTime() -
       new Date(a.createdBlock.datetime).getTime(),
@@ -38,24 +37,22 @@ export function getLastEvent(
 export function generateLinkToUse(
   isExecuted: boolean,
   lasEvent: RawInstructionEvent | null | undefined,
-  rawInstruction: RawInstructionNode | null | undefined,
+  instruction: SettlementInstructionWithEvents | null | undefined,
 ): string {
-  if (!rawInstruction) return '';
+  if (!instruction) return '';
 
   return isExecuted && lasEvent
     ? `${lasEvent.createdBlock.id.toString()}?tab=event&event=${lasEvent.id.replace('/', '-')}`
-    : rawInstruction?.createdBlock.id.toString() || '';
+    : instruction?.createdBlock?.id.toString() || '';
 }
 
 interface SettlementCardProps {
-  instruction?: SettlementInstruction | undefined;
-  rawInstruction: RawInstructionNode | null | undefined;
+  instruction?: SettlementInstructionWithEvents | undefined;
   isLoading?: boolean;
 }
 
 export function SettlementCard({
   instruction,
-  rawInstruction,
   isLoading,
 }: SettlementCardProps): React.ReactElement {
   const { currentNetworkConfig } = useNetworkProvider();
@@ -65,12 +62,12 @@ export function SettlementCard({
   }
 
   const { id, createdAt, settlementType, status, isExecuted } = instruction;
-  const lastEventTime = rawInstruction
-    ? `${getLastEventDateTime(rawInstruction)}Z`
+  const lastEventTime = instruction
+    ? `${getLastEventDateTime(instruction)}Z`
     : null;
-  const lasEvent = rawInstruction ? getLastEvent(rawInstruction) : null;
+  const lasEvent = instruction ? getLastEvent(instruction) : null;
   const dateToUse = isExecuted ? lastEventTime : createdAt?.toISOString();
-  const linkToUse = generateLinkToUse(isExecuted, lasEvent, rawInstruction);
+  const linkToUse = generateLinkToUse(isExecuted, lasEvent, instruction);
 
   return (
     <>
@@ -119,7 +116,7 @@ export function SettlementCard({
               <EmptyDash />
             ) : (
               <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-                {instruction.venueId}, {rawInstruction?.venue.details ?? '-'}
+                {instruction.venueId}, {instruction?.venueDescription ?? '-'}
               </GenericLink>
             )}
           </Box>

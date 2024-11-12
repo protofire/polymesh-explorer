@@ -22,6 +22,9 @@ import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { UseTransactionHistoryDidsAccountsResult } from '@/hooks/identity/useTransactionHistoryDidsAccounts';
 import { TransactionHistoryField } from './TransactionHistoryField';
+import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
+import { CsvExporter } from '@/services/csv/CsvExporter';
+import { IdentityCsvExportService } from '@/domain/services/exports/IdentityCsvExportService';
 
 interface IdentityTableProps {
   paginatedIdentities: PaginatedData<Identity[]>;
@@ -40,6 +43,14 @@ export function IdentityTable({
     return <Typography color="error">Error: {error.message}</Typography>;
 
   const { data: identities, paginationController } = paginatedIdentities;
+
+  const handleExport = () => {
+    const csvExporter = new CsvExporter<Identity>(
+      IdentityCsvExportService.getIdentityColumns(),
+    );
+    const exportService = new IdentityCsvExportService(csvExporter);
+    exportService.exportIdentities(identities);
+  };
 
   return (
     <Box>
@@ -100,7 +111,15 @@ export function IdentityTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={paginationController}
+        leftActions={
+          <ExportCsvButton
+            onExport={handleExport}
+            disabled={identities.length === 0}
+          />
+        }
+      />
     </Box>
   );
 }

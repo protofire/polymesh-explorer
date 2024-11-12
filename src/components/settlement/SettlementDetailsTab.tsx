@@ -1,31 +1,23 @@
 import React from 'react';
-import {
-  Box,
-  Tab,
-  Tabs,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material';
-import { UseGetSettlementInstructionByIdReturn } from '@/hooks/settlement/useGetSettlementInstructionById';
+import { Box, Tab, Tabs } from '@mui/material';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
-import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import { AccountOrDidTextField } from '../shared/fieldAttributes/AccountOrDidTextField';
+import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
+import { LegsTabTable } from './tabs/LegsTabTable';
+import { EventsTabTable } from './tabs/EventsTabTable';
+import { AffirmationsTabTable } from './tabs/AffirmationsTabTable';
 
 interface SettlementDetailsTabProps {
-  settlementData: UseGetSettlementInstructionByIdReturn;
+  instruction: SettlementInstructionWithEvents;
+  isLoading: boolean;
+  subscanUrl: string;
 }
 
 export function SettlementDetailsTab({
-  settlementData,
+  instruction,
+  isLoading,
+  subscanUrl,
 }: SettlementDetailsTabProps): React.ReactElement {
-  const { instruction, status } = settlementData;
   const [value, setValue] = React.useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
@@ -39,53 +31,42 @@ export function SettlementDetailsTab({
           label={
             <Box sx={{ position: 'relative', display: 'inline-block' }}>
               Legs
-              {status.isLoadingSdk && <LoadingDot />}
+              {isLoading && <LoadingDot />}
+            </Box>
+          }
+        />
+        <Tab
+          label={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              Events
+              {isLoading && <LoadingDot />}
+            </Box>
+          }
+        />
+        <Tab
+          label={
+            <Box sx={{ position: 'relative', display: 'inline-block' }}>
+              Affirmations
+              {isLoading && <LoadingDot />}
             </Box>
           }
         />
       </Tabs>
 
       <GenericTabPanel value={value} index={0} labelKey="legs">
-        <TableContainer component={Paper}>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>Sending </TableCell>
-                <TableCell>Receiving </TableCell>
-                <TableCell>Asset</TableCell>
-                <TableCell>Amount</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {instruction?.legs.map((leg) => (
-                <TableRow
-                  key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
-                >
-                  <TableCell>
-                    <AccountOrDidTextField
-                      value={leg.from.id}
-                      showIdenticon
-                      isIdentity
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <AccountOrDidTextField
-                      value={leg.to.id}
-                      showIdenticon
-                      isIdentity
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${leg.asset}`}>
-                      {leg.asset}
-                    </GenericLink>
-                  </TableCell>
-                  <TableCell>{leg.amount}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <LegsTabTable
+          legs={instruction.legs}
+          venueId={instruction.venueId}
+          instructionId={instruction.id}
+        />
+      </GenericTabPanel>
+
+      <GenericTabPanel value={value} index={1} labelKey="events">
+        <EventsTabTable events={instruction.events} subscanUrl={subscanUrl} />
+      </GenericTabPanel>
+
+      <GenericTabPanel value={value} index={2} labelKey="affirmations">
+        <AffirmationsTabTable affirmations={instruction.affirmations} />
       </GenericTabPanel>
     </>
   );

@@ -20,29 +20,15 @@ import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/Accou
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
-import { truncateAddress } from '@/services/polymesh/address';
 import { Asset } from '@/domain/entities/Asset';
-import { ROUTES } from '@/config/routes';
+import { ImageNftOrPlaceholder } from './ImageNftOrPlaceHolder';
+import { EmptyOrCollectionLink } from './EmptyOrCollectionLink';
 
 interface NftDetailsCardProps {
   nft?: NftAssetWithMetadata | null;
   isLoading: boolean;
   collection: Asset | null | undefined;
   isLoadingCollection: boolean;
-}
-
-function EmptyOrCollectionLink({
-  collection,
-}: {
-  collection: Asset | null | undefined;
-}) {
-  if (!collection) return <EmptyDash />;
-
-  return (
-    <GenericLink href={`${ROUTES.Asset}/${collection.assetId}`}>
-      {collection.ticker || truncateAddress(collection.assetUuid)}
-    </GenericLink>
-  );
 }
 
 export function NftDetailsCard({
@@ -100,31 +86,7 @@ export function NftDetailsCard({
 
       <Stack spacing={3} mt={4}>
         <Stack direction="row" spacing={4} alignItems="flex-start">
-          {nft.imgUrl && (
-            <Box
-              sx={{
-                width: 390,
-                height: 390,
-                borderRadius: 2,
-                overflow: 'hidden',
-                bgcolor: 'background.paper',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Box
-                component="img"
-                src={nft.imgUrl}
-                alt={nft.name || 'NFT Image'}
-                sx={{
-                  maxWidth: '100%',
-                  maxHeight: '100%',
-                  objectFit: 'contain',
-                }}
-              />
-            </Box>
-          )}
+          <ImageNftOrPlaceholder imgUrl={nft.imgUrl} name={nft.name} />
 
           <Stack spacing={3} flex={1}>
             <Box>

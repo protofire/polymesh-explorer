@@ -1,6 +1,6 @@
 import React from 'react';
 import { Tooltip, Typography } from '@mui/material';
-import { format, formatDistanceToNow, isValid, parseISO } from 'date-fns';
+import { format, formatDistanceToNow, isValid } from 'date-fns';
 
 interface FormattedDateProps {
   date: Date | string;
@@ -13,7 +13,7 @@ export function FormattedDate({
   formatString = 'PPpp',
   variant = 'caption',
 }: FormattedDateProps) {
-  const parsedDate = typeof date === 'string' ? parseISO(date) : date;
+  const parsedDate = typeof date === 'string' ? new Date(`${date}Z`) : date;
 
   if (!isValid(parsedDate)) {
     return null;

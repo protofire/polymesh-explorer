@@ -16,13 +16,26 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 interface CounterBadgeProps {
   count: number;
   children: React.ReactNode;
+  right?: number;
 }
 
-export function CounterBadge({ count, children }: CounterBadgeProps) {
+export function CounterBadge({
+  count,
+  children,
+  right = -10,
+}: CounterBadgeProps) {
   const displayCount = count > 99 ? '99+' : count.toString();
 
   return (
-    <StyledBadge badgeContent={displayCount} color="primary">
+    <StyledBadge
+      badgeContent={displayCount}
+      color="primary"
+      sx={{
+        '& .MuiBadge-badge': {
+          right: right !== -10 ? right : undefined,
+        },
+      }}
+    >
       {children}
     </StyledBadge>
   );
