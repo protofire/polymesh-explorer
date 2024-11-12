@@ -100,9 +100,13 @@ function Row({
                       key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
                     >
                       <TableCell>
-                        <SettlementLegDirectionField
-                          direction={leg.direction}
-                        />
+                        {leg.direction ? (
+                          <SettlementLegDirectionField
+                            direction={leg.direction}
+                          />
+                        ) : (
+                          <EmptyDash />
+                        )}
                       </TableCell>
                       <TableCell>
                         <GenericLink href={`${ROUTES.Identity}/${leg.from.id}`}>
