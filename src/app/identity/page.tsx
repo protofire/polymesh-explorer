@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Typography } from '@mui/material';
 import { useListIdentities } from '@/hooks/identity/useListIdentities';
 import { IdentityTable } from '@/components/identity/IdentityTable/IdentityTable';
@@ -19,10 +19,29 @@ export default function IdentityPage() {
 
   const {
     data: chartData,
-    isLoading: isChartLoading,
     isFetched: isChartFetched,
     error: chartError,
   } = useIdentityCreationCountByMonth(N_MONTHS);
+
+  const lastValidChartDataRef = useRef(chartData);
+  const lastValidTotalIdentitiesRef = useRef(
+    data?.paginationController.paginationInfo.totalCount,
+  );
+
+  useEffect(() => {
+    if (chartData) {
+      lastValidChartDataRef.current = chartData;
+    }
+    if (data?.paginationController.paginationInfo.totalCount) {
+      lastValidTotalIdentitiesRef.current =
+        data.paginationController.paginationInfo.totalCount;
+    }
+  }, [chartData, data]);
+
+  const isInitialLoading =
+    (!isChartFetched || !isDataHistoryFetched || !data) &&
+    !lastValidChartDataRef.current &&
+    !lastValidTotalIdentitiesRef.current;
 
   return (
     <MainWrapper>
@@ -31,13 +50,19 @@ export default function IdentityPage() {
       </Typography>
       <SummaryIdentitiesCard
         nMonths={N_MONTHS}
-        chartData={chartData}
-        isLoading={isChartLoading || !isChartFetched}
+        chartData={lastValidChartDataRef.current || chartData}
+        isLoading={isInitialLoading}
         error={chartError}
         totalVerifiedIdentities={
-          chartData?.reduce((sum, item) => sum + Number(item.count), 0) || 0
+          (lastValidChartDataRef.current || chartData)?.reduce(
+            (sum, item) => sum + Number(item.count),
+            0,
+          ) || 0
         }
-        totalIdentities={data?.paginationController.paginationInfo.totalCount}
+        totalIdentities={
+          lastValidTotalIdentitiesRef.current ||
+          data?.paginationController.paginationInfo.totalCount
+        }
       />
       {isLoading || dataHistory === undefined ? (
         <SkeletonIdentityTable />
