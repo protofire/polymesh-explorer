@@ -1,4 +1,5 @@
 import { Theme } from '@mui/material/styles';
+import { MAIN_BACKGROUND } from './colors';
 
 const GlobalStyles = (theme: Theme) => {
   return {
@@ -12,6 +13,7 @@ const GlobalStyles = (theme: Theme) => {
       scrollbarColor: theme.palette.primary.main,
       overflowX: 'hidden',
       padding: '0 !important',
+      background: MAIN_BACKGROUND,
     },
     '::-webkit-scrollbar': {
       width: '8px',

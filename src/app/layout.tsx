@@ -3,6 +3,7 @@ import { Providers } from '@/context/Providers';
 import { AppLayout } from '@/components/shared/layout/AppLayout';
 import TopLoader from '@/components/shared/TopLoader';
 import { SearchBarSkeleton } from '@/components/shared/layout/LayoutSearchTextInput/SearchTextInputSkeleton';
+import { ErrorBoundary } from '@/components/shared/layout/ErrorBoundary';
 
 export const metadata = {
   title: 'Polymesh Blockchain Explorer',
@@ -24,7 +25,9 @@ export default function RootLayout({
         <TopLoader />
         <Providers>
           <Suspense fallback={<SearchBarSkeleton />}>
-            <AppLayout>{children}</AppLayout>
+            <AppLayout>
+              <ErrorBoundary>{children}</ErrorBoundary>
+            </AppLayout>
           </Suspense>
         </Providers>
       </body>

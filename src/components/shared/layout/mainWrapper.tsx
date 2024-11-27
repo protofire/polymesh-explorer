@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from '@mui/material';
+import { MAIN_BACKGROUND } from '@/theme/colors';
 
 interface MainWrapperProps {
   children: React.ReactNode;
@@ -12,7 +13,7 @@ export function MainWrapper({
     <Card
       variant="outlined"
       sx={{
-        background: '#0a0608d1',
+        background: `${MAIN_BACKGROUND}d1`,
         marginTop: '2rem',
         padding: '2rem',
         borderRadius: '1rem',

@@ -114,7 +114,9 @@ export function AppLayout({
             }}
           >
             <Typography variant="caption">
-              <GenericLink href={POLYMESH_DOCS}>Polymesh Docs</GenericLink>
+              <GenericLink isExternal href={POLYMESH_DOCS}>
+                Polymesh Docs
+              </GenericLink>
             </Typography>
           </Box>
         </Footer>

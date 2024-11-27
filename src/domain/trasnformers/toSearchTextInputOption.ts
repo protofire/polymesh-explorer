@@ -11,6 +11,14 @@ import { SettlementInstruction } from '../entities/SettlementInstruction';
 export function transformToOption(
   data: UseSearchPolymeshEntityResult,
 ): SearchTextInputOption {
+  if (!data || !data.searchCriteria) {
+    return {
+      key: 'unknown',
+      type: PolymeshEntityType.Unknown,
+      value: '',
+    };
+  }
+
   switch (data.searchCriteria.type) {
     case PolymeshEntityType.Account: {
       const account = data.entity as Account;
