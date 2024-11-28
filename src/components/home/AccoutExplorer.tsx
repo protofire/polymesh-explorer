@@ -6,9 +6,11 @@ import { useSearchPolymeshEntity } from '@/hooks/polymeshEntity/useSearchPolymes
 import { SearchTextInput } from '../shared/SearchTextInput';
 import { CustomBox } from './styled';
 import { transformToOption } from '@/domain/trasnformers/toSearchTextInputOption';
+import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 
 export default function AccountExplorer() {
   const [searchTerm, setSearchTerm] = useState('');
+  const { isLoading: isLoadingSdk } = usePolymeshSdkService();
   const {
     data: results,
     isFetching: isLoading,
@@ -32,7 +34,7 @@ export default function AccountExplorer() {
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         options={options}
-        isLoading={isLoading}
+        isLoading={isLoading || isLoadingSdk}
         onRefetch={refetch}
         size="big"
       />

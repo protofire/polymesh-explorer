@@ -4,9 +4,11 @@ import React, { useMemo, useState } from 'react';
 import { useSearchPolymeshEntity } from '@/hooks/polymeshEntity/useSearchPolymeshEntity';
 import { transformToOption } from '@/domain/trasnformers/toSearchTextInputOption';
 import { SearchTextInput } from '@/components/shared/SearchTextInput';
+import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 
 export function LayoutSearchTextInput() {
   const [searchTerm, setSearchTerm] = useState('');
+  const { isLoading: isLoadingSdk } = usePolymeshSdkService();
   const {
     data: results,
     isFetching: isLoading,
@@ -26,7 +28,7 @@ export function LayoutSearchTextInput() {
       value={searchTerm}
       onChange={(e) => setSearchTerm(e.target.value)}
       options={options}
-      isLoading={isLoading}
+      isLoading={isLoading || isLoadingSdk}
       onRefetch={refetch}
     />
   );
