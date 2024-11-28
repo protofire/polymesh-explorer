@@ -288,7 +288,7 @@ export interface RawAffirmationNode {
 export interface RawInstructionNode {
   id: string;
   status: InstructionStatusEnum;
-  venue: {
+  venue?: {
     id: string;
     details: string;
   };

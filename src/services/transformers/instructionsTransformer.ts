@@ -59,8 +59,8 @@ export function rawInstructiontoSettlementInstruction(
 
   return {
     id: rawInstruction.id,
-    venueId: rawInstruction.venue.id,
-    venueDescription: rawInstruction.venue.details,
+    venueId: rawInstruction.venue?.id,
+    venueDescription: rawInstruction.venue?.details,
     status: statusEnumToInstructionStatus(rawInstruction.status),
     memo: rawInstruction.memo,
     createdAt: rawInstruction.createdBlock.datetime

@@ -112,7 +112,7 @@ export function SettlementCard({
             <Typography variant="body2" color="textSecondary">
               Venue:
             </Typography>
-            {isExecuted ? (
+            {!instruction.venueId || isExecuted ? (
               <EmptyDash />
             ) : (
               <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>

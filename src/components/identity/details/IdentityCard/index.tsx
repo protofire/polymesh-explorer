@@ -118,7 +118,7 @@ export function IdentityCard({
           <Typography variant="h4">{assetsCount}</Typography>
         </Box>
         <Box width="25%">
-          <Typography variant="body2">Venue</Typography>
+          <Typography variant="body2">Venues</Typography>
           <Typography variant="h4">{venuesCount}</Typography>
         </Box>
         <Box width="25%">

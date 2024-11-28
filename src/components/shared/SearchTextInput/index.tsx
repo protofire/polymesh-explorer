@@ -89,22 +89,31 @@ export function SearchTextInput({
       sx={paddingTop !== undefined ? { pt: paddingTop } : undefined}
       onOpen={() => setOpen(true)}
       onClose={() => setOpen(false)}
-      inputValue={value}
+      inputValue={value || ''}
       onInputChange={(event, newValue) => {
         if (event) {
           handleInputChange(event as React.ChangeEvent<HTMLInputElement>);
         }
-        setOpen(newValue !== '');
+        setOpen(!!newValue);
       }}
       options={options}
-      getOptionLabel={(option: unknown) =>
-        typeof option === 'string'
+      getOptionLabel={(option: unknown) => {
+        if (!option) return '';
+        return typeof option === 'string'
           ? option
-          : (option as SearchTextInputOption).value
-      }
-      value={selectedOption}
+          : (option as SearchTextInputOption).value || '';
+      }}
+      value={selectedOption || null}
       onChange={(event, newValue) => {
-        setSelectedOption(newValue as SearchTextInputOption | null);
+        if (newValue && typeof newValue === 'object') {
+          const inputOptionValue = newValue as SearchTextInputOption;
+          setSelectedOption(inputOptionValue);
+          if (inputOptionValue.type !== 'Unknown' && inputOptionValue.link) {
+            window.location.href = inputOptionValue.link;
+          }
+        } else {
+          setSelectedOption(null);
+        }
       }}
       onKeyDown={handleKeyDown}
       renderOption={(props, option, { selected }) => {
