@@ -106,9 +106,10 @@ export function SearchTextInput({
       value={selectedOption || null}
       onChange={(event, newValue) => {
         if (newValue && typeof newValue === 'object') {
-          setSelectedOption(newValue as SearchTextInputOption);
-          if (newValue.type !== 'Unknown' && newValue.link) {
-            window.location.href = newValue.link;
+          const inputOptionValue = newValue as SearchTextInputOption;
+          setSelectedOption(inputOptionValue);
+          if (inputOptionValue.type !== 'Unknown' && inputOptionValue.link) {
+            window.location.href = inputOptionValue.link;
           }
         } else {
           setSelectedOption(null);
