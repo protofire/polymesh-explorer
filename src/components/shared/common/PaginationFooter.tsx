@@ -91,11 +91,9 @@ export function PaginationFooter({
 
   const handleChangeRowsPerPage = React.useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (paginationInfo.totalCount > 0) {
-        pagination.changePageSize(event);
-      }
+      pagination.changePageSize(event);
     },
-    [pagination, paginationInfo.totalCount],
+    [pagination],
   );
 
   return (
@@ -113,9 +111,9 @@ export function PaginationFooter({
         onPageChange={handleChangePage}
         rowsPerPage={paginationInfo.pageSize}
         onRowsPerPageChange={handleChangeRowsPerPage}
-        rowsPerPageOptions={paginationInfo.totalCount > 0 ? [10, 30, 50] : []}
+        rowsPerPageOptions={[10, 30, 50]}
         ActionsComponent={TablePaginationActions}
-        disabled={paginationInfo.totalCount <= paginationInfo.pageSize}
+        disabled={paginationInfo.totalCount === 0}
       />
     </Stack>
   );

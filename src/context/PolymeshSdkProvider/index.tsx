@@ -45,7 +45,6 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
     setIsLoading(true);
     setError(null);
 
-    setGraphQlClient(new GraphQLClient(networkConfig.graphQlNode));
     PolymeshSdkService.getInstance(networkConfig.rpc, networkConfig.graphQlNode)
       .then((service) => {
         setPolymeshSdk(service);
@@ -58,7 +57,10 @@ export function PolymeshSdkProvider({ children }: PropsWithChildren) {
         );
         setPolymeshSdk(null);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        setGraphQlClient(new GraphQLClient(networkConfig.graphQlNode));
+        setIsLoading(false);
+      });
   }, [networkConfig]);
 
   const contextValue = useMemo(

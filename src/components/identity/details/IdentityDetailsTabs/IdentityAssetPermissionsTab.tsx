@@ -114,8 +114,8 @@ export function IdentityAssetPermissionsTab({
             </TableRow>
           </TableHead>
           <TableBody>
-            {assetPermissions.length > 0 ? (
-              assetPermissions.map((permission) => (
+            {paginatedItems.length > 0 ? (
+              paginatedItems.map((permission) => (
                 <Row key={permission.asset.assetId} permission={permission} />
               ))
             ) : (

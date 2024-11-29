@@ -185,14 +185,16 @@ export interface UseSearchPolymeshEntityResult {
 
 export const useSearchPolymeshEntity = (input: SearchCriteria) => {
   const { polymeshService, graphQlClient } = usePolymeshSdkService();
-  const { identityService } = useMemo(() => {
-    return { identityService: new IdentityGraphRepo(graphQlClient) };
+  const identityService = useMemo(() => {
+    if (!graphQlClient) return null;
+
+    return new IdentityGraphRepo(graphQlClient);
   }, [graphQlClient]);
 
   return useQuery<UseSearchPolymeshEntityResult[], Error>({
-    queryKey: ['useSearchPolymeshEntity', input],
+    queryKey: ['useSearchPolymeshEntity', identityService, input],
     queryFn: async () => {
-      if (!polymeshService?.polymeshSdk) {
+      if (!polymeshService?.polymeshSdk || !identityService) {
         throw new Error('PolymeshSdk service not initialized');
       }
 
@@ -202,7 +204,8 @@ export const useSearchPolymeshEntity = (input: SearchCriteria) => {
         input.searchTerm,
       );
     },
-    enabled: !!input.searchTerm && !!polymeshService?.polymeshSdk,
+    enabled:
+      !!input.searchTerm && !!polymeshService?.polymeshSdk && !!identityService,
     initialData: [],
   });
 };

@@ -30,7 +30,7 @@ export const useGetIdentity = ({ identityDid }: Props) => {
         throw e;
       }
     },
-    enabled: !!identityDid || !!identityService,
+    enabled: !!identityDid && !!identityService,
   });
 
   return queryResult;

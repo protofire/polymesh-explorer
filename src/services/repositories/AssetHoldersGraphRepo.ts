@@ -10,7 +10,7 @@ export class AssetHoldersGraphRepo {
   async getAssetHolders(
     assetId: string,
     first: number,
-    after?: string,
+    offset: number = 0,
   ): Promise<{
     holders: AssetHolder[];
     totalCount: number;
@@ -18,10 +18,10 @@ export class AssetHoldersGraphRepo {
   }> {
     const query = gql`
       ${pageInfoFragment}
-      query AssetHolders($first: Int!, $after: Cursor, $assetId: String!) {
+      query AssetHolders($first: Int!, $offset: Int!, $assetId: String!) {
         assetHolders(
           first: $first
-          after: $after
+          offset: $offset
           orderBy: AMOUNT_DESC
           filter: { assetId: { equalTo: $assetId } }
         ) {
@@ -40,7 +40,7 @@ export class AssetHoldersGraphRepo {
 
     const response = await this.client.request<AssetHoldersResponse>(query, {
       first,
-      after,
+      offset,
       assetId,
     });
 
@@ -54,7 +54,7 @@ export class AssetHoldersGraphRepo {
   async getNftHolders(
     assetId: string,
     first: number,
-    after?: string,
+    offset: number = 0,
   ): Promise<{
     holders: AssetHolder[];
     totalCount: number;
@@ -62,10 +62,10 @@ export class AssetHoldersGraphRepo {
   }> {
     const query = gql`
       ${pageInfoFragment}
-      query NftHolders($first: Int!, $after: Cursor, $assetId: String!) {
+      query NftHolders($first: Int!, $offset: Int!, $assetId: String!) {
         nftHolders(
           first: $first
-          after: $after
+          offset: $offset
           orderBy: NFT_IDS_DESC
           filter: { assetId: { equalTo: $assetId }, nftIds: { notEqualTo: [] } }
         ) {
@@ -84,7 +84,7 @@ export class AssetHoldersGraphRepo {
 
     const response = await this.client.request<NftHoldersResponse>(query, {
       first,
-      after,
+      offset,
       assetId,
     });
 
