@@ -23,7 +23,9 @@ export function useGetAssetHolders({
   asset,
 }: Props): UseQueryResult<UseGetAssetHoldersReturn> {
   const { graphQlClient } = usePolymeshSdkService();
-  const paginationController = usePaginationControllerGraphQl();
+  const paginationController = usePaginationControllerGraphQl({
+    useOffset: true,
+  });
   const assetHoldersService = useMemo(() => {
     if (!graphQlClient) return null;
     return new AssetHoldersGraphRepo(graphQlClient);
@@ -42,13 +44,13 @@ export function useGetAssetHolders({
         result = await assetHoldersService.getNftHolders(
           asset.assetId,
           paginationController.paginationInfo.pageSize,
-          paginationController.paginationInfo.cursor || undefined,
+          paginationController.paginationInfo.offset,
         );
       } else {
         result = await assetHoldersService.getAssetHolders(
           asset.assetId,
           paginationController.paginationInfo.pageSize,
-          paginationController.paginationInfo.cursor || undefined,
+          paginationController.paginationInfo.offset,
         );
       }
 
@@ -98,7 +100,7 @@ export function useGetAssetHolders({
       'useGetAssetHolders',
       asset.assetId,
       paginationController.paginationInfo.pageSize,
-      paginationController.paginationInfo.cursor,
+      paginationController.paginationInfo.offset,
     ],
     queryFn: fetchAssetHolders,
     select: useCallback(
