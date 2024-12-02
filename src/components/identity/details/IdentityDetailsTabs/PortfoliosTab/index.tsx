@@ -6,7 +6,12 @@ import {
   ListItem,
   ListItemButton,
   ListItemText,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Tooltip,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
@@ -16,6 +21,9 @@ import {
 } from './AssetTypeToggleButton';
 import { GroupedTabsFungibleOrNon } from './GroupedTabsFungibleOrNon';
 import { useListPortfolioAssetsTransactions } from '@/hooks/portfolio/useListPortfolioAssetsTransactions';
+import { truncateAddress } from '@/services/polymesh/address';
+import CopyButton from '@/components/shared/common/CopyButton';
+import { PortfolioAccordionItem } from './PortfolioAccordionItem';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -77,14 +85,12 @@ export function PortfoliosTab({
         </Typography>
         <List>
           {portfolios.map((portfolio) => (
-            <ListItem key={portfolio.id} disablePadding>
-              <ListItemButton
-                selected={selectedPortfolio?.id === portfolio.id}
-                onClick={() => handlePortfolioSelect(portfolio)}
-              >
-                <ListItemText primary={portfolio.name} />
-              </ListItemButton>
-            </ListItem>
+            <PortfolioAccordionItem
+              key={portfolio.id}
+              portfolio={portfolio}
+              isSelected={selectedPortfolio?.id === portfolio.id}
+              onSelect={handlePortfolioSelect}
+            />
           ))}
         </List>
       </Box>
