@@ -67,9 +67,8 @@ export function TabAssetTransactionsTable({
                     <TableCell>
                       {transaction.instructionId ? (
                         <GenericLink
-                          href={`${subscanUrl}/block/${transaction.createdBlock.blockId}?tab=event&event=${transaction.id.replace('/', '-')}`}
-                          tooltipText="See on subscan"
-                          isExternal
+                          href={`${ROUTES.Settlement}/${transaction.instructionId}`}
+                          tooltipText="Open settlement instruction"
                         >
                           {transaction.instructionId}
                         </GenericLink>

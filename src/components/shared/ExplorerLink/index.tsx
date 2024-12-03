@@ -28,14 +28,31 @@ export function ExplorerLink({
       title={linkDisabled ? 'Transaction hash is not available.' : toolTipText}
       placement="top"
     >
-      <ArrowOutwardIcon fontSize="small" />
+      <ArrowOutwardIcon
+        fontSize="small"
+        sx={{
+          transition: 'color 0.2s',
+          '&:hover': {
+            color: 'primary.main',
+          },
+        }}
+      />
     </Tooltip>
   );
 
   if (linkDisabled) return null;
 
   return (
-    <Link href={fullPath} target="_blank">
+    <Link
+      href={fullPath}
+      target="_blank"
+      sx={{
+        color: 'inherit',
+        '&:hover': {
+          color: 'primary.main',
+        },
+      }}
+    >
       <IconButton disabled={linkDisabled} size="small" sx={sx}>
         {iconWithStyles}
       </IconButton>
