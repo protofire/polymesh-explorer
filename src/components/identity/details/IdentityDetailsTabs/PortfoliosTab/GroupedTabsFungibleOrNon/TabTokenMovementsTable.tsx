@@ -105,7 +105,7 @@ export function TabTokenMovementsTable({
                             },
                             '&:hover .MuiSvgIcon-root': {
                               color: 'primary.main',
-                            }
+                            },
                           }}
                         />
                       )}
