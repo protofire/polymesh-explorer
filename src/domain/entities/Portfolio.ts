@@ -19,5 +19,6 @@ export interface PortfolioWithAssets extends Portfolio {
   assets: AssetPortfolio[];
   nonFungibleAssets?: NftData;
   custodianDid?: Identity['did'];
+  otherOwner?: Identity['did'];
   portfolioSdk: PortfolioSdk;
 }

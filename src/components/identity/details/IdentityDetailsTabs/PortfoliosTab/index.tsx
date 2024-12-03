@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Tooltip,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Box, Typography, List } from '@mui/material';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
@@ -21,8 +9,6 @@ import {
 } from './AssetTypeToggleButton';
 import { GroupedTabsFungibleOrNon } from './GroupedTabsFungibleOrNon';
 import { useListPortfolioAssetsTransactions } from '@/hooks/portfolio/useListPortfolioAssetsTransactions';
-import { truncateAddress } from '@/services/polymesh/address';
-import CopyButton from '@/components/shared/common/CopyButton';
 import { PortfolioAccordionItem } from './PortfolioAccordionItem';
 
 interface PortfoliosTabProps {
