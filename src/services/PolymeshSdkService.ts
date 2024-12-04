@@ -3,10 +3,15 @@ import { BigNumber, Polymesh } from '@polymeshassociation/polymesh-sdk';
 import {
   ExtrinsicData,
   ExtrinsicsOrderBy,
-  NumberedPortfolio,
   ResultSet,
 } from '@polymeshassociation/polymesh-sdk/types';
+import {
+  DefaultPortfolio,
+  NumberedPortfolio,
+} from '@polymeshassociation/polymesh-sdk/internal';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
+
+const DEFAULT_PORTFOLIO_NAME = 'Default';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =
@@ -93,10 +98,20 @@ export class PolymeshSdkService {
         did,
       });
 
-      const portfolios = await polymeshIdentity.portfolios.getPortfolios();
+      let portfolios = await polymeshIdentity.portfolios.getPortfolios();
+      const custodiedPortfolios =
+        await polymeshIdentity.portfolios.getCustodiedPortfolios();
+
+      if (custodiedPortfolios?.data && custodiedPortfolios.data.length > 0) {
+        portfolios = [
+          portfolios[0],
+          ...portfolios.slice(1),
+          ...custodiedPortfolios.data,
+        ] as [DefaultPortfolio, ...NumberedPortfolio[]];
+      }
 
       return await Promise.all(
-        portfolios.map(async (portfolio, index) => {
+        portfolios.map(async (portfolio) => {
           const assetBalances = await portfolio.getAssetBalances();
           const custodian = await portfolio.getCustodian();
           const assets = assetBalances
@@ -108,18 +123,24 @@ export class PolymeshSdkService {
               };
             });
 
-          const number = index === 0 ? '0' : (portfolio.toHuman().id as string);
-          const name =
-            index === 0
-              ? 'Default'
-              : await (portfolio as NumberedPortfolio).getName();
+          const number = portfolio.toHuman().id
+            ? (portfolio.toHuman().id as string)
+            : '0';
+          const name = portfolio.toHuman().id
+            ? await (portfolio as NumberedPortfolio).getName()
+            : DEFAULT_PORTFOLIO_NAME;
+          const ownerDid = portfolio.toHuman().did;
 
           return {
-            id: `${did}/${number}`,
+            id: `${portfolio.toHuman().did}/${number}`,
             number,
-            name,
+            name:
+              name === DEFAULT_PORTFOLIO_NAME && ownerDid !== did
+                ? `${name}  (${ownerDid.length >= 6 ? ownerDid.slice(-6) : did})`
+                : name,
             assets,
             custodianDid: custodian.did !== did ? custodian.did : undefined,
+            otherOwner: ownerDid !== did ? ownerDid : undefined,
             portfolioSdk: portfolio,
           };
         }),

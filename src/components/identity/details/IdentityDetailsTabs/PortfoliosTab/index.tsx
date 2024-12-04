@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  Box,
-  Typography,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemText,
-} from '@mui/material';
+import { Box, Typography, List } from '@mui/material';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
 import { useListPortfolioMovements } from '@/hooks/portfolio/useListPortfolioMovements';
 import { PortfoliosTabSkeleton } from './PortfoliosTabSkeleton';
@@ -16,6 +9,7 @@ import {
 } from './AssetTypeToggleButton';
 import { GroupedTabsFungibleOrNon } from './GroupedTabsFungibleOrNon';
 import { useListPortfolioAssetsTransactions } from '@/hooks/portfolio/useListPortfolioAssetsTransactions';
+import { PortfolioAccordionItem } from './PortfolioAccordionItem';
 
 interface PortfoliosTabProps {
   portfolios: PortfolioWithAssets[];
@@ -77,14 +71,12 @@ export function PortfoliosTab({
         </Typography>
         <List>
           {portfolios.map((portfolio) => (
-            <ListItem key={portfolio.id} disablePadding>
-              <ListItemButton
-                selected={selectedPortfolio?.id === portfolio.id}
-                onClick={() => handlePortfolioSelect(portfolio)}
-              >
-                <ListItemText primary={portfolio.name} />
-              </ListItemButton>
-            </ListItem>
+            <PortfolioAccordionItem
+              key={portfolio.id}
+              portfolio={portfolio}
+              isSelected={selectedPortfolio?.id === portfolio.id}
+              onSelect={handlePortfolioSelect}
+            />
           ))}
         </List>
       </Box>

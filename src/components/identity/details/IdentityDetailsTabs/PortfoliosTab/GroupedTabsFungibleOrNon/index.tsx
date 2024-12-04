@@ -73,7 +73,6 @@ export function GroupedTabsFungibleOrNon({
       </GenericTabPanel>
       <GenericTabPanel value={selectedTab} index={2} labelKey="portfolio">
         <TabAssetTransactionsTable
-          subscanUrl={subscanUrl}
           assetTransactions={assetTransactions}
           isLoadingTransactions={isLoadingTransactions}
           isFetchingTransactions={isFetchingTransactions}
@@ -108,7 +107,6 @@ export function GroupedTabsFungibleOrNon({
       </GenericTabPanel>
       <GenericTabPanel value={selectedTab} index={2} labelKey="portfolio">
         <TabAssetTransactionsTable
-          subscanUrl={subscanUrl}
           assetTransactions={assetTransactions}
           isLoadingTransactions={isLoadingTransactions}
           isFetchingTransactions={isFetchingTransactions}

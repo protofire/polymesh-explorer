@@ -7,6 +7,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Box,
 } from '@mui/material';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
@@ -19,6 +20,7 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { truncateAddress } from '@/services/polymesh/address';
+import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -27,6 +29,13 @@ interface TabTokenMovementsTableProps {
   subscanUrl: string;
   assetType?: AssetTypeSelected;
 }
+
+const formatMovementId = (id: string | undefined) => {
+  if (!id) return '';
+  if (id.length <= 10) return id;
+
+  return `${id.slice(0, 2)}...${id.slice(-3)}`;
+};
 
 export function TabTokenMovementsTable({
   portfolioMovements,
@@ -66,13 +75,41 @@ export function TabTokenMovementsTable({
               movements.map((movement) => (
                 <TableRow key={movement.id}>
                   <TableCell>
-                    <GenericLink
-                      href={`${subscanUrl}/extrinsic/${movement.id.replace('/', '-')}`}
-                      tooltipText="See on subscan"
-                      isExternal
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      sx={{
+                        minWidth: '1rem',
+                        maxWidth: '8rem',
+                      }}
+                      gap={0.5}
                     >
-                      {movement.id}
-                    </GenericLink>
+                      <Box
+                        sx={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {formatMovementId(movement.id)}
+                      </Box>
+                      {movement.id && (
+                        <PolymeshExplorerLink
+                          baseUrl={subscanUrl}
+                          path="extrinsic"
+                          hash={`${subscanUrl}/extrinsic/${movement.id.replace('/', '-')}`}
+                          sx={{
+                            '& .MuiSvgIcon-root': {
+                              fontSize: '16px',
+                              transition: 'color 0.2s',
+                            },
+                            '&:hover .MuiSvgIcon-root': {
+                              color: 'primary.main',
+                            },
+                          }}
+                        />
+                      )}
+                    </Box>
                   </TableCell>
                   <TableCell>
                     <FormattedDate date={movement.createdAt} />
