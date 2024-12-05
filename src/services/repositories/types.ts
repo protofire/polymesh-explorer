@@ -195,7 +195,9 @@ export interface PortfolioMovementsResponse {
 export interface AssetTransactionNode {
   id: string;
   fromPortfolioId: string;
+  fromPortfolio: Portfolio;
   toPortfolioId: string;
+  toPortfolio: Portfolio;
   assetId: string;
   asset: {
     ticker: string;

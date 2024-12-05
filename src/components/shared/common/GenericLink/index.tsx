@@ -1,5 +1,6 @@
+/* eslint-disable react/jsx-props-no-spreading */
 import React from 'react';
-import { Link as MuiLink, styled, Tooltip } from '@mui/material';
+import { Box, Link as MuiLink, styled, Tooltip } from '@mui/material';
 import NextLink from 'next/link';
 
 interface GenericLinkProps {
@@ -12,11 +13,16 @@ interface GenericLinkProps {
 const StyledLink = styled(MuiLink)(({ theme }) => ({
   textDecoration: 'none',
   color: 'inherit',
+  display: 'inline-block',
   '&:hover': {
     color: theme.palette.primary.main,
     textDecoration: 'underline',
   },
 }));
+
+const StyledNextLink = styled(NextLink)({
+  display: 'inline-block',
+});
 
 export function GenericLink({
   href,
@@ -24,19 +30,27 @@ export function GenericLink({
   isExternal = false,
   tooltipText,
 }: GenericLinkProps) {
-  const linkContent = isExternal ? (
+  const linkContent = (
+    <StyledLink href={isExternal ? href : undefined}>{children}</StyledLink>
+  );
+
+  const link = isExternal ? (
     <StyledLink href={href} target="_blank" rel="noopener noreferrer">
       {children}
     </StyledLink>
   ) : (
-    <NextLink href={href} passHref legacyBehavior>
-      <StyledLink>{children}</StyledLink>
-    </NextLink>
+    <StyledNextLink href={href} passHref legacyBehavior>
+      {linkContent}
+    </StyledNextLink>
   );
 
-  return tooltipText ? (
-    <Tooltip title={tooltipText}>{linkContent}</Tooltip>
-  ) : (
-    linkContent
+  if (!tooltipText) {
+    return link;
+  }
+
+  return (
+    <Tooltip title={tooltipText}>
+      <Box display="inline-block">{link}</Box>
+    </Tooltip>
   );
 }

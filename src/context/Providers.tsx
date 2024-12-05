@@ -11,7 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
 
   return (
-    <AppRouterCacheProvider options={{ enableCssLayer: true }}>
+    <AppRouterCacheProvider options={{ key: 'css' }}>
       <CustomMuiThemeProvider>
         <QueryClientProvider client={queryClient}>
           <NetworkProvider>

@@ -21,6 +21,9 @@ import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { truncateAddress } from '@/services/polymesh/address';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -32,9 +35,9 @@ interface TabTokenMovementsTableProps {
 
 const formatMovementId = (id: string | undefined) => {
   if (!id) return '';
-  if (id.length <= 10) return id;
+  if (id.length <= 7) return id;
 
-  return `${id.slice(0, 2)}...${id.slice(-3)}`;
+  return `${id.slice(0, 3)}...${id.slice(-4)}`;
 };
 
 export function TabTokenMovementsTable({
@@ -72,65 +75,90 @@ export function TabTokenMovementsTable({
                 colSpan={6}
               />
             ) : (
-              movements.map((movement) => (
-                <TableRow key={movement.id}>
-                  <TableCell>
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="space-between"
-                      sx={{
-                        minWidth: '1rem',
-                        maxWidth: '8rem',
-                      }}
-                      gap={0.5}
-                    >
+              movements.map((movement) => {
+                return (
+                  <TableRow key={movement.id}>
+                    <TableCell>
                       <Box
+                        display="flex"
+                        alignItems="center"
+                        justifyContent="space-between"
                         sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
+                          minWidth: '1rem',
+                          maxWidth: '8rem',
                         }}
+                        gap={0.5}
                       >
-                        {formatMovementId(movement.id)}
-                      </Box>
-                      {movement.id && (
-                        <PolymeshExplorerLink
-                          baseUrl={subscanUrl}
-                          path="extrinsic"
-                          hash={`${subscanUrl}/extrinsic/${movement.id.replace('/', '-')}`}
+                        <Box
                           sx={{
-                            '& .MuiSvgIcon-root': {
-                              fontSize: '16px',
-                              transition: 'color 0.2s',
-                            },
-                            '&:hover .MuiSvgIcon-root': {
-                              color: 'primary.main',
-                            },
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                           }}
+                        >
+                          {formatMovementId(movement.id)}
+                        </Box>
+                        {movement.id && (
+                          <PolymeshExplorerLink
+                            baseUrl={subscanUrl}
+                            path="extrinsic"
+                            hash={movement.id.replace('/', '-')}
+                            sx={{
+                              '& .MuiSvgIcon-root': {
+                                fontSize: '16px',
+                                transition: 'color 0.2s',
+                              },
+                              '&:hover .MuiSvgIcon-root': {
+                                color: 'primary.main',
+                              },
+                            }}
+                            toolTipText={`See in subscan extrinsic ${movement.id.replace('/', '-')}`}
+                          />
+                        )}
+                      </Box>
+                    </TableCell>
+                    <TableCell>
+                      <FormattedDate date={movement.createdAt} />
+                    </TableCell>
+                    <TableCell>
+                      <AccountOrDidTextField
+                        value={movement.fromId}
+                        isIdentity
+                        variant="body2"
+                      />
+                      {movement.from.name && (
+                        <TruncatedPortfolioNameWithTooltip
+                          text={movement.from.name}
                         />
                       )}
-                    </Box>
-                  </TableCell>
-                  <TableCell>
-                    <FormattedDate date={movement.createdAt} />
-                  </TableCell>
-                  <TableCell>{movement.from.name}</TableCell>
-                  <TableCell>{movement.to.name}</TableCell>
-                  <TableCell>
-                    <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
-                      {movement.assetTicker ||
-                        truncateAddress(movement.assetId, 4)}
-                    </GenericLink>
-                  </TableCell>
-                  <TableCell>
-                    {isFungible
-                      ? movement.amount && (
-                          <FormattedNumber value={movement.amount} />
-                        )
-                      : movement.nftIds?.join(', ')}
-                  </TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                    <TableCell>
+                      <AccountOrDidTextField
+                        value={movement.toId}
+                        isIdentity
+                        variant="body2"
+                      />
+                      {movement.to.name && (
+                        <TruncatedPortfolioNameWithTooltip
+                          text={movement.to.name}
+                        />
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
+                        {movement.assetTicker ||
+                          truncateAddress(movement.assetId, 4)}
+                      </GenericLink>
+                    </TableCell>
+                    <TableCell>
+                      {isFungible
+                        ? movement.amount && (
+                            <FormattedNumber value={movement.amount} />
+                          )
+                        : movement.nftIds?.join(', ')}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>

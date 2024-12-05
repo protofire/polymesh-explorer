@@ -67,7 +67,7 @@ function Row({
         </TableCell>
         <TableCell>
           {instruction.createdAt ? (
-            <FormattedDate date={instruction.createdAt.toISOString()} />
+            <FormattedDate date={instruction.createdAt} />
           ) : (
             <EmptyDash />
           )}

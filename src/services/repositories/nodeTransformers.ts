@@ -78,14 +78,14 @@ export function venueNodeToVenue(node: VenueNode): Venue {
   };
 }
 
+const getPortfolioParty = (party: Portfolio): Portfolio => ({
+  ...party,
+  name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
+});
+
 export function portfolioMovementNodeToPortfolioMovement(
   node: PortfolioMovementNode,
 ): PortfolioMovement {
-  const getPortfolioParty = (party: Portfolio): Portfolio => ({
-    ...party,
-    name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
-  });
-
   return {
     id: node.id,
     fromId: node.fromId,
@@ -113,7 +113,13 @@ export function assetTransactionNodeToAssetTransaction(
     assetId: node.assetId,
     assetTicker: node.asset.ticker,
     fromId: node.fromPortfolioId,
+    from: node.fromPortfolio
+      ? getPortfolioParty(node.fromPortfolio)
+      : node.fromPortfolio,
     toId: node.toPortfolioId,
+    to: node.toPortfolio
+      ? getPortfolioParty(node.toPortfolio)
+      : node.toPortfolio,
     amount:
       node.amount &&
       balanceToBigNumber(node.amount as unknown as Balance).toString(),

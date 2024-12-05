@@ -7,6 +7,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
 } from '@mui/material';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
@@ -20,6 +21,8 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
@@ -86,17 +89,35 @@ export function TabAssetTransactionsTable({
                       </GenericLink>
                     </TableCell>
                     <TableCell>
-                      {transaction.from?.name || (
-                        <GenericLink href={`${ROUTES.Identity}/${fromDid}`}>
-                          {truncateAddress(fromDid, 5)}
-                        </GenericLink>
+                      {transaction.fromId && (
+                        <AccountOrDidTextField
+                          value={fromDid}
+                          isIdentity
+                          variant="body2"
+                        >
+                          {transaction.fromId}
+                        </AccountOrDidTextField>
+                      )}
+                      {transaction.from?.name && (
+                        <TruncatedPortfolioNameWithTooltip
+                          text={transaction.from.name}
+                        />
                       )}
                     </TableCell>
                     <TableCell>
-                      {transaction.to?.name || (
-                        <GenericLink href={`${ROUTES.Identity}/${toDid}`}>
-                          {truncateAddress(toDid, 5)}
-                        </GenericLink>
+                      {transaction.toId && (
+                        <AccountOrDidTextField
+                          value={toDid}
+                          isIdentity
+                          variant="body2"
+                        >
+                          {transaction.toId}
+                        </AccountOrDidTextField>
+                      )}
+                      {transaction.to?.name && (
+                        <TruncatedPortfolioNameWithTooltip
+                          text={transaction.to.name}
+                        />
                       )}
                     </TableCell>
                     <TableCell>

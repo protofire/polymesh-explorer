@@ -13,7 +13,10 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
+import {
+  DEFAULT_PORTFOLIO_NAME,
+  PortfolioWithAssets,
+} from '@/domain/entities/Portfolio';
 import { truncateAddress } from '@/services/polymesh/address';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
@@ -34,6 +37,11 @@ export function PortfolioAccordionItem({
   const handleChange = (event: React.SyntheticEvent, expanded: boolean) => {
     setIsExpanded(expanded);
   };
+
+  const portfolioName =
+    DEFAULT_PORTFOLIO_NAME && portfolio.otherOwner
+      ? `${portfolio.name}  (${portfolio.otherOwner.length >= 6 ? portfolio.otherOwner.slice(-6) : portfolio.otherOwner})`
+      : portfolio.name;
 
   return (
     <Accordion
@@ -57,7 +65,7 @@ export function PortfolioAccordionItem({
             <ExpandMoreIcon />
           ) : (
             <Tooltip
-              title={`Show ${portfolio.name} details`}
+              title={`Show ${portfolioName} details`}
               placement="right-start"
             >
               <ExpandMoreIcon />
@@ -82,7 +90,7 @@ export function PortfolioAccordionItem({
             <ListItemText
               primary={
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography>{portfolio.name}</Typography>
+                  <Typography>{portfolioName}</Typography>
                   {portfolio.custodianDid && (
                     <Tooltip
                       title="Custodian with another identity"
