@@ -17,6 +17,7 @@ import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { Identity } from '@/domain/entities/Identity';
 import { UseGetSettlementInstructionsReturn } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 import { SettlementInstructionToggleOption } from '@/domain/ui/SettlementInstructionToggleOptoin';
+import { getColSpan } from './getColSpan';
 
 interface SettlementInstructionsTabProps {
   instructions:
@@ -28,6 +29,7 @@ interface SettlementInstructionsTabProps {
   isLoading: boolean;
   isLoadingHistorical: boolean;
   currentIdentityDid?: Identity['did'];
+  showVenueId?: boolean;
 }
 
 export function SettlementInstructionsTab({
@@ -36,6 +38,7 @@ export function SettlementInstructionsTab({
   historicalInstructions,
   isLoadingHistorical,
   currentIdentityDid,
+  showVenueId = true,
 }: SettlementInstructionsTabProps) {
   const [instructionType, setInstructionType] =
     useState<SettlementInstructionToggleOption>('Current');
@@ -73,7 +76,7 @@ export function SettlementInstructionsTab({
             <TableRow>
               <TableCell />
               <TableCell>Instruction ID</TableCell>
-              <TableCell>Venue ID</TableCell>
+              {showVenueId && <TableCell>Venue ID</TableCell>}
               <TableCell>Status</TableCell>
               <TableCell>Created At</TableCell>
               {isHistorical && <TableCell>Execution At</TableCell>}
@@ -90,11 +93,12 @@ export function SettlementInstructionsTab({
                   instruction={instruction}
                   currentIdentityDid={currentIdentityDid}
                   isHistorical={isHistorical}
+                  showVenueId={showVenueId}
                 />
               ))
             ) : (
               <NoDataAvailableTBody
-                colSpan={isHistorical ? 8 : 7}
+                colSpan={getColSpan(isHistorical, showVenueId)}
                 message={`No ${instructionType.toLowerCase()} settlement instructions found.`}
               />
             )}

@@ -27,17 +27,20 @@ import {
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { Identity } from '@/domain/entities/Identity';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { getColSpan } from './getColSpan';
 
 export interface RowInstructionProps {
   instruction: SettlementInstruction;
   currentIdentityDid?: Identity['did'];
-  isHistorical?: boolean;
+  isHistorical: boolean;
+  showVenueId?: boolean;
 }
 
 export function RowInstruction({
   instruction,
   currentIdentityDid,
   isHistorical,
+  showVenueId = true,
 }: RowInstructionProps) {
   const [open, setOpen] = useState(false);
 
@@ -54,11 +57,13 @@ export function RowInstruction({
             {instruction.id}
           </GenericLink>
         </TableCell>
-        <TableCell>
-          <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-            {instruction.venueId}
-          </GenericLink>
-        </TableCell>
+        {showVenueId && (
+          <TableCell>
+            <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
+              {instruction.venueId}
+            </GenericLink>
+          </TableCell>
+        )}
         <TableCell>
           <StatusBadge
             status={
@@ -86,14 +91,15 @@ export function RowInstruction({
           </TableCell>
         )}
         <TableCell>
-          {instruction.counterparties} (affirmed by {instruction.affirmedBy})
+          {instruction.counterparties}
+          {!isHistorical && ` (affirmed by ${instruction.affirmedBy})`}
         </TableCell>
         <TableCell>{instruction.settlementType}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell 
-          style={{ paddingBottom: 0, paddingTop: 0 }} 
-          colSpan={isHistorical ? 8 : 7}
+        <TableCell
+          style={{ paddingBottom: 0, paddingTop: 0 }}
+          colSpan={getColSpan(isHistorical, showVenueId)}
         >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>

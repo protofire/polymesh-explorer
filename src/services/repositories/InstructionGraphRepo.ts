@@ -109,4 +109,63 @@ export class InstructionGraphRepo {
       pageInfo: response.instructions.pageInfo,
     };
   }
+
+  async findByVenueId(
+    venueId: string,
+    pageSize: number,
+    offset: number = 0,
+    historicalInstructions: boolean = false,
+  ): Promise<{
+    instructions: SettlementInstructionWithEvents[];
+    totalCount: number;
+    pageInfo: PageInfo;
+  }> {
+    const query = gql`
+      ${pageInfoFragment}
+      ${settlementInstructionFragment}
+      query InstructionByVenueQuery(
+        $pageSize: Int!
+        $offset: Int!
+        $venueId: String!
+      ) {
+        instructions(
+          first: $pageSize
+          offset: $offset
+          filter: {
+            and: [
+              { venueId: { equalTo: $venueId } }
+              { status: { ${historicalInstructions ? 'distinctFrom' : 'equalTo'}: Created } }
+            ]
+          }
+        ) {
+          totalCount
+          pageInfo {
+            ...PageInfoFields
+          }
+          nodes {
+            ...SettlementInstructionFields
+          }
+        }
+      }
+    `;
+
+    const variables = {
+      pageSize,
+      offset,
+      venueId,
+    };
+
+    const response = await this.client.request<InstructionListResponse>(
+      query,
+      variables,
+    );
+
+    return {
+      instructions: response.instructions.nodes.map(
+        rawInstructiontoSettlementInstruction,
+      ),
+      totalCount: response.instructions.totalCount,
+      pageInfo: response.instructions.pageInfo,
+    };
+  }
 }
