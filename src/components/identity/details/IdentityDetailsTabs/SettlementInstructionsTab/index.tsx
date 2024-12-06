@@ -39,6 +39,7 @@ export function SettlementInstructionsTab({
 }: SettlementInstructionsTabProps) {
   const [instructionType, setInstructionType] =
     useState<SettlementInstructionToggleOption>('Current');
+  const isHistorical = instructionType === 'Historical';
 
   const handleInstructionTypeChange = (
     event: React.MouseEvent<HTMLElement>,
@@ -49,10 +50,10 @@ export function SettlementInstructionsTab({
     }
   };
 
-  const selectedInstructions =
-    instructionType === 'Current' ? instructions : historicalInstructions;
-  const isLoadingCurrent =
-    instructionType === 'Current' ? isLoading : isLoadingHistorical;
+  const selectedInstructions = isHistorical
+    ? historicalInstructions
+    : instructions;
+  const isLoadingCurrent = isHistorical ? isLoadingHistorical : isLoading;
 
   if (isLoadingCurrent || selectedInstructions === undefined) {
     return <GenericTableSkeleton columnCount={7} rowCount={8} />;
@@ -75,6 +76,7 @@ export function SettlementInstructionsTab({
               <TableCell>Venue ID</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Created At</TableCell>
+              {isHistorical && <TableCell>Execution At</TableCell>}
               <TableCell># Counterparties</TableCell>
               <TableCell>Settlement Type</TableCell>
             </TableRow>
@@ -87,11 +89,12 @@ export function SettlementInstructionsTab({
                   key={`${instruction.status}-${instruction.id}`}
                   instruction={instruction}
                   currentIdentityDid={currentIdentityDid}
+                  isHistorical={isHistorical}
                 />
               ))
             ) : (
               <NoDataAvailableTBody
-                colSpan={7}
+                colSpan={isHistorical ? 8 : 7}
                 message={`No ${instructionType.toLowerCase()} settlement instructions found.`}
               />
             )}

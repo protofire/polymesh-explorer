@@ -31,11 +31,13 @@ import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/Accou
 export interface RowInstructionProps {
   instruction: SettlementInstruction;
   currentIdentityDid?: Identity['did'];
+  isHistorical?: boolean;
 }
 
 export function RowInstruction({
   instruction,
   currentIdentityDid,
+  isHistorical,
 }: RowInstructionProps) {
   const [open, setOpen] = useState(false);
 
@@ -74,13 +76,25 @@ export function RowInstruction({
             <EmptyDash />
           )}
         </TableCell>
+        {isHistorical && (
+          <TableCell>
+            {instruction.upatedAt ? (
+              <FormattedDate date={instruction.upatedAt} />
+            ) : (
+              <EmptyDash />
+            )}
+          </TableCell>
+        )}
         <TableCell>
           {instruction.counterparties} (affirmed by {instruction.affirmedBy})
         </TableCell>
         <TableCell>{instruction.settlementType}</TableCell>
       </TableRow>
       <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
+        <TableCell 
+          style={{ paddingBottom: 0, paddingTop: 0 }} 
+          colSpan={isHistorical ? 8 : 7}
+        >
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
