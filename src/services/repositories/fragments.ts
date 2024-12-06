@@ -98,6 +98,11 @@ export const identityFragment = gql`
         parentId
       }
     }
+    children {
+      nodes {
+        id
+      }
+    }
     createdBlock {
       blockId
       datetime

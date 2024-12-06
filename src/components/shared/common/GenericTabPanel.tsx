@@ -12,7 +12,7 @@ export function GenericTabPanel(props: GenericTabPanelProps) {
   const { children, value, index, labelKey, ...other } = props;
 
   return (
-    <div
+    <Box
       role="tabpanel"
       hidden={value !== index}
       id={`${labelKey}-tabpanel-${index}`}
@@ -21,6 +21,6 @@ export function GenericTabPanel(props: GenericTabPanelProps) {
       {...other}
     >
       {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
+    </Box>
   );
 }

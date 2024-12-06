@@ -128,6 +128,12 @@ export interface IdentityNode {
       parentId: string;
     }[];
   };
+  children: {
+    totalCount: number;
+    nodes: {
+      id: string;
+    }[];
+  };
 }
 
 export interface IdentityResponse {

@@ -15,4 +15,5 @@ export interface Identity {
   custodiedPortfoliosCount: number;
   isChildIdentity: boolean;
   parentIdentityDid?: string;
+  childIdentities?: string[];
 }

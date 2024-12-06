@@ -13,6 +13,7 @@ import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';
 import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { ChildIdentitiesTab } from './ChildIdentitiesTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -36,8 +37,9 @@ export function IdentityDetailsTabs({
   isLoadingAssetPermissions,
 }: IdentityDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
-  const { ownedAssets, heldAssets } = identity;
+  const { ownedAssets, heldAssets, childIdentities } = identity;
   const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
+  const hasChildIdentities = childIdentities && childIdentities.length > 0;
 
   const { activeInstructions, historicalInstuctions } =
     useGetSettlementInstructionsByDid({
@@ -59,7 +61,7 @@ export function IdentityDetailsTabs({
           {isAssetIssuer && (
             <Tab
               label={
-                <Box sx={{ paddingRight: '20px' }}>
+                <Box sx={{ paddingRight: '8px' }}>
                   <CounterBadge count={ownedAssets.length}>
                     Issued Assets
                   </CounterBadge>
@@ -92,6 +94,17 @@ export function IdentityDetailsTabs({
               </Box>
             }
           />
+          {hasChildIdentities && (
+            <Tab
+              label={
+                <Box sx={{ paddingRight: '8px' }}>
+                  <CounterBadge count={childIdentities.length}>
+                    Child Identities
+                  </CounterBadge>
+                </Box>
+              }
+            />
+          )}
         </Tabs>
       </Box>
       <GenericTabPanel value={value} index={0} labelKey="identity-assets">
@@ -148,6 +161,15 @@ export function IdentityDetailsTabs({
           isLoading={isLoadingAssetPermissions}
         />
       </GenericTabPanel>
+      {hasChildIdentities && (
+        <GenericTabPanel
+          value={value}
+          index={isAssetIssuer ? 6 : 5}
+          labelKey="child-identities"
+        >
+          <ChildIdentitiesTab childIdentities={childIdentities} />
+        </GenericTabPanel>
+      )}
     </Box>
   );
 }

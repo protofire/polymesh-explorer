@@ -66,6 +66,7 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
     isChildIdentity: node.parentChildIdentities.totalCount > 0,
     parentIdentityDid: node.parentChildIdentities.nodes[0]?.parentId,
+    childIdentities: node.children.nodes.map((n) => n.id),
   };
 }
 
