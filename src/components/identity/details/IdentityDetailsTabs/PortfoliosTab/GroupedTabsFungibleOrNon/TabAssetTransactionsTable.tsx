@@ -7,7 +7,6 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Typography,
 } from '@mui/material';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';

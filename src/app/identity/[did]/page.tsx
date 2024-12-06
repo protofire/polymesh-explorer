@@ -10,7 +10,6 @@ import { IdentityDetailsTabs } from '@/components/identity/details/IdentityDetai
 import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { MainWrapper } from '@/components/shared/layout/mainWrapper';
 import { useTransactionHistoryAccounts } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { useGetSettlementInstructionsByOwner } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
 import { useGetIdentityAssetPermissions } from '@/hooks/identity/useGetIdentityAssetPermissions';
 
 export default function IdentityPage() {
@@ -25,12 +24,6 @@ export default function IdentityPage() {
     useGetIdentityPortfolios({ identity });
   const { data: transactionData, isFetched: isTransactionDataFetched } =
     useTransactionHistoryAccounts({ identity });
-  const {
-    data: settlementsInstructions,
-    isFetched: isFetchedSettlementInstructions,
-  } = useGetSettlementInstructionsByOwner({
-    identity,
-  });
   const { data: assetPermissions, isFetched: isAssetPermissionsFetched } =
     useGetIdentityAssetPermissions({ identity });
 
@@ -56,8 +49,6 @@ export default function IdentityPage() {
               isLoadingPortfolios={!portfoliosFetched}
               paginatedTransactions={transactionData}
               isLoadingTransactions={!isTransactionDataFetched}
-              settlementInstructions={settlementsInstructions}
-              isLoadingSettlementInstructions={!isFetchedSettlementInstructions}
               assetPermissions={assetPermissions}
               isLoadingAssetPermissions={!isAssetPermissionsFetched}
             />

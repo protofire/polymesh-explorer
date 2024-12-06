@@ -9,7 +9,10 @@ import {
   DefaultPortfolio,
   NumberedPortfolio,
 } from '@polymeshassociation/polymesh-sdk/internal';
-import { DEFAULT_PORTFOLIO_NAME, PortfolioWithAssets } from '@/domain/entities/Portfolio';
+import {
+  DEFAULT_PORTFOLIO_NAME,
+  PortfolioWithAssets,
+} from '@/domain/entities/Portfolio';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =

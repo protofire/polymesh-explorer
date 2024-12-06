@@ -9,6 +9,7 @@ import {
   VenueNode,
   ExtrinsicNode,
   AssetHolderNode,
+  RawPortfolio,
 } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
@@ -78,8 +79,9 @@ export function venueNodeToVenue(node: VenueNode): Venue {
   };
 }
 
-const getPortfolioParty = (party: Portfolio): Portfolio => ({
-  ...party,
+export const getPortfolioParty = (party: RawPortfolio): Portfolio => ({
+  id: party.identityId,
+  number: party.number,
   name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
 });
 

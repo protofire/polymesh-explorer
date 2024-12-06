@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
   Table,
   TableBody,
@@ -7,161 +7,67 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Collapse,
   Box,
-  Typography,
 } from '@mui/material';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
-import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import { FormattedDate } from '@/components/shared/common/FormattedDateText';
-import { StatusBadge } from '@/components/shared/common/StatusBadge';
-import { SettlementLegDirectionField } from '@/components/shared/common/SettlementLegDirectionField';
-import {
-  SettlementInstruction,
-  SettlementLeg,
-} from '@/domain/entities/SettlementInstruction';
-import { useLocalPagination } from '@/hooks/useLocalPagination';
+import { RowInstruction } from './RowInstruction';
+import { SettlementInstructionTypeToggle } from './SettlementInstructionTypeToggle';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
-import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { Identity } from '@/domain/entities/Identity';
+import { UseGetSettlementInstructionsReturn } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { SettlementInstructionToggleOption } from '@/domain/ui/SettlementInstructionToggleOptoin';
 
 interface SettlementInstructionsTabProps {
-  instructions: GroupedSettlementInstructions | null | undefined;
+  instructions:
+    | UseGetSettlementInstructionsReturn['activeInstructions']
+    | undefined;
+  historicalInstructions:
+    | UseGetSettlementInstructionsReturn['historicalInstuctions']
+    | undefined;
   isLoading: boolean;
-}
-
-function Row({
-  instruction,
-  status,
-}: {
-  instruction: SettlementInstruction;
-  status: 'pending' | 'affirmed' | 'failed';
-}) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <TableRow>
-        <TableCell>
-          <IconButton size="small" onClick={() => setOpen(!open)}>
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell>
-          <GenericLink href={`${ROUTES.Settlement}/${instruction.id}`}>
-            {instruction.id}
-          </GenericLink>
-        </TableCell>
-        <TableCell>
-          <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-            {instruction.venueId}
-          </GenericLink>
-        </TableCell>
-        <TableCell>
-          <StatusBadge status={status} />
-        </TableCell>
-        <TableCell>
-          {instruction.createdAt ? (
-            <FormattedDate date={instruction.createdAt} />
-          ) : (
-            <EmptyDash />
-          )}
-        </TableCell>
-        <TableCell>
-          {instruction.counterparties} (affirmed by {instruction.affirmedBy})
-        </TableCell>
-        <TableCell>{instruction.settlementType}</TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box margin={1}>
-              <Typography variant="h6" gutterBottom component="div">
-                Legs
-              </Typography>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Direction</TableCell>
-                    <TableCell>Sending Portfolio</TableCell>
-                    <TableCell>Receiving Portfolio</TableCell>
-                    <TableCell>Asset</TableCell>
-                    <TableCell>Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {instruction.legs.map((leg: SettlementLeg) => (
-                    <TableRow
-                      key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
-                    >
-                      <TableCell>
-                        {leg.direction ? (
-                          <SettlementLegDirectionField
-                            direction={leg.direction}
-                          />
-                        ) : (
-                          <EmptyDash />
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <GenericLink href={`${ROUTES.Identity}/${leg.from.id}`}>
-                          {leg.from.name}
-                        </GenericLink>
-                      </TableCell>
-                      <TableCell>
-                        <GenericLink href={`${ROUTES.Identity}/${leg.to.id}`}>
-                          {leg.to.name}
-                        </GenericLink>
-                      </TableCell>
-                      <TableCell>
-                        <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
-                          {leg.assetId}
-                        </GenericLink>
-                      </TableCell>
-                      <TableCell>{leg.amount}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  );
+  isLoadingHistorical: boolean;
+  currentIdentityDid?: Identity['did'];
 }
 
 export function SettlementInstructionsTab({
   instructions,
   isLoading,
+  historicalInstructions,
+  isLoadingHistorical,
+  currentIdentityDid,
 }: SettlementInstructionsTabProps) {
-  const allInstructions = useMemo(() => {
-    if (!instructions) return [];
+  const [instructionType, setInstructionType] =
+    useState<SettlementInstructionToggleOption>('Current');
 
-    return Object.entries(instructions).flatMap(([status, instructionList]) =>
-      instructionList.map((instruction: SettlementInstruction) => ({
-        ...instruction,
-        status,
-      })),
-    );
-  }, [instructions]);
+  const handleInstructionTypeChange = (
+    event: React.MouseEvent<HTMLElement>,
+    newValue: SettlementInstructionToggleOption | null,
+  ) => {
+    if (newValue !== null) {
+      setInstructionType(newValue);
+    }
+  };
 
-  const { paginatedItems: paginatedInstructions, ...paginationController } =
-    useLocalPagination(allInstructions);
+  const selectedInstructions =
+    instructionType === 'Current' ? instructions : historicalInstructions;
+  const isLoadingCurrent =
+    instructionType === 'Current' ? isLoading : isLoadingHistorical;
 
-  if (isLoading || instructions === undefined) {
+  if (isLoadingCurrent || selectedInstructions === undefined) {
     return <GenericTableSkeleton columnCount={7} rowCount={8} />;
   }
 
   return (
     <>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+        <SettlementInstructionTypeToggle
+          value={instructionType}
+          onChange={handleInstructionTypeChange}
+        />
+      </Box>
       <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
               <TableCell />
@@ -174,26 +80,27 @@ export function SettlementInstructionsTab({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedInstructions.length > 0 ? (
-              paginatedInstructions.map((instruction) => (
-                <Row
+            {selectedInstructions.data &&
+            selectedInstructions.data.length > 0 ? (
+              selectedInstructions.data.map((instruction) => (
+                <RowInstruction
                   key={`${instruction.status}-${instruction.id}`}
                   instruction={instruction}
-                  status={
-                    instruction.status as 'pending' | 'affirmed' | 'failed'
-                  }
+                  currentIdentityDid={currentIdentityDid}
                 />
               ))
             ) : (
               <NoDataAvailableTBody
                 colSpan={7}
-                message="No settlement instructions found."
+                message={`No ${instructionType.toLowerCase()} settlement instructions found.`}
               />
             )}
           </TableBody>
         </Table>
       </TableContainer>
-      <PaginationFooter paginationController={paginationController} />
+      <PaginationFooter
+        paginationController={selectedInstructions.paginationController}
+      />
     </>
   );
 }

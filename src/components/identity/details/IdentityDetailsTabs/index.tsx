@@ -9,10 +9,10 @@ import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
 import { AssetTabTable } from './AssetTabTable';
 import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { GroupedSettlementInstructions } from '@/hooks/settlement/useGetSettlementInstructionsByOwner';
 import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';
+import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -21,8 +21,6 @@ interface IdentityDetailsTabsProps {
   isLoadingPortfolios: boolean;
   paginatedTransactions: UseTransactionHistoryAccountsReturn | undefined;
   isLoadingTransactions: boolean;
-  settlementInstructions: GroupedSettlementInstructions | null | undefined;
-  isLoadingSettlementInstructions: boolean;
   assetPermissions?: AssetPermissions[];
   isLoadingAssetPermissions: boolean;
 }
@@ -34,14 +32,20 @@ export function IdentityDetailsTabs({
   isLoadingPortfolios,
   paginatedTransactions,
   isLoadingTransactions,
-  settlementInstructions,
-  isLoadingSettlementInstructions,
   assetPermissions,
   isLoadingAssetPermissions,
 }: IdentityDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
   const { ownedAssets, heldAssets } = identity;
   const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
+
+  const { activeInstructions, historicalInstuctions } =
+    useGetSettlementInstructionsByDid({
+      identity,
+    });
+
+  const isLoadingSettlementInstructions =
+    !activeInstructions.isFetched || !historicalInstuctions.isFetched;
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -127,8 +131,11 @@ export function IdentityDetailsTabs({
         labelKey="identity-settlement-instructions"
       >
         <SettlementInstructionsTab
-          instructions={settlementInstructions}
-          isLoading={isLoadingSettlementInstructions}
+          instructions={activeInstructions}
+          isLoading={!activeInstructions.isFetched}
+          historicalInstructions={historicalInstuctions}
+          isLoadingHistorical={!historicalInstuctions.isFetched}
+          currentIdentityDid={identity.did}
         />
       </GenericTabPanel>
       <GenericTabPanel

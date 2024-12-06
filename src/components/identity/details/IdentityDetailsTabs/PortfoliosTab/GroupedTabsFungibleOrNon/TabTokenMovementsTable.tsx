@@ -23,7 +23,6 @@ import { truncateAddress } from '@/services/polymesh/address';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
-import { EmptyDash } from '@/components/shared/common/EmptyDash';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -121,10 +120,12 @@ export function TabTokenMovementsTable({
                     </TableCell>
                     <TableCell>
                       <AccountOrDidTextField
-                        value={movement.fromId}
+                        value={movement.from.id}
                         isIdentity
                         variant="body2"
-                      />
+                      >
+                        {movement.fromId}
+                      </AccountOrDidTextField>
                       {movement.from.name && (
                         <TruncatedPortfolioNameWithTooltip
                           text={movement.from.name}
@@ -133,10 +134,12 @@ export function TabTokenMovementsTable({
                     </TableCell>
                     <TableCell>
                       <AccountOrDidTextField
-                        value={movement.toId}
+                        value={movement.to.id}
                         isIdentity
                         variant="body2"
-                      />
+                      >
+                        {movement.toId}
+                      </AccountOrDidTextField>
                       {movement.to.name && (
                         <TruncatedPortfolioNameWithTooltip
                           text={movement.to.name}

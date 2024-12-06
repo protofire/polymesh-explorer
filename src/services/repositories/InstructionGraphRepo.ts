@@ -3,82 +3,21 @@ import {
   InstructionListResponse,
   InstructionResponse,
   PageInfo,
-  RawInstructionNode,
 } from './types';
 import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
 import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
+import { pageInfoFragment, settlementInstructionFragment } from './fragments';
 
 export class InstructionGraphRepo {
   constructor(private client: GraphQLClient) {}
 
   async findById(id: string): Promise<SettlementInstructionWithEvents | null> {
     const query = gql`
+      ${settlementInstructionFragment}
       query ($filter: InstructionFilter!) {
         instructions(filter: $filter, first: 1) {
           nodes {
-            id
-            status
-            venue {
-              id
-              details
-            }
-            type
-            endBlock
-            endAfterBlock
-            tradeDate
-            valueDate
-            legs {
-              nodes {
-                legIndex
-                legType
-                from
-                fromPortfolio
-                to
-                toPortfolio
-                assetId
-                ticker
-                amount
-                nftIds
-                addresses
-              }
-            }
-            memo
-            affirmations {
-              nodes {
-                identity
-                isAutomaticallyAffirmed
-                isMediator
-                createdAt
-                createdBlockId
-                status
-                portfolios
-              }
-            }
-            mediators
-            failureReason
-            createdBlock {
-              id
-              blockId
-              datetime
-              hash
-            }
-            updatedBlock {
-              id
-              blockId
-              hash
-              datetime
-            }
-            events {
-              nodes {
-                id
-                event
-                createdBlock {
-                  id
-                  datetime
-                  hash
-                }
-              }
-            }
+            ...SettlementInstructionFields
           }
         }
       }
@@ -101,56 +40,73 @@ export class InstructionGraphRepo {
     return instructions[0];
   }
 
-  async getInstructionList(
-    first: number,
-    after?: string,
+  async findByDid(
+    did: string,
+    pageSize: number,
+    offset: number = 0,
+    historicalInstructions: boolean = false,
   ): Promise<{
-    instructions: RawInstructionNode[];
+    instructions: SettlementInstructionWithEvents[];
     totalCount: number;
     pageInfo: PageInfo;
   }> {
     const query = gql`
-      query ($first: Int!, $after: Cursor) {
-        instructions(first: $first, after: $after) {
+      ${pageInfoFragment}
+      ${settlementInstructionFragment}
+      query InstructionByDidQuery(
+        $pageSize: Int!
+        $offset: Int!
+        $fromId: String!
+        $toId: String!
+      ) {
+        instructions(
+          first: $pageSize
+          offset: $offset
+          filter: {
+            and: [
+              {
+                legs: {
+                  some: {
+                    or: [
+                      { from: { startsWith: $fromId } }
+                      { to: { startsWith: $toId } }
+                    ]
+                  }
+                }
+              }
+              { status: { ${historicalInstructions ? 'distinctFrom' : 'equalTo'}: Created } }
+            ]
+          }
+        ) {
           totalCount
           pageInfo {
-            hasNextPage
-            hasPreviousPage
-            startCursor
-            endCursor
+            ...PageInfoFields
           }
           nodes {
-            id
-            status
-            venue {
-              id
-              details
-            }
-            createdBlock {
-              id
-              datetime
-              hash
-            }
+            ...SettlementInstructionFields
           }
         }
       }
     `;
 
     const variables = {
-      first,
-      after,
+      pageSize,
+      offset,
+      fromId: did,
+      toId: did,
     };
 
     const response = await this.client.request<InstructionListResponse>(
       query,
       variables,
     );
-    const { instructions } = response;
 
     return {
-      instructions: instructions.nodes,
-      totalCount: instructions.totalCount,
-      pageInfo: instructions.pageInfo,
+      instructions: response.instructions.nodes.map(
+        rawInstructiontoSettlementInstruction,
+      ),
+      totalCount: response.instructions.totalCount,
+      pageInfo: response.instructions.pageInfo,
     };
   }
 }

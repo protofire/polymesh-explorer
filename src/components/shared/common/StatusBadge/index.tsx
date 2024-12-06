@@ -1,7 +1,7 @@
 import React from 'react';
 import { Chip, styled } from '@mui/material';
 
-interface StatusBadgeProps {
+export interface StatusBadgeProps {
   status: 'affirmed' | 'pending' | 'failed';
 }
 
