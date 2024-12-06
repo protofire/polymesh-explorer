@@ -1,34 +1,28 @@
 import React from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
-import { UseGetVenueReturn, VenueDetails } from '@/hooks/venue/useGetVenue';
+import { Box, Tab, Tabs } from '@mui/material';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs/SettlementInstructionsTab';
+import { Venue } from '@/domain/entities/Venue';
+import { useGetSettlementInstructionsByVenue } from '@/hooks/settlement/useGetSettlementInstructionsByVenue';
 
 interface VenueDetailsTabsProps {
-  venue: VenueDetails;
-  status: UseGetVenueReturn['status'];
-  error: UseGetVenueReturn['error'];
+  venue: Venue;
 }
 
 export function VenueDetailsTabs({
   venue,
-  status,
-  error,
 }: VenueDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
 
+  const { activeInstructions, historicalInstuctions } =
+    useGetSettlementInstructionsByVenue({ venueId: venue.id });
+
+  const isLoadingSettlementInstructions =
+    !activeInstructions.isFetched || !historicalInstuctions.isFetched;
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
-
-  if (error.getVenueInstructionsError) {
-    return (
-      <Box mt={2}>
-        <Typography>Error: {String(error.getVenueError)}</Typography>
-      </Box>
-    );
-  }
 
   return (
     <>
@@ -37,7 +31,7 @@ export function VenueDetailsTabs({
           label={
             <Box sx={{ position: 'relative', display: 'inline-block' }}>
               Settlement instructions
-              {status.isLoadingVenueInstructions && <LoadingDot />}
+              {isLoadingSettlementInstructions && <LoadingDot />}
             </Box>
           }
         />
@@ -49,8 +43,11 @@ export function VenueDetailsTabs({
         labelKey="settlement-instructions"
       >
         <SettlementInstructionsTab
-          instructions={venue?.instructions}
-          isLoading={!status.isFetchedVenueInstructions}
+          instructions={activeInstructions}
+          isLoading={!activeInstructions.isFetched}
+          historicalInstructions={historicalInstuctions}
+          isLoadingHistorical={!historicalInstuctions.isFetched}
+          showVenueId={false}
         />
       </GenericTabPanel>
     </>

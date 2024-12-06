@@ -20,8 +20,6 @@ function CopyButton({
   className?: string;
   children?: ReactNode;
   initialToolTipText?: React.ReactNode;
-  // eslint-disable-next-line react/no-unused-prop-types
-  ariaLabel?: string;
   onCopy?: () => void;
   disabled?: boolean;
 }): ReactElement {

@@ -66,7 +66,7 @@ export function SettlementCard({
     ? `${getLastEventDateTime(instruction)}Z`
     : null;
   const lasEvent = instruction ? getLastEvent(instruction) : null;
-  const dateToUse = isExecuted ? lastEventTime : createdAt?.toISOString();
+  const dateToUse = isExecuted ? lastEventTime : createdAt;
   const linkToUse = generateLinkToUse(isExecuted, lasEvent, instruction);
 
   return (

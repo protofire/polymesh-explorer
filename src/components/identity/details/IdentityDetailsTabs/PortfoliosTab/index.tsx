@@ -40,7 +40,6 @@ export function PortfoliosTab({
     isLoading: isLoadingTransactions,
     isFetching: isFetchingTransactions,
   } = useListPortfolioAssetsTransactions({
-    portfolios,
     portfolioId: selectedPortfolio?.id || null,
     nonFungible: assetType === 'NonFungible',
   });

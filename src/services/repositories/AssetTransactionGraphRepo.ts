@@ -81,7 +81,17 @@ export class AssetTransactionGraphRepo {
             eventIdx
             eventId
             toPortfolioId
+            toPortfolio {
+              identityId
+              number
+              name
+            }
             fromPortfolioId
+            fromPortfolio {
+              identityId
+              number
+              name
+            }
             fundingRound
             instructionId
             instructionMemo

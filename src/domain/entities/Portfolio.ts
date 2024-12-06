@@ -3,6 +3,8 @@ import { Asset } from './Asset';
 import { Identity } from './Identity';
 import { NftData } from './NftData';
 
+export const DEFAULT_PORTFOLIO_NAME = 'Default';
+
 export interface AssetPortfolio
   extends Pick<Asset, 'assetId'>,
     Partial<Omit<Asset, 'assetId'>> {

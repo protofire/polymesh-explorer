@@ -14,13 +14,11 @@ export type UseListPortfolioAssetsTransactionsReturn = PaginatedData<
 
 interface UseListPortfolioAssetsTransactionsParams {
   portfolioId: Portfolio['id'] | null;
-  portfolios: Portfolio[];
   nonFungible: boolean;
 }
 
 export function useListPortfolioAssetsTransactions({
   portfolioId,
-  portfolios,
   nonFungible,
 }: UseListPortfolioAssetsTransactionsParams): UseQueryResult<UseListPortfolioAssetsTransactionsReturn> {
   const { graphQlClient } = usePolymeshSdkService();
@@ -30,20 +28,6 @@ export function useListPortfolioAssetsTransactions({
   }, [graphQlClient]);
 
   const paginationController = usePaginationControllerGraphQl();
-
-  const portfoliosMap = useMemo(() => {
-    return portfolios.reduce(
-      (acc, portfolio) => {
-        acc[portfolio.id] = {
-          id: portfolio.id,
-          name: portfolio.name,
-          number: portfolio.number,
-        };
-        return acc;
-      },
-      {} as Record<string, Portfolio>,
-    );
-  }, [portfolios]);
 
   const fetchAssetTransactions = useCallback(async () => {
     if (!assetTransactionsRepo || !portfolioId) {
@@ -68,22 +52,12 @@ export function useListPortfolioAssetsTransactions({
         totalCount: result.totalCount,
       });
 
-      return result.transactions.map((t) => ({
-        ...t,
-        from: portfoliosMap[t.fromId],
-        to: portfoliosMap[t.toId],
-      }));
+      return result.transactions;
     } catch (e) {
       customReportError(e);
       throw e;
     }
-  }, [
-    assetTransactionsRepo,
-    portfolioId,
-    paginationController,
-    nonFungible,
-    portfoliosMap,
-  ]);
+  }, [assetTransactionsRepo, portfolioId, paginationController, nonFungible]);
 
   return useQuery<
     AssetTransaction[],

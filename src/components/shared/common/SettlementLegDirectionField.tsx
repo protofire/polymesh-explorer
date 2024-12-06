@@ -2,7 +2,11 @@ import React from 'react';
 import { styled } from '@mui/material';
 import ArrowOutwardIcon from '@mui/icons-material/ArrowOutward';
 
-const StyledWrapper = styled('div')<{ direction: 'Sending' | 'Receiving' }>(
+export interface SettlementLegDirectionFieldProps {
+  direction: 'Sending' | 'Receiving';
+}
+
+const StyledWrapper = styled('div')<SettlementLegDirectionFieldProps>(
   ({ theme, direction }) => ({
     display: 'flex',
     alignItems: 'center',
@@ -17,15 +21,11 @@ const StyledText = styled('span')({
   marginLeft: '8px',
 });
 
-const StyledIcon = styled(ArrowOutwardIcon)<{
-  direction: 'Sending' | 'Receiving';
-}>(({ direction }) => ({
-  transform: direction === 'Receiving' ? 'rotate(90deg)' : 'none',
-}));
-
-interface SettlementLegDirectionFieldProps {
-  direction: 'Sending' | 'Receiving';
-}
+const StyledIcon = styled(ArrowOutwardIcon)<SettlementLegDirectionFieldProps>(
+  ({ direction }) => ({
+    transform: direction === 'Receiving' ? 'rotate(90deg)' : 'none',
+  }),
+);
 
 export function SettlementLegDirectionField({
   direction,

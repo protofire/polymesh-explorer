@@ -98,6 +98,11 @@ export const identityFragment = gql`
         parentId
       }
     }
+    children {
+      nodes {
+        id
+      }
+    }
     createdBlock {
       blockId
       datetime
@@ -113,5 +118,73 @@ export const pageInfoFragment = gql`
     hasPreviousPage
     startCursor
     endCursor
+  }
+`;
+
+export const settlementInstructionFragment = gql`
+  fragment SettlementInstructionFields on Instruction {
+    id
+    status
+    venue {
+      id
+      details
+    }
+    type
+    endBlock
+    endAfterBlock
+    tradeDate
+    valueDate
+    legs {
+      nodes {
+        legIndex
+        legType
+        from
+        fromPortfolio
+        to
+        toPortfolio
+        assetId
+        ticker
+        amount
+        nftIds
+        addresses
+      }
+    }
+    memo
+    affirmations {
+      nodes {
+        identity
+        isAutomaticallyAffirmed
+        isMediator
+        createdAt
+        createdBlockId
+        status
+        portfolios
+      }
+    }
+    mediators
+    failureReason
+    createdBlock {
+      id
+      blockId
+      datetime
+      hash
+    }
+    updatedBlock {
+      id
+      blockId
+      hash
+      datetime
+    }
+    events {
+      nodes {
+        id
+        event
+        createdBlock {
+          id
+          datetime
+          hash
+        }
+      }
+    }
   }
 `;

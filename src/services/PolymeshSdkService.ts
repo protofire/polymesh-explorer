@@ -9,9 +9,10 @@ import {
   DefaultPortfolio,
   NumberedPortfolio,
 } from '@polymeshassociation/polymesh-sdk/internal';
-import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
-
-const DEFAULT_PORTFOLIO_NAME = 'Default';
+import {
+  DEFAULT_PORTFOLIO_NAME,
+  PortfolioWithAssets,
+} from '@/domain/entities/Portfolio';
 
 export class PolymeshSdkService {
   private static instances: Map<string, Promise<PolymeshSdkService>> =
@@ -134,10 +135,7 @@ export class PolymeshSdkService {
           return {
             id: `${portfolio.toHuman().did}/${number}`,
             number,
-            name:
-              name === DEFAULT_PORTFOLIO_NAME && ownerDid !== did
-                ? `${name}  (${ownerDid.length >= 6 ? ownerDid.slice(-6) : did})`
-                : name,
+            name,
             assets,
             custodianDid: custodian.did !== did ? custodian.did : undefined,
             otherOwner: ownerDid !== did ? ownerDid : undefined,

@@ -4,6 +4,10 @@ import { PageInfo } from '@/domain/ui/PaginationInfo';
 
 export type { PageInfo };
 
+export interface RawPortfolio extends Pick<Portfolio, 'name' | 'number'> {
+  identityId: Portfolio['id'];
+}
+
 interface CreatedBlockFields {
   blockId: string;
   datetime: string;
@@ -124,6 +128,12 @@ export interface IdentityNode {
       parentId: string;
     }[];
   };
+  children: {
+    totalCount: number;
+    nodes: {
+      id: string;
+    }[];
+  };
 }
 
 export interface IdentityResponse {
@@ -167,9 +177,9 @@ export interface VenueListResponse {
 export interface PortfolioMovementNode {
   id: string;
   fromId: string;
-  from: Portfolio;
+  from: RawPortfolio;
   toId: string;
-  to: Portfolio;
+  to: RawPortfolio;
   assetId: string;
   asset: {
     ticker: string;
@@ -195,7 +205,9 @@ export interface PortfolioMovementsResponse {
 export interface AssetTransactionNode {
   id: string;
   fromPortfolioId: string;
+  fromPortfolio: RawPortfolio;
   toPortfolioId: string;
+  toPortfolio: RawPortfolio;
   assetId: string;
   asset: {
     ticker: string;

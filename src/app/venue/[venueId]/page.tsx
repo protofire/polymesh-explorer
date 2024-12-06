@@ -10,26 +10,20 @@ import { VenueDetailsTabs } from '@/components/venue/VenueDetailsTabs';
 
 export default function VenueDetailPage() {
   const { venueId } = useParams();
-  const { venueDetails, status, error } = useGetVenue(venueId as string);
+  const { venue, isFetched, error } = useGetVenue(venueId as string);
 
-  if (error.getVenueError) {
-    return (
-      <Typography color="error">
-        Error: {String(error.getVenueError)}
-      </Typography>
-    );
+  if (error) {
+    return <Typography color="error">Error: {String(error)}</Typography>;
   }
 
-  if (venueDetails === null) {
+  if (venue === null) {
     notFound();
   }
 
   return (
     <MainWrapper>
-      <VenueCard venue={venueDetails} isLoading={!status.isFetchedVenue} />
-      {venueDetails?.id && (
-        <VenueDetailsTabs venue={venueDetails} error={error} status={status} />
-      )}
+      <VenueCard venue={venue} isLoading={!isFetched} />
+      {venue?.id && <VenueDetailsTabs venue={venue} />}
     </MainWrapper>
   );
 }

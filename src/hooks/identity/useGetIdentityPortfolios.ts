@@ -39,18 +39,28 @@ export const useGetIdentityPortfolios = ({ identity }: Props) => {
           identity.did,
         );
 
-        return portfolios?.map((portfolio) => ({
-          ...portfolio,
-          assets: portfolio.assets.map((assetPortfolio) => {
-            const assetInfo = assetsMap.get(assetPortfolio.assetId);
-            return {
-              ...assetPortfolio,
-              name: assetInfo?.name,
-              ticker: assetInfo?.ticker,
-              type: assetInfo?.type,
-            };
-          }),
-        }));
+        return portfolios
+          ?.map((portfolio) => ({
+            ...portfolio,
+            assets: portfolio.assets.map((assetPortfolio) => {
+              const assetInfo = assetsMap.get(assetPortfolio.assetId);
+              return {
+                ...assetPortfolio,
+                name: assetInfo?.name,
+                ticker: assetInfo?.ticker,
+                type: assetInfo?.type,
+              };
+            }),
+          }))
+          .sort((a, b) => {
+            const isACurrentIdentity = a.id.startsWith(identity.did);
+            const isBCurrentIdentity = b.id.startsWith(identity.did);
+
+            if (isACurrentIdentity && !isBCurrentIdentity) return -1;
+            if (!isACurrentIdentity && isBCurrentIdentity) return 1;
+
+            return parseInt(a.number, 10) - parseInt(b.number, 10);
+          });
       } catch (error) {
         customReportError(error);
         throw error;

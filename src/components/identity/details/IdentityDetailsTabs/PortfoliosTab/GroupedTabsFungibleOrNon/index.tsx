@@ -60,10 +60,14 @@ export function GroupedTabsFungibleOrNon({
         <Tab label="Movements" />
         <Tab label="Transactions" />
       </Tabs>
-      <GenericTabPanel value={selectedTab} index={0} labelKey="portfolio">
+      <GenericTabPanel value={selectedTab} index={0} labelKey="portfolioAssets">
         <TabPortfolioAssets assets={selectedPortfolio.assets} />
       </GenericTabPanel>
-      <GenericTabPanel value={selectedTab} index={1} labelKey="portfolio">
+      <GenericTabPanel
+        value={selectedTab}
+        index={1}
+        labelKey="portfolioAssetsMovements"
+      >
         <TabTokenMovementsTable
           subscanUrl={subscanUrl}
           portfolioMovements={portfolioMovements}
@@ -71,7 +75,11 @@ export function GroupedTabsFungibleOrNon({
           isFetchingMovements={isFetchingMovements}
         />
       </GenericTabPanel>
-      <GenericTabPanel value={selectedTab} index={2} labelKey="portfolio">
+      <GenericTabPanel
+        value={selectedTab}
+        index={2}
+        labelKey="portfolioAssetsTransactions"
+      >
         <TabAssetTransactionsTable
           assetTransactions={assetTransactions}
           isLoadingTransactions={isLoadingTransactions}
@@ -90,35 +98,47 @@ export function GroupedTabsFungibleOrNon({
       >
         <Tab label="Collections" />
         <Tab label="NFTs" />
-        <Tab label="Transactions" />
         <Tab label="Movements" />
+        <Tab label="Transactions" />
       </Tabs>
-      <GenericTabPanel value={selectedTab} index={0} labelKey="portfolio">
+      <GenericTabPanel
+        value={selectedTab}
+        index={0}
+        labelKey="portfolioCollection"
+      >
         <TabNftCollections
           selectedPortfolio={selectedPortfolioExtended}
           isLoadingCollections={status.isLoadingCollections}
         />
       </GenericTabPanel>
-      <GenericTabPanel value={selectedTab} index={1} labelKey="portfolio">
+      <GenericTabPanel value={selectedTab} index={1} labelKey="portfolioNfts">
         <TabNftAssets
           selectedPortfolio={selectedPortfolioExtended}
           isLoadingNfts={status.isLoadingNfts}
         />
       </GenericTabPanel>
-      <GenericTabPanel value={selectedTab} index={2} labelKey="portfolio">
-        <TabAssetTransactionsTable
-          assetTransactions={assetTransactions}
-          isLoadingTransactions={isLoadingTransactions}
-          isFetchingTransactions={isFetchingTransactions}
-          assetType={assetType}
-        />
-      </GenericTabPanel>
-      <GenericTabPanel value={selectedTab} index={3} labelKey="portfolio">
+      <GenericTabPanel
+        value={selectedTab}
+        index={2}
+        labelKey="portfolioNftMovements"
+      >
         <TabTokenMovementsTable
           subscanUrl={subscanUrl}
           portfolioMovements={portfolioMovements}
           isLoadingMovements={isLoadingMovements}
           isFetchingMovements={isFetchingMovements}
+          assetType={assetType}
+        />
+      </GenericTabPanel>
+      <GenericTabPanel
+        value={selectedTab}
+        index={3}
+        labelKey="portfolioNftTransactions"
+      >
+        <TabAssetTransactionsTable
+          assetTransactions={assetTransactions}
+          isLoadingTransactions={isLoadingTransactions}
+          isFetchingTransactions={isFetchingTransactions}
           assetType={assetType}
         />
       </GenericTabPanel>

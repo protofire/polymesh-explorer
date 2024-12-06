@@ -95,7 +95,7 @@ export function transformSettlementInstruction(
     venueId: details.venue?.id.toString(),
     status: details.status,
     memo: details.memo,
-    createdAt: details.createdAt ? new Date(details.createdAt) : undefined,
+    createdAt: details.createdAt ? details.createdAt : undefined,
     counterparties: uniqueCounterparties.size,
     affirmedBy: affirmations.filter((a) => a.status === 'Affirmed').length,
     settlementType: getSettlementType(details),

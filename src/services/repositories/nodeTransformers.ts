@@ -9,6 +9,7 @@ import {
   VenueNode,
   ExtrinsicNode,
   AssetHolderNode,
+  RawPortfolio,
 } from './types';
 import { Identity } from '@/domain/entities/Identity';
 import { Venue } from '@/domain/entities/Venue';
@@ -65,6 +66,7 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
     isChildIdentity: node.parentChildIdentities.totalCount > 0,
     parentIdentityDid: node.parentChildIdentities.nodes[0]?.parentId,
+    childIdentities: node.children.nodes.map((n) => n.id),
   };
 }
 
@@ -78,14 +80,15 @@ export function venueNodeToVenue(node: VenueNode): Venue {
   };
 }
 
+export const getPortfolioParty = (party: RawPortfolio): Portfolio => ({
+  id: party.identityId,
+  number: party.number,
+  name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
+});
+
 export function portfolioMovementNodeToPortfolioMovement(
   node: PortfolioMovementNode,
 ): PortfolioMovement {
-  const getPortfolioParty = (party: Portfolio): Portfolio => ({
-    ...party,
-    name: (party.number as unknown as number) === 0 ? 'Default' : party.name,
-  });
-
   return {
     id: node.id,
     fromId: node.fromId,
@@ -113,7 +116,13 @@ export function assetTransactionNodeToAssetTransaction(
     assetId: node.assetId,
     assetTicker: node.asset.ticker,
     fromId: node.fromPortfolioId,
+    from: node.fromPortfolio
+      ? getPortfolioParty(node.fromPortfolio)
+      : node.fromPortfolio,
     toId: node.toPortfolioId,
+    to: node.toPortfolio
+      ? getPortfolioParty(node.toPortfolio)
+      : node.toPortfolio,
     amount:
       node.amount &&
       balanceToBigNumber(node.amount as unknown as Balance).toString(),
