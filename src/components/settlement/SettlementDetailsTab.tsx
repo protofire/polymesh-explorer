@@ -1,9 +1,9 @@
 import React from 'react';
-import { Box, Tab, Tabs } from '@mui/material';
+import { Box, Paper, Tab, TableContainer, Tabs } from '@mui/material';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
 import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
-import { LegsTabTable } from './tabs/LegsTabTable';
+import { LegsTable } from '@/components/shared/settlement/LegsTable';
 import { EventsTabTable } from './tabs/EventsTabTable';
 import { AffirmationsTabTable } from './tabs/AffirmationsTabTable';
 
@@ -54,11 +54,9 @@ export function SettlementDetailsTab({
       </Tabs>
 
       <GenericTabPanel value={value} index={0} labelKey="legs">
-        <LegsTabTable
-          legs={instruction.legs}
-          venueId={instruction.venueId}
-          instructionId={instruction.id}
-        />
+        <TableContainer component={Paper}>
+          <LegsTable legs={instruction.legs} tableSize="medium" />
+        </TableContainer>
       </GenericTabPanel>
 
       <GenericTabPanel value={value} index={1} labelKey="events">

@@ -7,7 +7,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Chip,
 } from '@mui/material';
+import { EventIdEnum } from '@polymeshassociation/polymesh-sdk/types';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { truncateAddress } from '@/services/polymesh/address';
@@ -22,6 +24,8 @@ import { AssetTypeSelected } from '../AssetTypeToggleButton';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
+import { getEventLabel } from '@/components/asset/details/AssetDetailsTabs/getEventLabel';
+import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
@@ -37,7 +41,7 @@ export function TabAssetTransactionsTable({
   assetType = 'Fungible',
 }: TabAssetTransactionsTableProps) {
   if (isLoadingTransactions || isFetchingTransactions || !assetTransactions) {
-    return <GenericTableSkeleton columnCount={6} rowCount={3} />;
+    return <GenericTableSkeleton columnCount={7} rowCount={3} />;
   }
   const isFungible = assetType === 'Fungible';
   const { data: transactions, paginationController } = assetTransactions;
@@ -54,6 +58,7 @@ export function TabAssetTransactionsTable({
               <TableCell>From</TableCell>
               <TableCell>To</TableCell>
               <TableCell>{isFungible ? 'Amount' : 'Nft Id'}</TableCell>
+              <TableCell>Type</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -61,6 +66,9 @@ export function TabAssetTransactionsTable({
               transactions.map((transaction) => {
                 const fromDid = transaction.fromId?.split('/')[0] || '';
                 const toDid = transaction.toId?.split('/')[0] || '';
+                const eventInfo = getEventLabel(
+                  transaction.eventId as EventIdEnum,
+                );
 
                 return (
                   <TableRow key={transaction.id}>
@@ -124,7 +132,20 @@ export function TabAssetTransactionsTable({
                         ? transaction.amount && (
                             <FormattedNumber value={transaction.amount} />
                           )
-                        : transaction.nftIds?.join(', ')}
+                        : transaction.nftIds && (
+                            <NftIdsDisplay
+                              nftIds={transaction.nftIds}
+                              assetId={transaction.assetId}
+                              maxIdsToShow={3}
+                            />
+                          )}
+                    </TableCell>
+                    <TableCell>
+                      <Chip
+                        label={eventInfo.label}
+                        color={eventInfo.color}
+                        size="small"
+                      />
                     </TableCell>
                   </TableRow>
                 );

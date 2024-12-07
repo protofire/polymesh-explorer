@@ -68,7 +68,11 @@ export function VenueCard({
             <Typography variant="body2" color="textSecondary">
               Details:
             </Typography>
-            <Typography variant="body1">{details}</Typography>
+            {details ? (
+              <Typography variant="body1">{details}</Typography>
+            ) : (
+              <EmptyDash />
+            )}
           </Box>
         </Stack>
 
