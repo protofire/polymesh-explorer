@@ -14,19 +14,32 @@ import {
   SettlementLegDirectionField,
   SettlementLegDirectionFieldProps,
 } from '@/components/shared/common/SettlementLegDirectionField';
-import { SettlementLeg } from '@/domain/entities/SettlementInstruction';
+import {
+  SettlementInstructionWithAssets,
+  SettlementLeg,
+} from '@/domain/entities/SettlementInstruction';
+import { truncateAddress } from '@/services/polymesh/address';
+import NftIdsDisplay from '../NftIdsDisplay';
+import { FormattedNumber } from '../fieldAttributes/FormattedNumber';
 
 interface LegsTableProps {
   legs: SettlementLeg[];
+  assetsMap: SettlementInstructionWithAssets['assetsInvolved'];
   currentIdentityDid?: string;
   tableSize?: 'small' | 'medium';
 }
 
 export function LegsTable({
   legs,
+  assetsMap,
   currentIdentityDid,
   tableSize = 'small',
 }: LegsTableProps) {
+  const isFungible =
+    assetsMap && legs.length > 0 && assetsMap[legs[0].assetId]
+      ? !assetsMap[legs[0].assetId].isNftCollection
+      : false;
+
   return (
     <Table size={tableSize}>
       <TableHead>
@@ -35,7 +48,7 @@ export function LegsTable({
           <TableCell>Sending Portfolio</TableCell>
           <TableCell>Receiving Portfolio</TableCell>
           <TableCell>Asset</TableCell>
-          <TableCell>Amount</TableCell>
+          <TableCell>{isFungible ? 'Amount' : 'Nft Id'}</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
@@ -48,6 +61,7 @@ export function LegsTable({
             direction =
               leg.from.id === currentIdentityDid ? 'Sending' : 'Receiving';
           }
+          const asset = assetsMap[leg.assetId];
 
           return (
             <TableRow key={`leg-${leg.index}`}>
@@ -82,10 +96,24 @@ export function LegsTable({
               </TableCell>
               <TableCell>
                 <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
-                  {leg.assetId}
+                  {asset
+                    ? `${asset.name || asset.ticker} (${truncateAddress(asset.id)})`
+                    : leg.assetId}
                 </GenericLink>
               </TableCell>
-              <TableCell>{leg.amount}</TableCell>
+
+              <TableCell>
+                {isFungible
+                  ? leg.amount && <FormattedNumber value={leg.amount} />
+                  : leg.nftIds && (
+                      <NftIdsDisplay
+                        nftIds={leg.nftIds}
+                        assetId={leg.assetId}
+                        maxIdsToShow={3}
+                      />
+                    )}
+                {leg.amount}
+              </TableCell>
             </TableRow>
           );
         })}

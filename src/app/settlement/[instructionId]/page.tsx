@@ -25,7 +25,10 @@ export default function SettlementDetailPage() {
 
   return (
     <MainWrapper>
-      <SettlementCard instruction={instruction} isLoading={!isFetched} />
+      <SettlementCard
+        instruction={instruction?.instructions[0]}
+        isLoading={!isFetched}
+      />
       {instruction && (
         <SettlementDetailsTab
           instruction={instruction}

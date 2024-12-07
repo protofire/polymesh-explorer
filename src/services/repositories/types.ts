@@ -311,6 +311,9 @@ export interface RawInstructionNode {
   valueDate: string | null;
   legs: {
     nodes: RawLegNode[];
+    groupedAggregates: {
+      keys: string[];
+    }[];
   };
   memo: string | null;
   affirmations: {
@@ -335,5 +338,18 @@ export interface InstructionListResponse {
     totalCount: number;
     nodes: RawInstructionNode[];
     pageInfo: PageInfo;
+  };
+}
+
+export interface LegAssetNode {
+  id: string;
+  ticker: string;
+  name: string;
+  isNftCollection: boolean;
+}
+
+export interface LegAssetResponse {
+  assets: {
+    nodes: AssetNode[];
   };
 }

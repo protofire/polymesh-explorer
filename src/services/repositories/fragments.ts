@@ -135,6 +135,9 @@ export const settlementInstructionFragment = gql`
     tradeDate
     valueDate
     legs {
+      groupedAggregates(groupBy: [ASSET_ID]) {
+        keys
+      }
       nodes {
         legIndex
         legType

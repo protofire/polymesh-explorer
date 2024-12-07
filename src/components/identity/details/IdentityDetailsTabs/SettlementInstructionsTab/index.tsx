@@ -86,14 +86,15 @@ export function SettlementInstructionsTab({
           </TableHead>
           <TableBody>
             {selectedInstructions.data &&
-            selectedInstructions.data.length > 0 ? (
-              selectedInstructions.data.map((instruction) => (
+            selectedInstructions.data.instructions.length > 0 ? (
+              selectedInstructions.data.instructions.map((instruction) => (
                 <RowInstruction
                   key={`${instruction.status}-${instruction.id}`}
                   instruction={instruction}
                   currentIdentityDid={currentIdentityDid}
                   isHistorical={isHistorical}
                   showVenueId={showVenueId}
+                  assetsInvolved={selectedInstructions.data?.assetsInvolved}
                 />
               ))
             ) : (

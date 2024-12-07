@@ -17,16 +17,11 @@ import { ROUTES } from '@/config/routes';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { StatusBadge } from '@/components/shared/common/StatusBadge';
 import {
-  SettlementLegDirectionField,
-  SettlementLegDirectionFieldProps,
-} from '@/components/shared/common/SettlementLegDirectionField';
-import {
   SettlementInstruction,
-  SettlementLeg,
+  SettlementInstructionWithAssets,
 } from '@/domain/entities/SettlementInstruction';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { Identity } from '@/domain/entities/Identity';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { getColSpan } from './getColSpan';
 import { LegsTable } from '@/components/shared/settlement/LegsTable';
 
@@ -34,6 +29,7 @@ export interface RowInstructionProps {
   instruction: SettlementInstruction;
   currentIdentityDid?: Identity['did'];
   isHistorical: boolean;
+  assetsInvolved: SettlementInstructionWithAssets['assetsInvolved'];
   showVenueId?: boolean;
 }
 
@@ -41,6 +37,7 @@ export function RowInstruction({
   instruction,
   currentIdentityDid,
   isHistorical,
+  assetsInvolved,
   showVenueId = true,
 }: RowInstructionProps) {
   const [open, setOpen] = useState(false);
@@ -114,6 +111,7 @@ export function RowInstruction({
               <LegsTable
                 legs={instruction.legs}
                 currentIdentityDid={currentIdentityDid}
+                assetsMap={assetsInvolved}
               />
             </Box>
           </Collapse>

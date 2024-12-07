@@ -1,6 +1,7 @@
 import { InstructionStatus } from '@polymeshassociation/polymesh-sdk/types';
 import { Portfolio } from './Portfolio';
 import {
+  LegAssetNode,
   RawAffirmationNode,
   RawBlock,
   RawInstructionEvent,
@@ -40,4 +41,9 @@ type RawAffirmationNodeExtended = Omit<RawAffirmationNode, 'createdAt'> & {
 export interface SettlementInstructionWithEvents extends SettlementInstruction {
   events: RawInstructionEvent[];
   affirmations: RawAffirmationNodeExtended[];
+}
+
+export interface SettlementInstructionWithAssets {
+  instructions: SettlementInstructionWithEvents[];
+  assetsInvolved: Record<string, LegAssetNode>;
 }
