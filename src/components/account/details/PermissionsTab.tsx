@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Typography,
   Table,
@@ -25,8 +25,12 @@ import {
   FungibleAsset,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { AccountDetails } from '@/domain/entities/Account';
+import { AccountDetails, Permissions } from '@/domain/entities/Account';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { Asset } from '@/domain/entities/Asset';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
+import { truncateAddress } from '@/services/polymesh/address';
 
 interface PermissionsTabProps {
   accountDetails: AccountDetails | null;
@@ -52,15 +56,47 @@ interface SectionPermissions<T = PermissionValue> {
   exceptions?: T[];
 }
 
-const isFungibleAsset = (value: PermissionValue): value is FungibleAsset => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'uuid' in value &&
-    'id' in value &&
-    value.constructor?.name === 'FungibleAsset'
-  );
+const isFungibleAsset = (value: PermissionValue): value is Asset => {
+  return typeof value === 'object' && value !== null && 'assetUuid' in value;
 };
+
+function PermissionTypeIcon({ type }: { type: 'Include' | 'Exclude' }) {
+  return type === 'Include' ? (
+    <CheckCircle color="success" sx={{ mr: 1 }} />
+  ) : (
+    <Cancel color="error" sx={{ mr: 1 }} />
+  );
+}
+
+function AssetPermissionsList({
+  assetPermissions,
+}: {
+  assetPermissions: Permissions['assets'];
+}) {
+  const { values, type } = assetPermissions;
+
+  const assetsLinks = useMemo(
+    () =>
+      values.map((value) => (
+        <GenericLink
+          key={value.assetUuid}
+          href={`${ROUTES.Asset}/${value.assetId}`}
+        >
+          {value.name
+            ? `${value.name || value.ticker} [${truncateAddress(value.assetUuid, 4)}]`
+            : truncateAddress(value.assetUuid, 4)}
+        </GenericLink>
+      )),
+    [values],
+  );
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <PermissionTypeIcon type={type} />
+      <Typography>{type}</Typography>&nbsp; ({assetsLinks})
+    </Box>
+  );
+}
 
 const isDefaultPortfolio = (
   value: PermissionValue,
@@ -84,19 +120,13 @@ const isNumberedPortfolio = (
   );
 };
 
-const hasId = (value: object): value is { id: string } => {
-  return 'id' in value;
-};
-
-const hasTicker = (value: object): value is { ticker: string } => {
-  return 'ticker' in value;
-};
-
 const hasNumber = (value: object): value is { number: string | number } => {
   return 'number' in value;
 };
 
-const formatPermissionValue = (value: PermissionValue): string => {
+const formatPermissionValue = (
+  value: PermissionValue,
+): string | React.ReactNode => {
   if (typeof value === 'string') {
     return value
       .split('.')
@@ -109,7 +139,13 @@ const formatPermissionValue = (value: PermissionValue): string => {
   }
 
   if (isFungibleAsset(value)) {
-    return `Asset ${value.id}`;
+    return (
+      <GenericLink href={`${ROUTES.Asset}/${value.assetId}`}>
+        {value.name
+          ? `${value.name || value.ticker} [${truncateAddress(value.assetUuid, 4)}]`
+          : truncateAddress(value.assetUuid, 4)}
+      </GenericLink>
+    );
   }
 
   if (isDefaultPortfolio(value)) {
@@ -118,11 +154,6 @@ const formatPermissionValue = (value: PermissionValue): string => {
 
   if (isNumberedPortfolio(value) && hasNumber(value)) {
     return `Portfolio ${value.number || ''}`;
-  }
-
-  if (typeof value === 'object' && value !== null) {
-    if (hasId(value)) return `Asset ${value.id}`;
-    if (hasTicker(value)) return `Asset ${value.ticker}`;
   }
 
   return '';
@@ -224,7 +255,16 @@ export function PermissionsTab({
                   {renderSectionCell(<AccountBalance />, 'Assets')}
                 </TableCell>
                 <TableCell>
-                  {renderSectionPermissions(accountDetails.permissions.assets)}
+                  {accountDetails.permissions.assets === null ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircle color="success" sx={{ mr: 1 }} />
+                      <Typography>All</Typography>
+                    </Box>
+                  ) : (
+                    <AssetPermissionsList
+                      assetPermissions={accountDetails.permissions.assets}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
               <TableRow>

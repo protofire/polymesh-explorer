@@ -1,11 +1,13 @@
 import {
   Account as AccountSdk,
   SubsidyWithAllowance,
-  Permissions,
+  Permissions as RawPermissions,
   TxTag,
   ModuleName,
+  PermissionType,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from './Identity';
+import { Asset } from './Asset';
 
 export type IdentityRelationship =
   | 'Primary'
@@ -21,6 +23,13 @@ export interface Account {
   isSmartContract: boolean;
   isMultisig: boolean;
   polymeshSdkClass?: AccountSdk;
+}
+
+export interface Permissions extends Omit<RawPermissions, 'assets'> {
+  assets: {
+    values: Asset[];
+    type: PermissionType;
+  };
 }
 
 export interface AccountDetails extends Account {

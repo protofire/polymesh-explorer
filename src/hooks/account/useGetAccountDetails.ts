@@ -1,7 +1,11 @@
 import { useQueries } from '@tanstack/react-query';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/api/entities/Asset/Fungible';
+import { Permissions } from '@polymeshassociation/polymesh-sdk/types';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Account, AccountDetails } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';
+import { Asset } from '@/domain/entities/Asset';
+import { uuidToHex } from '@/services/polymesh/hexToUuid';
 
 export interface UseGetAccountDetailsReturn {
   accountDetails: AccountDetails | null;
@@ -14,6 +18,41 @@ export interface UseGetAccountDetailsReturn {
   error: {
     permissionsError: Error | null;
     subsidiesError: Error | null;
+  };
+}
+
+async function transformPermissions(permissions: Permissions) {
+  if (!permissions) {
+    return permissions;
+  }
+  let transformedAssets = null;
+
+  if (permissions.assets) {
+    const values: Asset[] = await Promise.all(
+      permissions.assets.values.map(async (asset: FungibleAsset) => {
+        const assetDetails = await asset.details();
+        return {
+          assetId: uuidToHex(asset.id),
+          assetUuid: asset.id,
+          ticker: assetDetails.ticker,
+          name: assetDetails.name,
+          type: assetDetails.assetType,
+          ownerDid: assetDetails.owner.did,
+          isNftCollection: assetDetails.nonFungible,
+          isDivisible: assetDetails.isDivisible,
+        } as Asset;
+      }),
+    );
+
+    transformedAssets = {
+      ...permissions.assets,
+      values,
+    };
+  }
+
+  return {
+    ...permissions,
+    assets: transformedAssets,
   };
 }
 
@@ -39,8 +78,10 @@ export const useGetAccountDetails = (
             }
 
             const permissions = await account.polymeshSdkClass.getPermissions();
+            const transformedPermissions =
+              await transformPermissions(permissions);
 
-            return permissions;
+            return transformedPermissions;
           } catch (error) {
             customReportError(error);
             throw error;
