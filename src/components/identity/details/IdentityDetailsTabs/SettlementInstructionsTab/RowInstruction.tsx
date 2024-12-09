@@ -6,9 +6,6 @@ import {
   Collapse,
   Box,
   Typography,
-  Table,
-  TableHead,
-  TableBody,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -17,22 +14,19 @@ import { ROUTES } from '@/config/routes';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { StatusBadge } from '@/components/shared/common/StatusBadge';
 import {
-  SettlementLegDirectionField,
-  SettlementLegDirectionFieldProps,
-} from '@/components/shared/common/SettlementLegDirectionField';
-import {
   SettlementInstruction,
-  SettlementLeg,
+  SettlementInstructionWithAssets,
 } from '@/domain/entities/SettlementInstruction';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { Identity } from '@/domain/entities/Identity';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { getColSpan } from './getColSpan';
+import { LegsTable } from '@/components/shared/settlement/LegsTable';
 
 export interface RowInstructionProps {
   instruction: SettlementInstruction;
   currentIdentityDid?: Identity['did'];
   isHistorical: boolean;
+  assetsInvolved: SettlementInstructionWithAssets['assetsInvolved'] | undefined;
   showVenueId?: boolean;
 }
 
@@ -40,6 +34,7 @@ export function RowInstruction({
   instruction,
   currentIdentityDid,
   isHistorical,
+  assetsInvolved,
   showVenueId = true,
 }: RowInstructionProps) {
   const [open, setOpen] = useState(false);
@@ -59,9 +54,13 @@ export function RowInstruction({
         </TableCell>
         {showVenueId && (
           <TableCell>
-            <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-              {instruction.venueId}
-            </GenericLink>
+            {instruction.venueId ? (
+              <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
+                {instruction.venueId}
+              </GenericLink>
+            ) : (
+              <EmptyDash />
+            )}
           </TableCell>
         )}
         <TableCell>
@@ -106,85 +105,11 @@ export function RowInstruction({
               <Typography variant="h6" gutterBottom component="div">
                 Legs
               </Typography>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Direction</TableCell>
-                    <TableCell>Sending Portfolio</TableCell>
-                    <TableCell>Receiving Portfolio</TableCell>
-                    <TableCell>Asset</TableCell>
-                    <TableCell>Amount</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {instruction.legs.map((leg: SettlementLeg) => {
-                    let direction:
-                      | SettlementLegDirectionFieldProps['direction']
-                      | undefined;
-
-                    if (currentIdentityDid) {
-                      direction =
-                        leg.from.id === currentIdentityDid
-                          ? 'Sending'
-                          : 'Receiving';
-                    }
-
-                    return (
-                      <TableRow
-                        key={`leg-${leg.index}-${instruction.venueId}-${instruction.id}`}
-                      >
-                        <TableCell>
-                          {typeof direction !== undefined ? (
-                            <SettlementLegDirectionField
-                              direction={
-                                direction as SettlementLegDirectionFieldProps['direction']
-                              }
-                            />
-                          ) : (
-                            <EmptyDash />
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <AccountOrDidTextField
-                            value={leg.from.id}
-                            isIdentity
-                            variant="body2"
-                            showIdenticon
-                          >
-                            {`${leg.from.id}/${leg.from.number}`}
-                          </AccountOrDidTextField>
-                          {/* {leg.from.name && (
-                            <TruncatedPortfolioNameWithTooltip
-                              text={leg.from.name}
-                            />
-                          )} */}
-                        </TableCell>
-                        <TableCell>
-                          <AccountOrDidTextField
-                            value={leg.to.id}
-                            isIdentity
-                            variant="body2"
-                            showIdenticon
-                          >
-                            {`${leg.to.id}/${leg.to.number}`}
-                          </AccountOrDidTextField>
-                          {/* {leg.to.name && (
-                            <TruncatedPortfolioNameWithTooltip
-                              text={leg.to.name}
-                            />
-                          )} */}
-                        </TableCell>
-                        <TableCell>
-                          <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
-                            {leg.assetId}
-                          </GenericLink>
-                        </TableCell>
-                        <TableCell>{leg.amount}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+              <LegsTable
+                legs={instruction.legs}
+                currentIdentityDid={currentIdentityDid}
+                assetsMap={assetsInvolved}
+              />
             </Box>
           </Collapse>
         </TableCell>

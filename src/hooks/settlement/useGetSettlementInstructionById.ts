@@ -3,10 +3,10 @@ import { useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { InstructionGraphRepo } from '@/services/repositories/InstructionGraphRepo';
 import { customReportError } from '@/utils/customReportError';
-import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
+import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
 
 export interface UseGetSettlementInstructionByIdReturn {
-  instruction: SettlementInstructionWithEvents | null | undefined;
+  instruction: SettlementInstructionWithAssets | null | undefined;
   isLoading: boolean;
   isFetched: boolean;
   error: Error | null;

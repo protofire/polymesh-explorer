@@ -2,7 +2,13 @@ import React from 'react';
 import { Chip, styled } from '@mui/material';
 
 export interface StatusBadgeProps {
-  status: 'affirmed' | 'pending' | 'failed';
+  status:
+    | 'created'
+    | 'executed'
+    | 'rejected'
+    | 'failed'
+    | 'affirmed'
+    | 'pending';
 }
 
 const StyledChip = styled(Chip)(({ theme }) => ({
@@ -19,18 +25,27 @@ const StyledChip = styled(Chip)(({ theme }) => ({
     backgroundColor: theme.palette.warning.light,
     color: theme.palette.warning.contrastText,
   },
+  '&.MuiChip-filledInfo': {
+    backgroundColor: theme.palette.info.light,
+    color: theme.palette.info.contrastText,
+  },
 }));
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  let color: 'success' | 'error' | 'warning' | 'default' = 'default';
+  let color: 'success' | 'error' | 'warning' | 'info' | 'default' = 'default';
 
   switch (status) {
+    case 'created':
+      color = 'info';
+      break;
     case 'pending':
       color = 'warning';
       break;
+    case 'executed':
     case 'affirmed':
       color = 'success';
       break;
+    case 'rejected':
     case 'failed':
       color = 'error';
       break;

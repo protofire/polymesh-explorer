@@ -2,16 +2,53 @@ import { GraphQLClient, gql } from 'graphql-request';
 import {
   InstructionListResponse,
   InstructionResponse,
+  LegAssetResponse,
   PageInfo,
+  RawInstructionNode,
 } from './types';
 import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
-import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
+import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
 import { pageInfoFragment, settlementInstructionFragment } from './fragments';
 
 export class InstructionGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  async findById(id: string): Promise<SettlementInstructionWithEvents | null> {
+  private async getAssetsDetails(instructions: RawInstructionNode[]) {
+    const uniqueAssetIds = Array.from(
+      new Set(
+        instructions.flatMap(
+          (instruction) => instruction.legs.groupedAggregates[0].keys,
+        ),
+      ),
+    );
+
+    const query = gql`
+      query GetAssetDetails($assetIds: [String!]!) {
+        assets(filter: { id: { in: $assetIds } }) {
+          nodes {
+            id
+            ticker
+            name
+            isNftCollection
+          }
+        }
+      }
+    `;
+
+    const response = await this.client.request<LegAssetResponse>(query, {
+      assetIds: uniqueAssetIds,
+    });
+
+    return response.assets.nodes.reduce(
+      (acc, node) => ({
+        ...acc,
+        [node.id]: node,
+      }),
+      {},
+    );
+  }
+
+  async findById(id: string): Promise<SettlementInstructionWithAssets | null> {
     const query = gql`
       ${settlementInstructionFragment}
       query ($filter: InstructionFilter!) {
@@ -37,7 +74,11 @@ export class InstructionGraphRepo {
 
     if (instructions.length === 0) return null;
 
-    return instructions[0];
+    const assetsInvolved = await this.getAssetsDetails(
+      response.instructions.nodes,
+    );
+
+    return { instructions, assetsInvolved };
   }
 
   async findByDid(
@@ -45,11 +86,12 @@ export class InstructionGraphRepo {
     pageSize: number,
     offset: number = 0,
     historicalInstructions: boolean = false,
-  ): Promise<{
-    instructions: SettlementInstructionWithEvents[];
-    totalCount: number;
-    pageInfo: PageInfo;
-  }> {
+  ): Promise<
+    SettlementInstructionWithAssets & {
+      totalCount: number;
+      pageInfo: PageInfo;
+    }
+  > {
     const query = gql`
       ${pageInfoFragment}
       ${settlementInstructionFragment}
@@ -101,10 +143,15 @@ export class InstructionGraphRepo {
       variables,
     );
 
+    const assetsInvolved = await this.getAssetsDetails(
+      response.instructions.nodes,
+    );
+
     return {
       instructions: response.instructions.nodes.map(
         rawInstructiontoSettlementInstruction,
       ),
+      assetsInvolved,
       totalCount: response.instructions.totalCount,
       pageInfo: response.instructions.pageInfo,
     };
@@ -115,11 +162,12 @@ export class InstructionGraphRepo {
     pageSize: number,
     offset: number = 0,
     historicalInstructions: boolean = false,
-  ): Promise<{
-    instructions: SettlementInstructionWithEvents[];
-    totalCount: number;
-    pageInfo: PageInfo;
-  }> {
+  ): Promise<
+    SettlementInstructionWithAssets & {
+      totalCount: number;
+      pageInfo: PageInfo;
+    }
+  > {
     const query = gql`
       ${pageInfoFragment}
       ${settlementInstructionFragment}
@@ -160,10 +208,15 @@ export class InstructionGraphRepo {
       variables,
     );
 
+    const assetsInvolved = await this.getAssetsDetails(
+      response.instructions.nodes,
+    );
+
     return {
       instructions: response.instructions.nodes.map(
         rawInstructiontoSettlementInstruction,
       ),
+      assetsInvolved,
       totalCount: response.instructions.totalCount,
       pageInfo: response.instructions.pageInfo,
     };

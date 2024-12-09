@@ -2,6 +2,8 @@ import {
   Account as AccountSdk,
   SubsidyWithAllowance,
   Permissions,
+  TxTag,
+  ModuleName,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from './Identity';
 
@@ -27,4 +29,22 @@ export interface AccountDetails extends Account {
     beneficiaries: SubsidyWithAllowance[];
     subsidizer: SubsidyWithAllowance | null;
   } | null;
+}
+
+export interface TransactionPermissions {
+  type: 'Include' | 'Exclude';
+  values: (TxTag | ModuleName)[];
+  exceptions?: TxTag[];
+}
+
+export interface SectionPermissions<T> {
+  type: 'Include' | 'Exclude';
+  values: T[];
+}
+
+export interface AccountPermissions {
+  assets: SectionPermissions<{ ticker: string }> | null;
+  transactions: TransactionPermissions | null;
+  transactionGroups: string[];
+  portfolios: SectionPermissions<{ id: string }> | null;
 }

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Identity } from '@/domain/entities/Identity';
-import { SettlementInstructionWithEvents } from '@/domain/entities/SettlementInstruction';
+import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { InstructionGraphRepo } from '@/services/repositories/InstructionGraphRepo';
 import { customReportError } from '@/utils/customReportError';
@@ -20,11 +20,11 @@ interface StatusQuery {
 
 export type UseGetSettlementInstructionsReturn = {
   historicalInstuctions: PaginatedData<
-    SettlementInstructionWithEvents[] | undefined
+    SettlementInstructionWithAssets | undefined
   > &
     StatusQuery;
   activeInstructions: PaginatedData<
-    SettlementInstructionWithEvents[] | undefined
+    SettlementInstructionWithAssets | undefined
   > &
     StatusQuery;
 };
@@ -83,7 +83,7 @@ export const useGetSettlementInstructionsByDid = ({
               totalCount: result.totalCount,
             });
 
-            return result.instructions;
+            return result;
           } catch (error) {
             customReportError(error);
             throw error;
@@ -122,7 +122,7 @@ export const useGetSettlementInstructionsByDid = ({
               totalCount: result.totalCount,
             });
 
-            return result.instructions;
+            return result;
           } catch (error) {
             customReportError(error);
             throw error;

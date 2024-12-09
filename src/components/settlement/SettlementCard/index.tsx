@@ -58,15 +58,11 @@ export function SettlementCard({
   const { currentNetworkConfig } = useNetworkProvider();
 
   if (instruction === undefined || isLoading) {
-    return <LoadingSkeletonCard title="Settlement Instrucion" />;
+    return <LoadingSkeletonCard title="Settlement Instruction" />;
   }
 
-  const { id, createdAt, settlementType, status, isExecuted } = instruction;
-  const lastEventTime = instruction
-    ? `${getLastEventDateTime(instruction)}Z`
-    : null;
+  const { id, createdAt, settlementType, isExecuted } = instruction;
   const lasEvent = instruction ? getLastEvent(instruction) : null;
-  const dateToUse = isExecuted ? lastEventTime : createdAt;
   const linkToUse = generateLinkToUse(isExecuted, lasEvent, instruction);
 
   return (
@@ -96,10 +92,21 @@ export function SettlementCard({
 
           <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
-              {status === 'Success' ? 'Execution Date' : 'Created At:'}
+              Created At:
             </Typography>
-            {dateToUse ? (
-              <FormattedDate date={dateToUse} variant="body1" />
+            {createdAt ? (
+              <FormattedDate date={createdAt} variant="body1" />
+            ) : (
+              <EmptyDash />
+            )}
+          </Box>
+
+          <Box flex={1}>
+            <Typography variant="body2" color="textSecondary">
+              Execution Date:
+            </Typography>
+            {isExecuted && instruction.upatedAt ? (
+              <FormattedDate date={instruction.upatedAt} variant="body1" />
             ) : (
               <EmptyDash />
             )}
@@ -112,21 +119,23 @@ export function SettlementCard({
             <Typography variant="body2" color="textSecondary">
               Venue:
             </Typography>
-            {!instruction.venueId || isExecuted ? (
-              <EmptyDash />
-            ) : (
+            {instruction.venueId ? (
               <GenericLink href={`${ROUTES.Venue}/${instruction.venueId}`}>
-                {instruction.venueId}, {instruction?.venueDescription ?? '-'}
+                {instruction.venueDescription
+                  ? `${instruction.venueId}, ${instruction.venueDescription}`
+                  : instruction.venueId}
               </GenericLink>
+            ) : (
+              <EmptyDash />
             )}
           </Box>
-
           <Box flex={1}>
             <Typography variant="body2" color="textSecondary">
               Settlement Type:
             </Typography>
             <Typography variant="body1">{settlementType}</Typography>
           </Box>
+          <Box flex={1} /> {/* Empty space */}
         </Stack>
       </Stack>
 
@@ -140,7 +149,7 @@ export function SettlementCard({
             {instruction.counterparties} (affirmed by {instruction.affirmedBy})
           </Typography>
         </Box>
-
+        <Box flex={1} /> {/* Empty space */}
         <Box flex={1}>
           <Typography variant="body2" color="textSecondary">
             Status:

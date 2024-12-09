@@ -35,37 +35,14 @@ import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
-import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
 import { CsvExporter } from '@/services/csv/CsvExporter';
 import { AssetTransactionsCsvExportService } from '@/domain/services/exports/AssetTransactionsCsvExportService';
+import { getEventLabel } from './getEventLabel';
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
   allowedVenues: Venue[];
-}
-
-function getEventLabel(event: EventIdEnum): {
-  label: string;
-  color:
-    | 'default'
-    | 'primary'
-    | 'secondary'
-    | 'error'
-    | 'info'
-    | 'success'
-    | 'warning';
-} {
-  switch (event) {
-    case 'Issued':
-      return { label: 'Issued', color: 'success' };
-    case 'Redeemed':
-      return { label: 'Redeemed', color: 'error' };
-    case 'Transfer':
-      return { label: 'Transfer', color: 'primary' };
-    default:
-      return { label: event, color: 'default' };
-  }
 }
 
 function VenueFilteringStatus({
@@ -87,8 +64,8 @@ function VenueFilteringStatus({
         <Box sx={{ mt: 1, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {allowedVenues.map((venue) => (
             <Chip
-              key={venue.toString()}
-              label={`Venue ${venue.toString()}`}
+              key={venue.id.toString()}
+              label={`Venue ${venue.id.toString()}`}
               size="small"
               color="primary"
               variant="outlined"
@@ -120,25 +97,18 @@ function TransactionsEmptyState(): React.ReactElement {
 }
 
 function TransactionDetailsTooltip({
-  instructionId,
   instructionMemo,
   fundingRound,
 }: {
-  instructionId?: string;
   instructionMemo?: string;
   fundingRound?: string;
 }): React.ReactElement | null {
-  if (!instructionId && !instructionMemo && !fundingRound) return null;
+  if (!instructionMemo && !fundingRound) return <EmptyDash />;
 
   return (
     <Tooltip
       title={
         <Stack spacing={1}>
-          {instructionId && (
-            <Typography variant="body2">
-              Instruction ID: {instructionId}
-            </Typography>
-          )}
           {instructionMemo && (
             <Typography variant="body2">Memo: {instructionMemo}</Typography>
           )}
@@ -161,14 +131,12 @@ interface TransactionsTabProps {
   asset: Asset;
   assetTransactionsData: UseGetAssetTransactionsReturn;
   isLoadingSdkClass: boolean;
-  subscanUrl: string | undefined;
 }
 
 export function AssetTransactionsTab({
   asset,
   assetTransactionsData,
   isLoadingSdkClass,
-  subscanUrl,
 }: TransactionsTabProps): React.ReactElement {
   const [selectedVenue, setSelectedVenue] = useState<string>('all');
   const [, setPage] = useState(0);
@@ -292,20 +260,11 @@ export function AssetTransactionsTab({
                   <TableRow key={tx.id} hover>
                     <TableCell>
                       {tx.instructionId ? (
-                        <>
-                          <Typography variant="caption">
-                            {tx.instructionId}
-                          </Typography>
-                          <PolymeshExplorerLink
-                            baseUrl={subscanUrl}
-                            path="block"
-                            hash={`${tx.createdBlock.blockId}?tab=event&event=${tx.id.replace('/', '-')}`}
-                            sx={{
-                              ml: 0.2,
-                              padding: '2px',
-                            }}
-                          />
-                        </>
+                        <GenericLink
+                          href={`${ROUTES.Settlement}/${tx.instructionId}`}
+                        >
+                          {tx.instructionId}
+                        </GenericLink>
                       ) : (
                         <EmptyDash />
                       )}
@@ -331,14 +290,28 @@ export function AssetTransactionsTab({
                     </TableCell>
                     <TableCell>
                       {fromDid ? (
-                        <AccountOrDidTextField value={fromDid} isIdentity />
+                        <AccountOrDidTextField
+                          value={fromDid}
+                          isIdentity
+                          variant="body2"
+                          showIdenticon
+                        >
+                          {tx.fromId}
+                        </AccountOrDidTextField>
                       ) : (
                         <EmptyDash />
                       )}
                     </TableCell>
                     <TableCell>
                       {toDid ? (
-                        <AccountOrDidTextField value={toDid} isIdentity />
+                        <AccountOrDidTextField
+                          value={toDid}
+                          isIdentity
+                          variant="body2"
+                          showIdenticon
+                        >
+                          {tx.toId}
+                        </AccountOrDidTextField>
                       ) : (
                         <EmptyDash />
                       )}
@@ -365,7 +338,6 @@ export function AssetTransactionsTab({
                     </TableCell>
                     <TableCell align="center">
                       <TransactionDetailsTooltip
-                        instructionId={tx.instructionId}
                         instructionMemo={tx.memo}
                         fundingRound={tx.fundingRound}
                       />
