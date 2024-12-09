@@ -1,7 +1,16 @@
 import { useQueries } from '@tanstack/react-query';
+import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/api/entities/Asset/Fungible';
+import {
+  DefaultPortfolio,
+  NumberedPortfolio,
+  Permissions,
+} from '@polymeshassociation/polymesh-sdk/types';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Account, AccountDetails } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';
+import { Asset } from '@/domain/entities/Asset';
+import { uuidToHex } from '@/services/polymesh/hexToUuid';
+import { DEFAULT_PORTFOLIO_NAME, Portfolio } from '@/domain/entities/Portfolio';
 
 export interface UseGetAccountDetailsReturn {
   accountDetails: AccountDetails | null;
@@ -14,6 +23,69 @@ export interface UseGetAccountDetailsReturn {
   error: {
     permissionsError: Error | null;
     subsidiesError: Error | null;
+  };
+}
+
+async function transformPermissions(permissions: Permissions) {
+  if (!permissions) {
+    return permissions;
+  }
+
+  let assetsTransformed = null;
+  if (permissions.assets) {
+    const values: Asset[] = await Promise.all(
+      permissions.assets.values.map(async (asset: FungibleAsset) => {
+        const assetDetails = await asset.details();
+        return {
+          assetId: uuidToHex(asset.id),
+          assetUuid: asset.id,
+          ticker: assetDetails.ticker,
+          name: assetDetails.name,
+          type: assetDetails.assetType,
+          ownerDid: assetDetails.owner.did,
+          isNftCollection: assetDetails.nonFungible,
+          isDivisible: assetDetails.isDivisible,
+        } as Asset;
+      }),
+    );
+
+    assetsTransformed = {
+      ...permissions.assets,
+      values,
+    };
+  }
+
+  let portfoliosTransformed = null;
+  if (permissions.portfolios) {
+    const values = await Promise.all(
+      permissions.portfolios.values.map(
+        async (portfolio: DefaultPortfolio | NumberedPortfolio) => {
+          const number = portfolio.toHuman().id
+            ? (portfolio.toHuman().id as string)
+            : '0';
+          const name = portfolio.toHuman().id
+            ? await (portfolio as NumberedPortfolio).getName()
+            : DEFAULT_PORTFOLIO_NAME;
+          const ownerDid = portfolio.toHuman().did;
+          return {
+            id: `${ownerDid}/${number}`,
+            name,
+            number,
+          } as Portfolio;
+        },
+      ),
+    );
+
+    portfoliosTransformed = {
+      type: permissions.portfolios.type,
+      values,
+    };
+  }
+
+  return {
+    ...permissions,
+    assets: assetsTransformed,
+    portfolios: portfoliosTransformed,
   };
 }
 
@@ -39,8 +111,10 @@ export const useGetAccountDetails = (
             }
 
             const permissions = await account.polymeshSdkClass.getPermissions();
+            const transformedPermissions =
+              await transformPermissions(permissions);
 
-            return permissions;
+            return transformedPermissions;
           } catch (error) {
             customReportError(error);
             throw error;

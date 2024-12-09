@@ -1,11 +1,13 @@
 import {
   Account as AccountSdk,
   SubsidyWithAllowance,
-  Permissions,
+  Permissions as RawPermissions,
   TxTag,
   ModuleName,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { Identity } from './Identity';
+import { Asset } from './Asset';
+import { Portfolio } from './Portfolio';
 
 export type IdentityRelationship =
   | 'Primary'
@@ -23,6 +25,17 @@ export interface Account {
   polymeshSdkClass?: AccountSdk;
 }
 
+export interface SectionPermissions<T> {
+  type: 'Include' | 'Exclude';
+  values: T[];
+}
+
+export interface Permissions
+  extends Omit<RawPermissions, 'assets' | 'portfolios'> {
+  assets: SectionPermissions<Asset> | null;
+  portfolios: SectionPermissions<Portfolio> | null;
+}
+
 export interface AccountDetails extends Account {
   permissions: Permissions | null;
   subsidies: {
@@ -35,11 +48,6 @@ export interface TransactionPermissions {
   type: 'Include' | 'Exclude';
   values: (TxTag | ModuleName)[];
   exceptions?: TxTag[];
-}
-
-export interface SectionPermissions<T> {
-  type: 'Include' | 'Exclude';
-  values: T[];
 }
 
 export interface AccountPermissions {

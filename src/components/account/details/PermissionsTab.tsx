@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   Typography,
   Table,
@@ -19,14 +19,15 @@ import {
   Group,
   Folder,
 } from '@mui/icons-material';
-import {
-  DefaultPortfolio,
-  NumberedPortfolio,
-  FungibleAsset,
-} from '@polymeshassociation/polymesh-sdk/types';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { AccountDetails } from '@/domain/entities/Account';
+import { AccountDetails, SectionPermissions } from '@/domain/entities/Account';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { Asset } from '@/domain/entities/Asset';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { ROUTES } from '@/config/routes';
+import { truncateAddress } from '@/services/polymesh/address';
+import { Portfolio } from '@/domain/entities/Portfolio';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface PermissionsTabProps {
   accountDetails: AccountDetails | null;
@@ -39,64 +40,90 @@ interface AssetLike {
   ticker?: string;
 }
 
-type PermissionValue =
-  | string
-  | FungibleAsset
-  | DefaultPortfolio
-  | NumberedPortfolio
-  | AssetLike;
+type PermissionValue = string | AssetLike;
 
-interface SectionPermissions<T = PermissionValue> {
+interface SectionPermissionsWithExceptions<T = PermissionValue> {
   values: T[];
   type: 'Include' | 'Exclude';
   exceptions?: T[];
 }
 
-const isFungibleAsset = (value: PermissionValue): value is FungibleAsset => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'uuid' in value &&
-    'id' in value &&
-    value.constructor?.name === 'FungibleAsset'
+function PermissionTypeIcon({ type }: { type: 'Include' | 'Exclude' }) {
+  return type === 'Include' ? (
+    <CheckCircle color="success" sx={{ mr: 1 }} />
+  ) : (
+    <Cancel color="error" sx={{ mr: 1 }} />
   );
-};
+}
 
-const isDefaultPortfolio = (
+function AssetPermissionsList({
+  assetPermissions,
+}: {
+  assetPermissions: SectionPermissions<Asset>;
+}) {
+  const { values, type } = assetPermissions;
+
+  const assetsLinks = useMemo(
+    () =>
+      values.map((value) => (
+        <GenericLink
+          key={value.assetUuid}
+          href={`${ROUTES.Asset}/${value.assetId}`}
+        >
+          {value.name
+            ? `${value.name || value.ticker} [${truncateAddress(value.assetUuid, 4)}]`
+            : truncateAddress(value.assetUuid, 4)}
+        </GenericLink>
+      )),
+    [values],
+  );
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <PermissionTypeIcon type={type} />
+      <Typography>{type}</Typography>&nbsp; ({assetsLinks})
+    </Box>
+  );
+}
+
+function PortfoliosPermissionsList({
+  portfolioPermissions,
+}: {
+  portfolioPermissions: SectionPermissions<Portfolio>;
+}) {
+  const { values, type } = portfolioPermissions;
+
+  const portfolioLinks = useMemo(
+    () =>
+      values.map((value) => {
+        const did = value.id.split('/')[0] || '';
+
+        return (
+          <AccountOrDidTextField
+            key={value.id}
+            value={did}
+            isIdentity
+            variant="body2"
+            hideCopyButton
+          >
+            {value.id}
+          </AccountOrDidTextField>
+        );
+      }),
+    [values],
+  );
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <PermissionTypeIcon type={type} />
+      <Typography>{type}</Typography>&nbsp; ({portfolioLinks})
+    </Box>
+  );
+}
+
+const formatPermissionValue = (
   value: PermissionValue,
-): value is DefaultPortfolio => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'owner' in value &&
-    value.constructor?.name === 'DefaultPortfolio'
-  );
-};
-
-const isNumberedPortfolio = (
-  value: PermissionValue,
-): value is NumberedPortfolio => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'owner' in value &&
-    value.constructor?.name === 'NumberedPortfolio'
-  );
-};
-
-const hasId = (value: object): value is { id: string } => {
-  return 'id' in value;
-};
-
-const hasTicker = (value: object): value is { ticker: string } => {
-  return 'ticker' in value;
-};
-
-const hasNumber = (value: object): value is { number: string | number } => {
-  return 'number' in value;
-};
-
-const formatPermissionValue = (value: PermissionValue): string => {
+): string | React.ReactNode => {
   if (typeof value === 'string') {
     return value
       .split('.')
@@ -106,23 +133,6 @@ const formatPermissionValue = (value: PermissionValue): string => {
           .replace(/^./, (str) => str.toUpperCase()),
       )
       .join(' → ');
-  }
-
-  if (isFungibleAsset(value)) {
-    return `Asset ${value.id}`;
-  }
-
-  if (isDefaultPortfolio(value)) {
-    return 'Default Portfolio';
-  }
-
-  if (isNumberedPortfolio(value) && hasNumber(value)) {
-    return `Portfolio ${value.number || ''}`;
-  }
-
-  if (typeof value === 'object' && value !== null) {
-    if (hasId(value)) return `Asset ${value.id}`;
-    if (hasTicker(value)) return `Asset ${value.ticker}`;
   }
 
   return '';
@@ -144,7 +154,9 @@ export function PermissionsTab({
   );
 
   const renderSectionPermissions = useCallback(
-    <T extends PermissionValue>(permissions: SectionPermissions<T> | null) => {
+    <T extends PermissionValue>(
+      permissions: SectionPermissionsWithExceptions<T> | null,
+    ) => {
       if (!permissions) {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -224,7 +236,16 @@ export function PermissionsTab({
                   {renderSectionCell(<AccountBalance />, 'Assets')}
                 </TableCell>
                 <TableCell>
-                  {renderSectionPermissions(accountDetails.permissions.assets)}
+                  {accountDetails.permissions.assets === null ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircle color="success" sx={{ mr: 1 }} />
+                      <Typography>All</Typography>
+                    </Box>
+                  ) : (
+                    <AssetPermissionsList
+                      assetPermissions={accountDetails.permissions.assets}
+                    />
+                  )}
                 </TableCell>
               </TableRow>
               <TableRow>
@@ -256,8 +277,18 @@ export function PermissionsTab({
                   {renderSectionCell(<Folder />, 'Portfolios')}
                 </TableCell>
                 <TableCell>
-                  {renderSectionPermissions(
-                    accountDetails.permissions.portfolios,
+                  {accountDetails.permissions.assets === null ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircle color="success" sx={{ mr: 1 }} />
+                      <Typography>All</Typography>
+                    </Box>
+                  ) : (
+                    <PortfoliosPermissionsList
+                      portfolioPermissions={
+                        accountDetails.permissions
+                          .portfolios as SectionPermissions<Portfolio>
+                      }
+                    />
                   )}
                 </TableCell>
               </TableRow>
