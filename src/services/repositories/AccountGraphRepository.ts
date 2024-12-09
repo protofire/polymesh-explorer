@@ -29,12 +29,16 @@ export class AccountGraphRepository {
           nodes {
             address
             identityId
-            createdAt
             multiSigsByCreatorAccountId {
               totalCount
             }
             identity {
               primaryAccount
+            }
+            createdBlock {
+              blockId
+              datetime
+              hash
             }
           }
         }
