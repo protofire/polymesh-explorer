@@ -1,11 +1,16 @@
 import { useQueries } from '@tanstack/react-query';
 import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/api/entities/Asset/Fungible';
-import { Permissions } from '@polymeshassociation/polymesh-sdk/types';
+import {
+  DefaultPortfolio,
+  NumberedPortfolio,
+  Permissions,
+} from '@polymeshassociation/polymesh-sdk/types';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Account, AccountDetails } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';
 import { Asset } from '@/domain/entities/Asset';
 import { uuidToHex } from '@/services/polymesh/hexToUuid';
+import { DEFAULT_PORTFOLIO_NAME, Portfolio } from '@/domain/entities/Portfolio';
 
 export interface UseGetAccountDetailsReturn {
   accountDetails: AccountDetails | null;
@@ -25,8 +30,8 @@ async function transformPermissions(permissions: Permissions) {
   if (!permissions) {
     return permissions;
   }
-  let transformedAssets = null;
 
+  let assetsTransformed = null;
   if (permissions.assets) {
     const values: Asset[] = await Promise.all(
       permissions.assets.values.map(async (asset: FungibleAsset) => {
@@ -44,15 +49,43 @@ async function transformPermissions(permissions: Permissions) {
       }),
     );
 
-    transformedAssets = {
+    assetsTransformed = {
       ...permissions.assets,
+      values,
+    };
+  }
+
+  let portfoliosTransformed = null;
+  if (permissions.portfolios) {
+    const values = await Promise.all(
+      permissions.portfolios.values.map(
+        async (portfolio: DefaultPortfolio | NumberedPortfolio) => {
+          const number = portfolio.toHuman().id
+            ? (portfolio.toHuman().id as string)
+            : '0';
+          const name = portfolio.toHuman().id
+            ? await (portfolio as NumberedPortfolio).getName()
+            : DEFAULT_PORTFOLIO_NAME;
+          const ownerDid = portfolio.toHuman().did;
+          return {
+            id: `${ownerDid}/${number}`,
+            name,
+            number,
+          } as Portfolio;
+        },
+      ),
+    );
+
+    portfoliosTransformed = {
+      type: permissions.portfolios.type,
       values,
     };
   }
 
   return {
     ...permissions,
-    assets: transformedAssets,
+    assets: assetsTransformed,
+    portfolios: portfoliosTransformed,
   };
 }
 

@@ -19,18 +19,15 @@ import {
   Group,
   Folder,
 } from '@mui/icons-material';
-import {
-  DefaultPortfolio,
-  NumberedPortfolio,
-  FungibleAsset,
-} from '@polymeshassociation/polymesh-sdk/types';
 import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { AccountDetails, Permissions } from '@/domain/entities/Account';
+import { AccountDetails, SectionPermissions } from '@/domain/entities/Account';
 import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { Asset } from '@/domain/entities/Asset';
 import { GenericLink } from '@/components/shared/common/GenericLink';
 import { ROUTES } from '@/config/routes';
 import { truncateAddress } from '@/services/polymesh/address';
+import { Portfolio } from '@/domain/entities/Portfolio';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
 interface PermissionsTabProps {
   accountDetails: AccountDetails | null;
@@ -43,22 +40,13 @@ interface AssetLike {
   ticker?: string;
 }
 
-type PermissionValue =
-  | string
-  | FungibleAsset
-  | DefaultPortfolio
-  | NumberedPortfolio
-  | AssetLike;
+type PermissionValue = string | AssetLike;
 
-interface SectionPermissions<T = PermissionValue> {
+interface SectionPermissionsWithExceptions<T = PermissionValue> {
   values: T[];
   type: 'Include' | 'Exclude';
   exceptions?: T[];
 }
-
-const isFungibleAsset = (value: PermissionValue): value is Asset => {
-  return typeof value === 'object' && value !== null && 'assetUuid' in value;
-};
 
 function PermissionTypeIcon({ type }: { type: 'Include' | 'Exclude' }) {
   return type === 'Include' ? (
@@ -71,7 +59,7 @@ function PermissionTypeIcon({ type }: { type: 'Include' | 'Exclude' }) {
 function AssetPermissionsList({
   assetPermissions,
 }: {
-  assetPermissions: Permissions['assets'];
+  assetPermissions: SectionPermissions<Asset>;
 }) {
   const { values, type } = assetPermissions;
 
@@ -98,31 +86,40 @@ function AssetPermissionsList({
   );
 }
 
-const isDefaultPortfolio = (
-  value: PermissionValue,
-): value is DefaultPortfolio => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'owner' in value &&
-    value.constructor?.name === 'DefaultPortfolio'
-  );
-};
+function PortfoliosPermissionsList({
+  portfolioPermissions,
+}: {
+  portfolioPermissions: SectionPermissions<Portfolio>;
+}) {
+  const { values, type } = portfolioPermissions;
 
-const isNumberedPortfolio = (
-  value: PermissionValue,
-): value is NumberedPortfolio => {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'owner' in value &&
-    value.constructor?.name === 'NumberedPortfolio'
-  );
-};
+  const portfolioLinks = useMemo(
+    () =>
+      values.map((value) => {
+        const did = value.id.split('/')[0] || '';
 
-const hasNumber = (value: object): value is { number: string | number } => {
-  return 'number' in value;
-};
+        return (
+          <AccountOrDidTextField
+            key={value.id}
+            value={did}
+            isIdentity
+            variant="body2"
+            hideCopyButton
+          >
+            {value.id}
+          </AccountOrDidTextField>
+        );
+      }),
+    [values],
+  );
+
+  return (
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <PermissionTypeIcon type={type} />
+      <Typography>{type}</Typography>&nbsp; ({portfolioLinks})
+    </Box>
+  );
+}
 
 const formatPermissionValue = (
   value: PermissionValue,
@@ -136,24 +133,6 @@ const formatPermissionValue = (
           .replace(/^./, (str) => str.toUpperCase()),
       )
       .join(' → ');
-  }
-
-  if (isFungibleAsset(value)) {
-    return (
-      <GenericLink href={`${ROUTES.Asset}/${value.assetId}`}>
-        {value.name
-          ? `${value.name || value.ticker} [${truncateAddress(value.assetUuid, 4)}]`
-          : truncateAddress(value.assetUuid, 4)}
-      </GenericLink>
-    );
-  }
-
-  if (isDefaultPortfolio(value)) {
-    return 'Default Portfolio';
-  }
-
-  if (isNumberedPortfolio(value) && hasNumber(value)) {
-    return `Portfolio ${value.number || ''}`;
   }
 
   return '';
@@ -175,7 +154,9 @@ export function PermissionsTab({
   );
 
   const renderSectionPermissions = useCallback(
-    <T extends PermissionValue>(permissions: SectionPermissions<T> | null) => {
+    <T extends PermissionValue>(
+      permissions: SectionPermissionsWithExceptions<T> | null,
+    ) => {
       if (!permissions) {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -296,8 +277,18 @@ export function PermissionsTab({
                   {renderSectionCell(<Folder />, 'Portfolios')}
                 </TableCell>
                 <TableCell>
-                  {renderSectionPermissions(
-                    accountDetails.permissions.portfolios,
+                  {accountDetails.permissions.assets === null ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                      <CheckCircle color="success" sx={{ mr: 1 }} />
+                      <Typography>All</Typography>
+                    </Box>
+                  ) : (
+                    <PortfoliosPermissionsList
+                      portfolioPermissions={
+                        accountDetails.permissions
+                          .portfolios as SectionPermissions<Portfolio>
+                      }
+                    />
                   )}
                 </TableCell>
               </TableRow>

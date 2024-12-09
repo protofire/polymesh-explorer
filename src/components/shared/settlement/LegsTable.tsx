@@ -112,7 +112,6 @@ export function LegsTable({
                         maxIdsToShow={3}
                       />
                     )}
-                {leg.amount}
               </TableCell>
             </TableRow>
           );
