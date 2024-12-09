@@ -75,3 +75,11 @@ export function useLocalPagination<T>(
     paginatedItems,
   };
 }
+
+export const getItemNumber = (
+  currentPage: number,
+  pageSize: number,
+  index: number,
+): number => {
+  return (currentPage - 1) * pageSize + index + 1;
+};
