@@ -24,7 +24,7 @@ import { FormattedNumber } from '../fieldAttributes/FormattedNumber';
 
 interface LegsTableProps {
   legs: SettlementLeg[];
-  assetsMap: SettlementInstructionWithAssets['assetsInvolved'];
+  assetsMap?: SettlementInstructionWithAssets['assetsInvolved'];
   currentIdentityDid?: string;
   tableSize?: 'small' | 'medium';
 }
@@ -61,7 +61,7 @@ export function LegsTable({
             direction =
               leg.from.id === currentIdentityDid ? 'Sending' : 'Receiving';
           }
-          const asset = assetsMap[leg.assetId];
+          const asset = assetsMap && assetsMap[leg.assetId];
 
           return (
             <TableRow key={`leg-${leg.index}`}>
@@ -97,7 +97,7 @@ export function LegsTable({
               <TableCell>
                 <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
                   {asset
-                    ? `${asset.name || asset.ticker} (${truncateAddress(asset.id)})`
+                    ? `${asset.name || asset.ticker} (${truncateAddress(asset.id, 4)})`
                     : leg.assetId}
                 </GenericLink>
               </TableCell>

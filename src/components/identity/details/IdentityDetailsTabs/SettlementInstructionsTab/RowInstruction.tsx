@@ -6,9 +6,6 @@ import {
   Collapse,
   Box,
   Typography,
-  Table,
-  TableHead,
-  TableBody,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -29,7 +26,7 @@ export interface RowInstructionProps {
   instruction: SettlementInstruction;
   currentIdentityDid?: Identity['did'];
   isHistorical: boolean;
-  assetsInvolved: SettlementInstructionWithAssets['assetsInvolved'];
+  assetsInvolved: SettlementInstructionWithAssets['assetsInvolved'] | undefined;
   showVenueId?: boolean;
 }
 

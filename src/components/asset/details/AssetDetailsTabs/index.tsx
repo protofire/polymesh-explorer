@@ -10,7 +10,6 @@ import { useGetAssetHolders } from '@/hooks/asset/useGetAssetHolders';
 import { HoldersTab } from './HoldersTab';
 import { AssetTransactionsTab } from './AssetTransactionsTab';
 import { useGetAssetTransactions } from '@/hooks/asset/useGetAssetTransactions';
-import { useNetworkProvider } from '@/context/NetworkProvider/useNetworkProvider';
 import { AssetPermissionsTab } from './AssetPermissionsTab';
 import { useGetAssetPermissions } from '@/hooks/asset/useGetAssetPermissions';
 import { ComplianceTab } from './ComplianceTab';
@@ -22,7 +21,6 @@ interface AssetDetailsTabsProps {
 export function AssetDetailsTabs({
   asset,
 }: AssetDetailsTabsProps): React.ReactElement {
-  const { currentNetworkConfig } = useNetworkProvider();
   const [value, setValue] = React.useState(0);
   const { assetDetails, assetSdk, status, error } = useGetAssetDetails(asset);
   const isLoadingDetails = !status.isFetchedDetails || status.isLoadingDetails;
@@ -114,7 +112,6 @@ export function AssetDetailsTabs({
       </GenericTabPanel>
       <GenericTabPanel value={value} index={2} labelKey="Transactions">
         <AssetTransactionsTab
-          subscanUrl={currentNetworkConfig?.subscanUrl}
           asset={asset}
           assetTransactionsData={assetTransactionsData}
           isLoadingSdkClass={isLoadingDetails}

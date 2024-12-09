@@ -7,10 +7,7 @@ import {
   RawInstructionNode,
 } from './types';
 import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
-import {
-  SettlementInstructionWithAssets,
-  SettlementInstructionWithEvents,
-} from '@/domain/entities/SettlementInstruction';
+import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
 import { pageInfoFragment, settlementInstructionFragment } from './fragments';
 
 export class InstructionGraphRepo {
@@ -165,11 +162,12 @@ export class InstructionGraphRepo {
     pageSize: number,
     offset: number = 0,
     historicalInstructions: boolean = false,
-  ): Promise<{
-    instructions: SettlementInstructionWithEvents[];
-    totalCount: number;
-    pageInfo: PageInfo;
-  }> {
+  ): Promise<
+    SettlementInstructionWithAssets & {
+      totalCount: number;
+      pageInfo: PageInfo;
+    }
+  > {
     const query = gql`
       ${pageInfoFragment}
       ${settlementInstructionFragment}
@@ -210,10 +208,15 @@ export class InstructionGraphRepo {
       variables,
     );
 
+    const assetsInvolved = await this.getAssetsDetails(
+      response.instructions.nodes,
+    );
+
     return {
       instructions: response.instructions.nodes.map(
         rawInstructiontoSettlementInstruction,
       ),
+      assetsInvolved,
       totalCount: response.instructions.totalCount,
       pageInfo: response.instructions.pageInfo,
     };

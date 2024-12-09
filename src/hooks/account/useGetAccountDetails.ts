@@ -38,7 +38,9 @@ export const useGetAccountDetails = (
               return null;
             }
 
-            return await account.polymeshSdkClass.getPermissions();
+            const permissions = await account.polymeshSdkClass.getPermissions();
+
+            return permissions;
           } catch (error) {
             customReportError(error);
             throw error;
