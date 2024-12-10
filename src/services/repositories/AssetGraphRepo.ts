@@ -106,4 +106,29 @@ export class AssetGraphRepo {
       pageInfo: assets.pageInfo,
     };
   }
+
+  async getAssetsListIds(assetIds: string[]): Promise<Record<string, Asset>> {
+    const query = gql`
+      ${assetFragment}
+      query GetAssetDetails($assetIds: [String!]!) {
+        assets(filter: { id: { in: $assetIds } }) {
+          nodes {
+            ...AssetFields
+          }
+        }
+      }
+    `;
+
+    const response = await this.client.request<AssetListResponse>(query, {
+      assetIds,
+    });
+
+    return response.assets.nodes.reduce(
+      (acc, node) => ({
+        ...acc,
+        [node.id]: assetNodeToAsset(node),
+      }),
+      {},
+    );
+  }
 }
