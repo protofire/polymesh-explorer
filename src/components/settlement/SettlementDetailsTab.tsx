@@ -6,6 +6,8 @@ import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementIns
 import { LegsTable } from '@/components/shared/settlement/LegsTable';
 import { EventsTabTable } from './tabs/EventsTabTable';
 import { AffirmationsTabTable } from './tabs/AffirmationsTabTable';
+import { useLocalPagination } from '@/hooks/useLocalPagination';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 
 interface SettlementDetailsTabProps {
   instruction: SettlementInstructionWithAssets;
@@ -19,6 +21,14 @@ export function SettlementDetailsTab({
   subscanUrl,
 }: SettlementDetailsTabProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
+
+  const legsPagination = useLocalPagination(instruction.instructions[0].legs);
+  const eventsPagination = useLocalPagination(
+    instruction.instructions[0].events,
+  );
+  const affirmationsPagination = useLocalPagination(
+    instruction.instructions[0].affirmations,
+  );
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -56,24 +66,27 @@ export function SettlementDetailsTab({
       <GenericTabPanel value={value} index={0} labelKey="legs">
         <TableContainer component={Paper}>
           <LegsTable
-            legs={instruction.instructions[0].legs}
+            legs={legsPagination.paginatedItems}
             tableSize="medium"
             assetsMap={instruction.assetsInvolved}
           />
         </TableContainer>
+        <PaginationFooter paginationController={legsPagination} />
       </GenericTabPanel>
 
       <GenericTabPanel value={value} index={1} labelKey="events">
         <EventsTabTable
-          events={instruction.instructions[0].events}
+          events={eventsPagination.paginatedItems}
           subscanUrl={subscanUrl}
         />
+        <PaginationFooter paginationController={eventsPagination} />
       </GenericTabPanel>
 
       <GenericTabPanel value={value} index={2} labelKey="affirmations">
         <AffirmationsTabTable
-          affirmations={instruction.instructions[0].affirmations}
+          affirmations={affirmationsPagination.paginatedItems}
         />
+        <PaginationFooter paginationController={affirmationsPagination} />
       </GenericTabPanel>
     </>
   );

@@ -14,6 +14,7 @@ export interface SettlementLeg {
   assetId: string;
   assetTicker?: string;
   amount: string;
+  legType: string;
   nftIds?: Array<string> | null;
   direction?: 'Sending' | 'Receiving';
 }

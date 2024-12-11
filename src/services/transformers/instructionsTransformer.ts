@@ -47,6 +47,7 @@ export function rawLegToSettlementLeg(leg: RawLegNode): SettlementLeg {
       ? balanceToBigNumber(leg.amount as unknown as Balance).toString()
       : leg.amount,
     nftIds: leg.nftIds,
+    legType: leg.legType,
   };
 }
 
