@@ -11,6 +11,7 @@ import { ROUTES } from '@/config/routes';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import {
+  EInstructionDirection,
   SettlementLegDirectionField,
   SettlementLegDirectionFieldProps,
 } from '@/components/shared/common/SettlementLegDirectionField';
@@ -28,6 +29,27 @@ interface LegsTableProps {
   currentIdentityDid?: string;
   tableSize?: 'small' | 'medium';
 }
+
+export const getLegDirection = ({
+  from,
+  to,
+  identity,
+}: {
+  from: string;
+  to: string;
+  identity: string;
+}) => {
+  if (from === identity && to === identity) {
+    return EInstructionDirection.INTER_PORTFOLIO;
+  }
+  if (from === identity) {
+    return EInstructionDirection.OUTGOING;
+  }
+  if (to === identity) {
+    return EInstructionDirection.INCOMING;
+  }
+  return EInstructionDirection.NONE;
+};
 
 export function LegsTable({
   legs,
@@ -59,7 +81,13 @@ export function LegsTable({
 
           if (currentIdentityDid) {
             direction =
-              leg.from.id === currentIdentityDid ? 'Sending' : 'Receiving';
+              leg.legType === EInstructionDirection.OFF_CHAIN
+                ? EInstructionDirection.OFF_CHAIN
+                : getLegDirection({
+                    from: leg.from.id,
+                    to: leg.to.id,
+                    identity: currentIdentityDid,
+                  });
           }
           const asset = assetsMap && assetsMap[leg.assetId];
 
