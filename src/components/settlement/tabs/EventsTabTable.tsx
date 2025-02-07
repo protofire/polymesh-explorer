@@ -41,8 +41,8 @@ export function EventsTabTable({
           <TableRow>
             <TableCell>Date</TableCell>
             <TableCell>Event</TableCell>
-            <TableCell>Block</TableCell>
-            <TableCell>Hash</TableCell>
+            <TableCell>Event ID</TableCell>
+            <TableCell>Block Hash</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -53,11 +53,11 @@ export function EventsTabTable({
               </TableCell>
               <TableCell>{event.event}</TableCell>
               <TableCell>
-                {event.createdBlock.id}
+                {event.createdBlock.blockId}-{event.eventIdx}
                 <PolymeshExplorerLink
                   baseUrl={subscanUrl}
                   path="block"
-                  hash={buildLinkFromEvent(event)}
+                  hash={buildLinkFromEvent(event, true)}
                 />
               </TableCell>
               <TableCell>

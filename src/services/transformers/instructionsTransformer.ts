@@ -64,12 +64,8 @@ export function rawInstructiontoSettlementInstruction(
     venueDescription: rawInstruction.venue?.details,
     status: statusEnumToInstructionStatus(rawInstruction.status),
     memo: rawInstruction.memo,
-    createdAt: rawInstruction.createdBlock.datetime
-      ? new Date(`${rawInstruction.createdBlock.datetime}Z`)
-      : undefined,
-    upatedAt: rawInstruction.updatedBlock.datetime
-      ? new Date(`${rawInstruction.updatedBlock.datetime}Z`)
-      : undefined,
+    createdAt: new Date(`${rawInstruction.createdBlock.datetime}Z`),
+    updatedAt: new Date(`${rawInstruction.updatedBlock.datetime}Z`),
     counterparties: uniqueCounterparties.size,
     affirmedBy: rawInstruction.affirmations.nodes.filter(
       (a) => a.status === 'Affirmed',
@@ -80,7 +76,9 @@ export function rawInstructiontoSettlementInstruction(
     events: rawInstruction.events.nodes,
     affirmations: rawInstruction.affirmations.nodes.map((a) => ({
       ...a,
-      createdAt: new Date(`${a.createdAt}Z`),
+      createdAt: new Date(`${a.createdBlock.datetime}Z`),
     })),
+    createdBlock: rawInstruction.createdBlock,
+    createdEvent: rawInstruction.createdEvent,
   };
 }

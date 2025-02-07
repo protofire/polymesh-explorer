@@ -25,17 +25,22 @@ export interface SettlementInstruction {
   venueDescription?: string;
   status: InstructionStatus;
   memo: string | null;
-  createdAt?: Date;
-  upatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
   counterparties: number;
   affirmedBy: number;
   settlementType: string;
   legs: SettlementLeg[];
   isExecuted: boolean;
-  createdBlock?: RawBlock;
+  createdBlock: RawBlock;
+  createdEvent: {
+    id: string;
+    eventId: string;
+    eventIdx: number;
+  };
 }
 
-type RawAffirmationNodeExtended = Omit<RawAffirmationNode, 'createdAt'> & {
+type RawAffirmationNodeExtended = RawAffirmationNode & {
   createdAt: Date;
 };
 

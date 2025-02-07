@@ -82,8 +82,8 @@ export function RowInstruction({
         </TableCell>
         {isHistorical && (
           <TableCell>
-            {instruction.upatedAt ? (
-              <FormattedDate date={instruction.upatedAt} />
+            {instruction.updatedAt ? (
+              <FormattedDate date={instruction.updatedAt} />
             ) : (
               <EmptyDash />
             )}

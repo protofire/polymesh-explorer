@@ -43,7 +43,7 @@ export class VenueGraphRepo {
       ${venueFragment}
       ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
-        venues(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
+        venues(first: $first, after: $after, orderBy: CREATED_BLOCK_ID_DESC) {
           totalCount
           pageInfo {
             ...PageInfoFields
