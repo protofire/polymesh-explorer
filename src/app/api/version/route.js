@@ -5,7 +5,7 @@ export async function GET() {
   const packageJsonPath = join(process.cwd(), 'package.json');
   const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
-  const version = packageJson.version;
+  const { version } = packageJson;
 
   return new Response(JSON.stringify({ version }), {
     status: 200,

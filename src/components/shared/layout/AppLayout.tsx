@@ -50,7 +50,7 @@ export function AppLayout({
   children,
   buttonActionComponent = <NetworkSelector />,
 }: Props) {
-  const { version, loading, error } = useVersion();
+  const { version, loading } = useVersion();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   const barActions = useMemo(() => {
@@ -123,7 +123,7 @@ export function AppLayout({
               </GenericLink>
             </Typography>
             <Typography sx={{ opacity: 0.5 }} variant="caption">
-              V {version}
+              V {version || (loading ? '0.0.0' : '0.0.0')}
             </Typography>
           </Box>
         </Footer>
