@@ -3,6 +3,6 @@ export type NetworkType = (typeof NETWORK_TYPES)[number];
 
 export interface NetworkConfig {
   rpc: string;
-  graphQlNode: string;
+  graphQlNode: string | undefined;
   subscanUrl: string;
 }
