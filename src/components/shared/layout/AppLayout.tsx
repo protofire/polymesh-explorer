@@ -10,6 +10,7 @@ import { LayoutSearchTextInput } from './LayoutSearchTextInput';
 import { APP_BACKGROUD } from '@/config/images';
 import { GenericLink } from '../common/GenericLink';
 import { POLYMESH_DOCS } from '@/config/constant';
+import { useVersion } from '@/hooks/common/useVersion';
 
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
@@ -49,6 +50,7 @@ export function AppLayout({
   children,
   buttonActionComponent = <NetworkSelector />,
 }: Props) {
+  const { version, loading, error } = useVersion();
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   const barActions = useMemo(() => {
@@ -104,6 +106,8 @@ export function AppLayout({
           <Box
             component="span"
             sx={{
+              display: 'flex',
+              gap: '20px',
               '& a': {
                 color: '#fff',
                 textDecoration: 'none',
@@ -117,6 +121,9 @@ export function AppLayout({
               <GenericLink isExternal href={POLYMESH_DOCS}>
                 Polymesh Docs
               </GenericLink>
+            </Typography>
+            <Typography sx={{ opacity: 0.5 }} variant="caption">
+              V {version}
             </Typography>
           </Box>
         </Footer>
