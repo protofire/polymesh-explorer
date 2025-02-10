@@ -5,11 +5,16 @@ export const POLYMESH_DOCS = 'https://developers.polymesh.network/docs/';
 
 // network config nodes
 export const POLYMESH_RPC_URL = 'wss://mainnet-rpc.polymesh.network';
-export const GRAPHQL_ENDPOINT = 'https://mainnet-graphql.polymesh.network';
+
+export const GRAPHQL_ENDPOINT =
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+  'https://mainnet-graphql.polymesh.network';
 export const SUBSCAN_URL = 'https://polymesh.subscan.io/';
 
 export const POLYMESH_RPC_URL_TESTNET = 'wss://testnet-rpc.polymesh.live';
-export const GRAPHQL_ENDPOINT_TESTNET = 'https://testnet-graphql.polymesh.live';
+export const GRAPHQL_ENDPOINT_TESTNET =
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT_TESTNET ||
+  'https://testnet-graphql.polymesh.live';
 export const SUBSCAN_URL_TESTNET = 'https://polymesh-testnet.subscan.io/';
 // export const GRAPHQL_ENDPOINT_TESTNET = 'http://dev.polymesh.tech:3049';
 
