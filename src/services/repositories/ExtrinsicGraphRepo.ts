@@ -21,7 +21,7 @@ export class ExtrinsicGraphRepo {
       return `
         did_${did}: extrinsics(
           filter: {address: {in: [${addressFilter}]}}
-          orderBy: [CREATED_AT_DESC]
+          orderBy: [ID_DESC]
           first: ${size}
           offset: ${start}
         ) {
@@ -88,7 +88,7 @@ export class ExtrinsicGraphRepo {
       query TransactionsQuery($start: Int, $size: Int, $addresses: [String!]!) {
         extrinsics(
           filter: { address: { in: $addresses } }
-          orderBy: [CREATED_AT_DESC]
+          orderBy: [ID_DESC]
           first: $size
           offset: $start
         ) {

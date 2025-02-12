@@ -23,6 +23,7 @@ import { truncateAddress } from '@/services/polymesh/address';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
+import { removeLeadingZeros } from '@/utils/formatString';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -32,11 +33,20 @@ interface TabTokenMovementsTableProps {
   assetType?: AssetTypeSelected;
 }
 
+const removeMovementIdPadding = (id: string) => {
+  if (!id) return '';
+  const [part1, part2] = id.split('/');
+  const formattedPart1 = removeLeadingZeros(part1);
+  const formattedPart2 = removeLeadingZeros(part2);
+  return `${formattedPart1}-${formattedPart2}`;
+};
+
 const formatMovementId = (id: string | undefined) => {
   if (!id) return '';
-  if (id.length <= 7) return id;
+  const unpaddedId = removeMovementIdPadding(id);
+  if (unpaddedId.length <= 7) return unpaddedId;
 
-  return `${id.slice(0, 3)}...${id.slice(-4)}`;
+  return `${unpaddedId.slice(0, 3)}...${unpaddedId.slice(-4)}`;
 };
 
 export function TabTokenMovementsTable({
@@ -92,6 +102,7 @@ export function TabTokenMovementsTable({
                           sx={{
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
                           }}
                         >
                           {formatMovementId(movement.id)}
@@ -100,7 +111,7 @@ export function TabTokenMovementsTable({
                           <PolymeshExplorerLink
                             baseUrl={subscanUrl}
                             path="extrinsic"
-                            hash={movement.id.replace('/', '-')}
+                            hash={removeMovementIdPadding(movement.id)}
                             sx={{
                               '& .MuiSvgIcon-root': {
                                 fontSize: '16px',
@@ -110,7 +121,7 @@ export function TabTokenMovementsTable({
                                 color: 'primary.main',
                               },
                             }}
-                            toolTipText={`See in subscan extrinsic ${movement.id.replace('/', '-')}`}
+                            toolTipText={`See in subscan extrinsic ${removeMovementIdPadding(movement.id)}`}
                           />
                         )}
                       </Box>

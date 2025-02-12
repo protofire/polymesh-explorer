@@ -36,14 +36,14 @@ export function getLastEvent(
 
 export function generateLinkToUse(
   isExecuted: boolean,
-  lasEvent: RawInstructionEvent | null | undefined,
+  lastEvent: RawInstructionEvent | null | undefined,
   instruction: SettlementInstructionWithEvents | null | undefined,
 ): string {
   if (!instruction) return '';
 
-  return isExecuted && lasEvent
-    ? `${lasEvent.createdBlock.id.toString()}?tab=event&event=${lasEvent.id.replace('/', '-')}`
-    : instruction?.createdBlock?.id.toString() || '';
+  return isExecuted && lastEvent
+    ? `${lastEvent.createdBlock.blockId}?tab=event&event=${lastEvent.createdBlock.blockId}-${lastEvent.eventIdx}`
+    : `${instruction.createdBlock.blockId}?tab=event&event=${instruction.createdBlock.blockId}-${instruction.createdEvent.eventIdx}`;
 }
 
 interface SettlementCardProps {
@@ -62,8 +62,8 @@ export function SettlementCard({
   }
 
   const { id, createdAt, settlementType, isExecuted } = instruction;
-  const lasEvent = instruction ? getLastEvent(instruction) : null;
-  const linkToUse = generateLinkToUse(isExecuted, lasEvent, instruction);
+  const lastEvent = instruction ? getLastEvent(instruction) : null;
+  const linkToUse = generateLinkToUse(isExecuted, lastEvent, instruction);
 
   return (
     <>
@@ -105,8 +105,8 @@ export function SettlementCard({
             <Typography variant="body2" color="textSecondary">
               Execution Date:
             </Typography>
-            {isExecuted && instruction.upatedAt ? (
-              <FormattedDate date={instruction.upatedAt} variant="body1" />
+            {isExecuted && instruction.updatedAt ? (
+              <FormattedDate date={instruction.updatedAt} variant="body1" />
             ) : (
               <EmptyDash />
             )}

@@ -64,7 +64,10 @@ export const identityFragment = gql`
     portfolios(filter: { deletedAt: { isNull: true } }) {
       totalCount
     }
-    heldAssets {
+    heldAssets(
+      orderBy: ASSET_ID_ASC
+      filter: { amount: { greaterThan: "0" } }
+    ) {
       totalCount
       nodes {
         asset {
@@ -72,13 +75,13 @@ export const identityFragment = gql`
         }
       }
     }
-    assetsByOwnerId {
+    assetsByOwnerId(orderBy: [NAME_ASC, TICKER_ASC, ID_ASC]) {
       totalCount
       nodes {
         ...AssetFields
       }
     }
-    heldNfts {
+    heldNfts(orderBy: ASSET_ID_ASC, filter: { nftIds: { notEqualTo: [] } }) {
       totalCount
       nodes {
         asset {
@@ -153,12 +156,14 @@ export const settlementInstructionFragment = gql`
       }
     }
     memo
-    affirmations {
+    affirmations(orderBy: CREATED_BLOCK_ID_DESC) {
       nodes {
         identity
         isAutomaticallyAffirmed
         isMediator
-        createdAt
+        createdBlock {
+          datetime
+        }
         createdBlockId
         status
         portfolios
@@ -172,6 +177,11 @@ export const settlementInstructionFragment = gql`
       datetime
       hash
     }
+    createdEvent {
+      id
+      eventId
+      eventIdx
+    }
     updatedBlock {
       id
       blockId
@@ -182,8 +192,10 @@ export const settlementInstructionFragment = gql`
       nodes {
         id
         event
+        eventIdx
         createdBlock {
           id
+          blockId
           datetime
           hash
         }

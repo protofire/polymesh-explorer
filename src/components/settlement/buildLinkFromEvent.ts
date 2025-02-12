@@ -4,7 +4,9 @@ export function buildLinkFromEvent(
   event: RawInstructionEvent,
   linkWithEvent: boolean = false,
 ) {
+  const { blockId } = event.createdBlock;
+
   return !linkWithEvent
-    ? event?.createdBlock?.id.toString()
-    : `${event.createdBlock.id.toString()}?tab=event&event=${event.id.replace('/', '-')}`;
+    ? blockId.toString()
+    : `${blockId.toString()}?tab=event&event=${blockId}-${event.eventIdx}`;
 }

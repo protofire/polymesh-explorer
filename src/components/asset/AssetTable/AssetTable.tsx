@@ -93,7 +93,7 @@ export function AssetTable({
           <TableBody>
             {assets.length > 0 ? (
               assets.map((asset) => (
-                <TableRow key={asset.ticker}>
+                <TableRow key={asset.assetId}>
                   <TableCell>
                     <GenericLink href={`${ROUTES.Asset}/${asset.assetId}`}>
                       {asset.ticker || truncateAddress(asset.assetId, 4)}
