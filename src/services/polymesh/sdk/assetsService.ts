@@ -77,7 +77,7 @@ export async function getCollectionsFromPortfolio(
     await portfolio.getCollections();
   return Promise.all(
     collectionsList.map(async ({ collection, free, locked, total }) => {
-      const [{ name, assetType }, collectionId] = await Promise.all([
+      const [{ name, assetType, ticker }, collectionId] = await Promise.all([
         collection.details(),
         collection.getCollectionId(),
       ]);
@@ -85,7 +85,7 @@ export async function getCollectionsFromPortfolio(
       const imgUrl = await getNftImageUrl(free[0] || locked[0]);
       return {
         collectionId: collectionId.toString(),
-        ticker: collection.ticker,
+        ticker,
         assetId: collection.id,
         imgUrl: imgUrl || '',
         uuid: collection.uuid,
@@ -103,7 +103,7 @@ export async function getNftAssetsFromPortfolio(
   const collectionsList = await portfolio.getCollections();
   const parsedNftsList = await Promise.all(
     collectionsList.map(async ({ free, locked, collection: rawCollection }) => {
-      const { name: collectionName } = await rawCollection.details();
+      const { name: collectionName, ticker } = await rawCollection.details();
       const freeNfts = await Promise.all(
         free.map(async (nft) => {
           let imgUrl = imageUrlCache.get(nft.uuid);
@@ -116,7 +116,7 @@ export async function getNftAssetsFromPortfolio(
             id: nft.id.toNumber(),
             imgUrl,
             isLocked: false,
-            collectionTicker: rawCollection.ticker,
+            collectionTicker: ticker,
             assetId: rawCollection.id,
             collectionName,
           };
@@ -134,7 +134,7 @@ export async function getNftAssetsFromPortfolio(
             id: nft.id.toNumber(),
             imgUrl,
             isLocked: true,
-            collectionTicker: rawCollection.ticker,
+            collectionTicker: ticker,
             assetId: rawCollection.id,
             collectionName,
           };

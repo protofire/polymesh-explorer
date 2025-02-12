@@ -20,3 +20,7 @@ export function splitCamelCase(text: string): string {
 
   return text;
 }
+
+export function removeLeadingZeros(str: string) {
+  return str.replace(/^0+/, '');
+}

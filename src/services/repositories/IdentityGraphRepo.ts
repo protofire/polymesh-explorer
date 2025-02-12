@@ -74,7 +74,11 @@ export class IdentityGraphRepo {
       ${identityFragment}
       ${pageInfoFragment}
       query ($first: Int!, $after: Cursor) {
-        identities(first: $first, after: $after, orderBy: CREATED_AT_DESC) {
+        identities(
+          first: $first
+          after: $after
+          orderBy: CREATED_BLOCK_ID_DESC
+        ) {
           totalCount
           pageInfo {
             ...PageInfoFields

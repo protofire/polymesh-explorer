@@ -104,6 +104,7 @@ export class InstructionGraphRepo {
         instructions(
           first: $pageSize
           offset: $offset
+          orderBy: CREATED_EVENT_ID_DESC
           filter: {
             and: [
               {
@@ -179,6 +180,7 @@ export class InstructionGraphRepo {
         instructions(
           first: $pageSize
           offset: $offset
+          orderBy: CREATED_EVENT_ID_DESC
           filter: {
             and: [
               { venueId: { equalTo: $venueId } }

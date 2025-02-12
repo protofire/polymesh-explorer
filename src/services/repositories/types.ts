@@ -262,7 +262,7 @@ export interface ExtrinsicResponse {
 // Instruction
 export interface RawBlock {
   id: string;
-  blockId?: number;
+  blockId: number;
   datetime: string;
   hash: string;
 }
@@ -270,6 +270,7 @@ export interface RawBlock {
 export interface RawInstructionEvent {
   id: string;
   event: string;
+  eventIdx: number;
   createdBlock: RawBlock;
 }
 
@@ -291,7 +292,9 @@ export interface RawAffirmationNode {
   identity: string;
   isAutomaticallyAffirmed: boolean;
   isMediator: boolean;
-  createdAt: string;
+  createdBlock: {
+    datetime: string;
+  };
   createdBlockId: string;
   status: string;
   portfolios: number[] | null;
@@ -322,6 +325,11 @@ export interface RawInstructionNode {
   mediators: string[];
   failureReason: string | null;
   createdBlock: RawBlock;
+  createdEvent: {
+    id: string;
+    eventId: string;
+    eventIdx: number;
+  };
   updatedBlock: RawBlock;
   events: {
     nodes: RawInstructionEvent[];

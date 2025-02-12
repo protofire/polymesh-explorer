@@ -28,7 +28,7 @@ export class PortfolioMovementsGraphRepo {
         portfolioMovements(
           first: $pageSize
           offset: $offset
-          orderBy: CREATED_AT_DESC
+          orderBy: ID_DESC
           filter: {
             type: { equalTo: $type }
             or: [

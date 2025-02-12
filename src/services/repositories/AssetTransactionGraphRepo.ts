@@ -58,7 +58,7 @@ export class AssetTransactionGraphRepo {
         assetTransactions(
           first: $pageSize
           after: $after
-          orderBy: CREATED_AT_DESC
+          orderBy: CREATED_EVENT_ID_DESC
           filter: {
             ${filterConditions}
           }
