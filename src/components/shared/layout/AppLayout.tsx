@@ -4,13 +4,17 @@ import { Box, Container, styled, Typography } from '@mui/material';
 
 import React, { useMemo } from 'react';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import { NorthEast } from '@mui/icons-material';
+
 import { DashboardLayout } from '@/components/shared/layout/DashboardLayout';
 import { NetworkSelector } from './NetworkSelector';
 import { LayoutSearchTextInput } from './LayoutSearchTextInput';
-import { APP_BACKGROUD } from '@/config/images';
+import { APP_BACKGROUD, PROTOFIRE_LOGO } from '@/config/images';
 import { GenericLink } from '../common/GenericLink';
 import { POLYMESH_DOCS } from '@/config/constant';
 import { useVersion } from '@/hooks/common/useVersion';
+import { ContactModal } from './ContactModal';
 
 const MainContainer = styled(Container)(() => ({
   color: '#fff',
@@ -51,6 +55,7 @@ export function AppLayout({
   buttonActionComponent = <NetworkSelector />,
 }: Props) {
   const { version, loading } = useVersion();
+
   const pathname = usePathname();
   const isHomePage = pathname === '/';
   const barActions = useMemo(() => {
@@ -102,29 +107,34 @@ export function AppLayout({
             <ContentWrapper>{children}</ContentWrapper>
           </MainContainer>
         </DashboardLayout>
-        <Footer>
-          <Box
-            component="span"
-            sx={{
-              display: 'flex',
-              gap: '20px',
-              '& a': {
-                color: '#fff',
-                textDecoration: 'none',
-                '&:hover': {
-                  textDecoration: 'underline',
-                },
-              },
-            }}
-          >
-            <Typography variant="caption">
-              <GenericLink isExternal href={POLYMESH_DOCS}>
+        <Footer
+          sx={{
+            zIndex: 2,
+            px: '24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Typography variant="caption">
+            <GenericLink isExternal href={POLYMESH_DOCS}>
+              <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
                 Polymesh Docs
-              </GenericLink>
+                <NorthEast sx={{ fontSize: 'small' }} />
+              </Box>
+            </GenericLink>
+          </Typography>
+          <Typography sx={{ opacity: 0.5 }} variant="caption">
+            V {version || (loading ? '0.0.0' : '0.0.0')}
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Typography sx={{ color: '#D6D6D6', fontSize: '12px' }}>
+              developed by
             </Typography>
-            <Typography sx={{ opacity: 0.5 }} variant="caption">
-              V {version || (loading ? '0.0.0' : '0.0.0')}
-            </Typography>
+
+            <Image alt="Protofire" src={PROTOFIRE_LOGO} />
+
+            <ContactModal />
           </Box>
         </Footer>
       </Box>
