@@ -122,18 +122,6 @@ export interface IdentityNode {
       id: string;
     }[];
   };
-  parentChildIdentities: {
-    totalCount: number;
-    nodes: {
-      parentId: string;
-    }[];
-  };
-  children: {
-    totalCount: number;
-    nodes: {
-      id: string;
-    }[];
-  };
 }
 
 export interface IdentityResponse {
@@ -177,9 +165,11 @@ export interface VenueListResponse {
 export interface PortfolioMovementNode {
   id: string;
   fromId: string;
-  from: RawPortfolio;
-  toId: string;
-  to: RawPortfolio;
+  from?: RawPortfolio;
+  fromAccount?: string;
+  toId?: string;
+  to?: RawPortfolio;
+  toAccount?: string;
   assetId: string;
   asset: {
     ticker: string;
@@ -204,15 +194,19 @@ export interface PortfolioMovementsResponse {
 
 export interface AssetTransactionNode {
   id: string;
-  fromPortfolioId: string;
-  fromPortfolio: RawPortfolio;
-  toPortfolioId: string;
-  toPortfolio: RawPortfolio;
+  fromAccount: string | null;
+  fromIdentityId: string | null;
+  fromPortfolioId: string | null;
+  fromPortfolio: RawPortfolio | null;
+  toAccount: string | null;
+  toIdentityId: string | null;
+  toPortfolioId: string | null;
+  toPortfolio: RawPortfolio | null;
   assetId: string;
   asset: {
     ticker: string;
   };
-  amount: string;
+  amount: string | null;
   nftIds: string[] | null;
   datetime: string;
   createdBlockId: string;
@@ -277,10 +271,12 @@ export interface RawInstructionEvent {
 export interface RawLegNode {
   legIndex: number;
   legType: string;
-  from: string;
-  fromPortfolio: number;
-  to: string;
-  toPortfolio: number;
+  from: string | null;
+  fromAccount: string | null;
+  fromPortfolio: number | null;
+  to: string | null;
+  toAccount: string | null;
+  toPortfolio: number | null;
   assetId: string;
   ticker: string;
   amount: string;

@@ -22,7 +22,10 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import VerifiedIcon from '@mui/icons-material/Verified';
 import RuleIcon from '@mui/icons-material/Rule';
 import LockIcon from '@mui/icons-material/Lock';
-import { Asset as AssetSdk } from '@polymeshassociation/polymesh-sdk/types';
+import {
+  Asset as AssetSdk,
+  TransferRestrictionType,
+} from '@polymeshassociation/polymesh-sdk/types';
 import { useGetAssetCompliance } from '@/hooks/asset/useGetAssetCompliance';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 
@@ -181,10 +184,31 @@ export function ComplianceTab({
         Transfer Restrictions
       </Typography>
       {transferRestrictions ? (
-        <Typography>
-          Maximum number of holders:{' '}
-          {transferRestrictions.restrictions.length || 'No limit'}
-        </Typography>
+        <Stack spacing={1}>
+          {transferRestrictions.paused && (
+            <Alert severity="warning">
+              Transfer restrictions are currently paused
+            </Alert>
+          )}
+          {transferRestrictions.restrictions.length > 0 ? (
+            transferRestrictions.restrictions.map((restriction) => (
+              <Typography
+                key={`${restriction.type}-${restriction.value.toString()}`}
+              >
+                {restriction.type === TransferRestrictionType.Count &&
+                  `Maximum number of holders: ${restriction.value.toString()}`}
+                {restriction.type === TransferRestrictionType.Percentage &&
+                  `Maximum holding percentage: ${restriction.value.toString()}%`}
+                {restriction.type === TransferRestrictionType.ClaimCount &&
+                  `Claim count restriction (min: ${restriction.value.min.toString()})`}
+                {restriction.type === TransferRestrictionType.ClaimPercentage &&
+                  `Claim percentage restriction (max: ${restriction.value.max.toString()}%)`}
+              </Typography>
+            ))
+          ) : (
+            <Typography>No transfer restrictions set</Typography>
+          )}
+        </Stack>
       ) : (
         <Typography>No transfer restrictions set</Typography>
       )}

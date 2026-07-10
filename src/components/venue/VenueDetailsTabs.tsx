@@ -1,12 +1,12 @@
-import React from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
+import React from 'react';
+import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs/SettlementInstructionsTab';
 import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
 import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
-import { SettlementInstructionsTab } from '@/components/identity/details/IdentityDetailsTabs/SettlementInstructionsTab';
-import { SignersTab } from './SignersTab/SignersTab';
-import { Venue } from '@/domain/entities/Venue';
+import { DEFAULT_VENUE_ID, Venue } from '@/domain/entities/Venue';
 import { useGetSettlementInstructionsByVenue } from '@/hooks/settlement/useGetSettlementInstructionsByVenue';
 import { useGetVenueSigners } from '@/hooks/venue/useGetVenueSigners';
+import { SignersTab } from './SignersTab/SignersTab';
 
 interface VenueDetailsTabsProps {
   venue: Venue;
@@ -16,14 +16,14 @@ export function VenueDetailsTabs({
   venue,
 }: VenueDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
-
+  const isDefaultVenue = venue.id === DEFAULT_VENUE_ID;
   const { activeInstructions, historicalInstuctions } =
     useGetSettlementInstructionsByVenue({ venueId: venue.id });
   const {
     data: signers,
     isLoading: isLoadingSigners,
     error: errorSigners,
-  } = useGetVenueSigners(venue);
+  } = useGetVenueSigners(isDefaultVenue ? null : venue);
 
   const isLoadingSettlementInstructions =
     !activeInstructions.isFetched || !historicalInstuctions.isFetched;
@@ -43,14 +43,16 @@ export function VenueDetailsTabs({
             </Box>
           }
         />
-        <Tab
-          label={
-            <Box sx={{ position: 'relative', display: 'inline-block' }}>
-              Allowed Signers
-              {isLoadingSigners && <LoadingDot />}
-            </Box>
-          }
-        />
+        {!isDefaultVenue && (
+          <Tab
+            label={
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                Allowed Signers
+                {isLoadingSigners && <LoadingDot />}
+              </Box>
+            }
+          />
+        )}
       </Tabs>
 
       <GenericTabPanel
@@ -67,13 +69,15 @@ export function VenueDetailsTabs({
         />
       </GenericTabPanel>
 
-      <GenericTabPanel value={value} index={1} labelKey="venue-signers">
-        <SignersTab
-          signers={signers}
-          isLoading={isLoadingSigners}
-          error={errorSigners}
-        />
-      </GenericTabPanel>
+      {!isDefaultVenue && (
+        <GenericTabPanel value={value} index={1} labelKey="venue-signers">
+          <SignersTab
+            signers={signers}
+            isLoading={isLoadingSigners}
+            error={errorSigners}
+          />
+        </GenericTabPanel>
+      )}
     </>
   );
 }

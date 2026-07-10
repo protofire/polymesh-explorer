@@ -1,44 +1,92 @@
-import React, { useState, useMemo } from 'react';
 import {
+  FilterList as FilterIcon,
+  Info as InfoIcon,
+} from '@mui/icons-material';
+import {
+  Alert,
+  AlertTitle,
   Box,
+  Chip,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  Chip,
   Tooltip,
-  IconButton,
-  Alert,
-  AlertTitle,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Stack,
-  TableContainer,
-  Paper,
+  Typography,
 } from '@mui/material';
-import {
-  Info as InfoIcon,
-  FilterList as FilterIcon,
-} from '@mui/icons-material';
 import { EventIdEnum, Venue } from '@polymeshassociation/polymesh-sdk/types';
-import { Asset } from '@/domain/entities/Asset';
-import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
-import { UseGetAssetTransactionsReturn } from '@/hooks/asset/useGetAssetTransactions';
-import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
-import { FormattedDate } from '@/components/shared/common/FormattedDateText';
+import React, { useMemo, useState } from 'react';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { ExportCsvButton } from '@/components/shared/ExportCsvButton';
-import { CsvExporter } from '@/services/csv/CsvExporter';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
+import { ROUTES } from '@/config/routes';
+import { Asset } from '@/domain/entities/Asset';
+import { Portfolio } from '@/domain/entities/Portfolio';
 import { AssetTransactionsCsvExportService } from '@/domain/services/exports/AssetTransactionsCsvExportService';
+import { UseGetAssetTransactionsReturn } from '@/hooks/asset/useGetAssetTransactions';
+import { CsvExporter } from '@/services/csv/CsvExporter';
 import { getEventLabel } from './getEventLabel';
+
+function formatPortfolioPartyLabel(
+  identityId: string,
+  portfolio?: Portfolio,
+  portfolioId?: string,
+): string {
+  const portfolioNumber = portfolio?.number ?? portfolioId?.split('/')[1];
+
+  return portfolioNumber !== undefined
+    ? `${identityId}/${portfolioNumber}`
+    : identityId;
+}
+
+function renderTransactionPartyCell({
+  account,
+  identityId,
+  portfolio,
+  portfolioId,
+}: {
+  account?: string;
+  identityId?: string;
+  portfolio?: Portfolio;
+  portfolioId?: string;
+}): React.ReactElement {
+  if (account) {
+    return (
+      <AccountOrDidTextField value={account} variant="body2" showIdenticon>
+        {account}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (identityId) {
+    return (
+      <AccountOrDidTextField
+        value={identityId}
+        isIdentity
+        variant="body2"
+        showIdenticon
+      >
+        {formatPortfolioPartyLabel(identityId, portfolio, portfolioId)}
+      </AccountOrDidTextField>
+    );
+  }
+
+  return <EmptyDash />;
+}
 
 interface VenueFilteringStatusProps {
   enabled: boolean;
@@ -253,8 +301,10 @@ export function AssetTransactionsTab({
             ) : (
               filteredTransactions.map((tx) => {
                 const eventInfo = getEventLabel(tx.eventId as EventIdEnum);
-                const fromDid = tx.fromId?.split('/')[0] || '';
-                const toDid = tx.toId?.split('/')[0] || '';
+                const { fromAccount } = tx;
+                const fromDid = tx.fromIdentityId;
+                const { toAccount } = tx;
+                const toDid = tx.toIdentityId;
 
                 return (
                   <TableRow key={tx.id} hover>
@@ -289,32 +339,20 @@ export function AssetTransactionsTab({
                       />
                     </TableCell>
                     <TableCell>
-                      {fromDid ? (
-                        <AccountOrDidTextField
-                          value={fromDid}
-                          isIdentity
-                          variant="body2"
-                          showIdenticon
-                        >
-                          {tx.fromId}
-                        </AccountOrDidTextField>
-                      ) : (
-                        <EmptyDash />
-                      )}
+                      {renderTransactionPartyCell({
+                        account: fromAccount,
+                        identityId: fromDid,
+                        portfolio: tx.from,
+                        portfolioId: tx.fromId,
+                      })}
                     </TableCell>
                     <TableCell>
-                      {toDid ? (
-                        <AccountOrDidTextField
-                          value={toDid}
-                          isIdentity
-                          variant="body2"
-                          showIdenticon
-                        >
-                          {tx.toId}
-                        </AccountOrDidTextField>
-                      ) : (
-                        <EmptyDash />
-                      )}
+                      {renderTransactionPartyCell({
+                        account: toAccount,
+                        identityId: toDid,
+                        portfolio: tx.to,
+                        portfolioId: tx.toId,
+                      })}
                     </TableCell>
                     <TableCell align="right">
                       <Stack

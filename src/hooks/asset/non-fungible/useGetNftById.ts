@@ -1,10 +1,33 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
+import { AssetHolder } from '@polymeshassociation/polymesh-sdk/types';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { customReportError } from '@/utils/customReportError';
-import { validateAssetId } from '@/services/polymesh/validation/assetIdValidator';
-import { getNftDetails } from '@/services/polymesh/sdk/assetsService';
 import { NftAssetWithMetadata } from '@/domain/entities/NftData';
+import { getNftDetails } from '@/services/polymesh/sdk/assetsService';
+import { validateAssetId } from '@/services/polymesh/validation/assetIdValidator';
+import { customReportError } from '@/utils/customReportError';
+
+async function resolveNftOwner(holder: AssetHolder): Promise<{
+  ownerDid: string;
+  ownerPortfolioId?: string;
+  ownerAccount?: string;
+}> {
+  if ('owner' in holder) {
+    const portfolioHuman = holder.toHuman();
+
+    return {
+      ownerDid: holder.owner.did,
+      ownerPortfolioId: portfolioHuman.id ?? '0',
+    };
+  }
+
+  const identity = await holder.getIdentity();
+
+  return {
+    ownerDid: identity?.did ?? '',
+    ownerAccount: holder.address,
+  };
+}
 
 export function useGetNftById({
   assetId,
@@ -43,18 +66,10 @@ export function useGetNftById({
         }
 
         const collectionKeys = (await collectionSdk.collectionKeys()) || [];
-        const ownerPortfolio = await nftSdk.getOwner();
-
-        let ownerData;
-        if (ownerPortfolio) {
-          const ownerPortfolioId =
-            'id' in ownerPortfolio ? ownerPortfolio.id.toString() : 'default';
-
-          ownerData = {
-            ownerDid: ownerPortfolio.owner.did.toString(),
-            ownerPortfolioId,
-          };
-        }
+        const ownerHolder = await nftSdk.getOwner();
+        const ownerData = ownerHolder
+          ? await resolveNftOwner(ownerHolder)
+          : undefined;
         const isLocked = await nftSdk.isLocked();
 
         const nftDetails = await getNftDetails(
@@ -63,6 +78,7 @@ export function useGetNftById({
           collectionKeys,
           ownerData?.ownerDid || '',
           ownerData?.ownerPortfolioId || '',
+          ownerData?.ownerAccount || '',
         );
 
         return {

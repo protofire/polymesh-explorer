@@ -1,16 +1,16 @@
-import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import {
-  VenueFilteringDetails,
   Asset as AssetSdk,
+  VenueFilteringDetails,
 } from '@polymeshassociation/polymesh-sdk/types';
+import { useQueries, UseQueryResult } from '@tanstack/react-query';
 import { useMemo } from 'react';
+import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Asset } from '@/domain/entities/Asset';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { PaginationController } from '@/domain/ui/PaginationInfo';
+import { AssetTransactionGraphRepo } from '@/services/repositories/AssetTransactionGraphRepo';
 import { customReportError } from '@/utils/customReportError';
 import { usePaginationControllerGraphQl } from '../usePaginationControllerGraphQl';
-import { PaginationController } from '@/domain/ui/PaginationInfo';
-import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { AssetTransactionGraphRepo } from '@/services/repositories/AssetTransactionGraphRepo';
-import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 
 interface Props {
   asset: Asset;
@@ -42,9 +42,8 @@ export const useGetAssetTransactions = ({
     if (!graphQlClient) return null;
     return new AssetTransactionGraphRepo(graphQlClient);
   }, [graphQlClient]);
-  const paginationController = usePaginationControllerGraphQl({
-    useOffset: true,
-  });
+  const paginationController = usePaginationControllerGraphQl();
+  const { pageSize, cursor } = paginationController.paginationInfo;
 
   const results = useQueries({
     queries: [
@@ -59,12 +58,7 @@ export const useGetAssetTransactions = ({
         enabled: !!asset.assetId && !!assetSdk,
       },
       {
-        queryKey: [
-          'assetTransactions',
-          asset.assetId,
-          paginationController.paginationInfo.pageSize,
-          paginationController.paginationInfo.cursor,
-        ],
+        queryKey: ['assetTransactions', asset.assetId, pageSize, cursor],
         queryFn: async () => {
           if (!assetTransactionsRepo) {
             throw new Error('AssetTransactionGraphRepo not initialized');
@@ -73,8 +67,8 @@ export const useGetAssetTransactions = ({
           try {
             const result = await assetTransactionsRepo.getAssetTransactions(
               { assetId: asset.assetId },
-              paginationController.paginationInfo.pageSize,
-              paginationController.paginationInfo.cursor || undefined,
+              pageSize,
+              cursor || undefined,
               asset.isNftCollection,
             );
 

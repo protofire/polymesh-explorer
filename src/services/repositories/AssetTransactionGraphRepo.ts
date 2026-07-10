@@ -1,12 +1,13 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
-import { AssetTransactionsResponse, PageInfo } from './types';
-import { pageInfoFragment } from './fragments';
 import { assetTransactionNodeToAssetTransaction } from '@/services/repositories/nodeTransformers';
+import { pageInfoFragment } from './fragments';
+import { AssetTransactionsResponse, PageInfo } from './types';
 
 type FilterType = {
   portfolioId?: string;
   assetId?: string;
+  account?: string;
 };
 
 export class AssetTransactionGraphRepo {
@@ -18,6 +19,18 @@ export class AssetTransactionGraphRepo {
         or: [
           {fromPortfolioId: {equalTo: "${filter.portfolioId}"}}
           {toPortfolioId: {equalTo: "${filter.portfolioId}"}}
+        ]
+        amount: {
+          isNull: ${nonFungible}
+        }
+      `;
+    }
+
+    if (filter.account) {
+      return `
+        or: [
+          {fromAccount: {equalTo: "${filter.account}"}}
+          {toAccount: {equalTo: "${filter.account}"}}
         ]
         amount: {
           isNull: ${nonFungible}
@@ -80,12 +93,16 @@ export class AssetTransactionGraphRepo {
             extrinsicIdx
             eventIdx
             eventId
+            toAccount
+            toIdentityId
             toPortfolioId
             toPortfolio {
               identityId
               number
               name
             }
+            fromAccount
+            fromIdentityId
             fromPortfolioId
             fromPortfolio {
               identityId
@@ -95,9 +112,9 @@ export class AssetTransactionGraphRepo {
             fundingRound
             instructionId
             instructionMemo
-    		instruction {
-				venueId
-			}
+            instruction {
+              venueId
+            }
           }
         }
       }

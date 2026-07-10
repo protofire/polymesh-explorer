@@ -95,17 +95,6 @@ export const identityFragment = gql`
         id
       }
     }
-    parentChildIdentities {
-      totalCount
-      nodes {
-        parentId
-      }
-    }
-    children {
-      nodes {
-        id
-      }
-    }
     createdBlock {
       blockId
       datetime
@@ -145,8 +134,10 @@ export const settlementInstructionFragment = gql`
         legIndex
         legType
         from
+        fromAccount
         fromPortfolio
         to
+        toAccount
         toPortfolio
         assetId
         ticker

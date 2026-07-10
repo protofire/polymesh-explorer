@@ -1,23 +1,31 @@
 import { format } from 'date-fns';
 import { Asset } from '@/domain/entities/Asset';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { CsvColumn, CsvExporterPort } from '@/services/csv/types';
 import { truncateAddress } from '@/services/polymesh/address';
 
-interface AssetTransaction {
-  id: string;
-  eventId: string;
-  instructionId?: string;
-  venueId?: string;
-  fromId?: string;
-  toId?: string;
-  amount?: string;
-  nftIds?: string[];
-  memo?: string;
-  fundingRound?: string;
-  createdBlock: {
-    blockId: string;
-    datetime: Date;
-  };
+function formatTransactionParty(
+  tx: AssetTransaction,
+  side: 'from' | 'to',
+): string {
+  const account = side === 'from' ? tx.fromAccount : tx.toAccount;
+  const identityId = side === 'from' ? tx.fromIdentityId : tx.toIdentityId;
+  const portfolio = side === 'from' ? tx.from : tx.to;
+  const portfolioId = side === 'from' ? tx.fromId : tx.toId;
+
+  if (account) {
+    return account;
+  }
+
+  if (identityId) {
+    const portfolioNumber = portfolio?.number ?? portfolioId?.split('/')[1];
+
+    return portfolioNumber !== undefined
+      ? `${identityId}/${portfolioNumber}`
+      : identityId;
+  }
+
+  return portfolioId ?? '';
 }
 
 export class AssetTransactionsCsvExportService {
@@ -51,11 +59,11 @@ export class AssetTransactionsCsvExportService {
       },
       {
         header: 'From',
-        accessor: (tx) => (tx.fromId ? tx.fromId.split('/')[0] : ''),
+        accessor: (tx) => formatTransactionParty(tx, 'from'),
       },
       {
         header: 'To',
-        accessor: (tx) => (tx.toId ? tx.toId.split('/')[0] : ''),
+        accessor: (tx) => formatTransactionParty(tx, 'to'),
       },
       {
         header: 'Amount',
@@ -96,11 +104,11 @@ export class AssetTransactionsCsvExportService {
       },
       {
         header: 'From',
-        accessor: (tx) => (tx.fromId ? tx.fromId.split('/')[0] : ''),
+        accessor: (tx) => formatTransactionParty(tx, 'from'),
       },
       {
         header: 'To',
-        accessor: (tx) => (tx.toId ? tx.toId.split('/')[0] : ''),
+        accessor: (tx) => formatTransactionParty(tx, 'to'),
       },
       {
         header: 'NFT IDs',
