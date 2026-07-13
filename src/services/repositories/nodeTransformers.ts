@@ -20,27 +20,37 @@ import {
   VenueNode,
 } from './types';
 
-export function assetNodeToAsset(assetNode: AssetNode): Asset {
+export function assetNodeToAsset({
+  asset,
+  heldAmount,
+  heldNftIds,
+}: {
+  asset: AssetNode;
+  heldAmount?: string;
+  heldNftIds?: number[];
+}): Asset {
   return {
-    assetId: assetNode.id,
-    assetUuid: hexToUuid(assetNode.id),
-    ticker: assetNode.ticker,
-    name: assetNode.name,
-    type: assetNode.type,
+    assetId: asset.id,
+    assetUuid: hexToUuid(asset.id),
+    ticker: asset.ticker,
+    name: asset.name,
+    type: asset.type,
     totalSupply:
-      !assetNode.isNftCollection && assetNode.totalSupply
-        ? balanceToBigNumber(
-            assetNode.totalSupply as unknown as Balance,
-          ).toString()
-        : assetNode.totalSupply,
-    ownerDid: assetNode.owner.did,
-    isNftCollection: assetNode.isNftCollection,
-    isDivisible: assetNode.isDivisible,
-    totalHolders: assetNode.isNftCollection
-      ? assetNode.nftHolders.totalCount.toString()
-      : assetNode.holders.totalCount.toString(),
-    createdAt: new Date(`${assetNode.createdBlock.datetime}Z`),
-    totalDocuments: assetNode.documents.totalCount.toString(),
+      !asset.isNftCollection && asset.totalSupply
+        ? balanceToBigNumber(asset.totalSupply as unknown as Balance).toString()
+        : asset.totalSupply,
+    ownerDid: asset.owner.did,
+    isNftCollection: asset.isNftCollection,
+    isDivisible: asset.isDivisible,
+    totalHolders: asset.isNftCollection
+      ? asset.nftHolders.totalCount.toString()
+      : asset.holders.totalCount.toString(),
+    createdAt: new Date(`${asset.createdBlock.datetime}Z`),
+    totalDocuments: asset.documents.totalCount.toString(),
+    heldAmount: heldAmount
+      ? balanceToBigNumber(heldAmount as unknown as Balance).toString()
+      : undefined,
+    heldNftIds,
   };
 }
 
@@ -57,11 +67,20 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     venuesCount: node.venuesByOwnerId.totalCount,
     portfoliosCount: node.portfolios.totalCount,
     ownedAssets: node.assetsByOwnerId.nodes.map((asset) =>
-      assetNodeToAsset(asset),
+      assetNodeToAsset({ asset }),
     ),
     heldAssets: node.heldAssets.nodes
-      .map((heldAsset) => assetNodeToAsset(heldAsset.asset))
-      .concat(node.heldNfts.nodes.map((nft) => assetNodeToAsset(nft.asset))),
+      .map((heldAsset) =>
+        assetNodeToAsset({
+          asset: heldAsset.asset,
+          heldAmount: heldAsset.amount,
+        }),
+      )
+      .concat(
+        node.heldNfts.nodes.map((nft) =>
+          assetNodeToAsset({ asset: nft.asset, heldNftIds: nft.nftIds }),
+        ),
+      ),
     isCustodian: node.portfoliosByCustodianId.totalCount > 0,
     custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
   };

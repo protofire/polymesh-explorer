@@ -70,6 +70,7 @@ export const identityFragment = gql`
     ) {
       totalCount
       nodes {
+        amount
         asset {
           ...AssetFields
         }
@@ -84,6 +85,7 @@ export const identityFragment = gql`
     heldNfts(orderBy: ASSET_ID_ASC, filter: { nftIds: { notEqualTo: [] } }) {
       totalCount
       nodes {
+        nftIds
         asset {
           ...AssetFields
         }

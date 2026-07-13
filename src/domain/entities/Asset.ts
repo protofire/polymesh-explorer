@@ -17,6 +17,8 @@ export interface Asset {
   totalSupply: string;
   totalHolders: string;
   totalDocuments: string;
+  heldAmount?: string;
+  heldNftIds?: number[];
 }
 
 export interface AssetMeta {

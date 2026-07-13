@@ -103,6 +103,7 @@ export interface IdentityNode {
   heldAssets: {
     totalCount: number;
     nodes: {
+      amount: string;
       asset: AssetNode;
     }[];
   };
@@ -114,6 +115,7 @@ export interface IdentityNode {
     totalCount: number;
     nodes: {
       asset: AssetNode;
+      nftIds: number[];
     }[];
   };
   portfoliosByCustodianId: {

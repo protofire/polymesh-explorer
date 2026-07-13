@@ -95,11 +95,11 @@ export function IdentityDetailsTabs({
         </Tabs>
       </Box>
       <GenericTabPanel value={value} index={0} labelKey="identity-assets">
-        <AssetTabTable assets={heldAssets} />
+        <AssetTabTable assets={heldAssets} isOwnedAssets={false} />
       </GenericTabPanel>
       {isAssetIssuer && (
         <GenericTabPanel value={value} index={1} labelKey="issued-assets">
-          <AssetTabTable assets={ownedAssets} />
+          <AssetTabTable assets={ownedAssets} isOwnedAssets={true} />
         </GenericTabPanel>
       )}
       <GenericTabPanel
