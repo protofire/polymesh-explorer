@@ -24,6 +24,9 @@ import RuleIcon from '@mui/icons-material/Rule';
 import LockIcon from '@mui/icons-material/Lock';
 import {
   Asset as AssetSdk,
+  ClaimType,
+  InputStatClaim,
+  TransferRestriction,
   TransferRestrictionType,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { useGetAssetCompliance } from '@/hooks/asset/useGetAssetCompliance';
@@ -32,6 +35,33 @@ import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/Accou
 interface ComplianceTabProps {
   assetSdk?: AssetSdk;
   isLoading: boolean;
+}
+
+function formatStatClaim(claim: InputStatClaim): string {
+  switch (claim.type) {
+    case ClaimType.Jurisdiction:
+      return `Jurisdiction: ${claim.countryCode ?? 'Any'}`;
+    case ClaimType.Accredited:
+      return `Accredited: ${claim.accredited ? 'Yes' : 'No'}`;
+    case ClaimType.Affiliate:
+      return `Affiliate: ${claim.affiliate ? 'Yes' : 'No'}`;
+    default:
+      return 'Unknown claim';
+  }
+}
+
+function getRestrictionKey(restriction: TransferRestriction): string {
+  switch (restriction.type) {
+    case TransferRestrictionType.Count:
+    case TransferRestrictionType.Percentage:
+      return `${restriction.type}-${restriction.value.toString()}`;
+    case TransferRestrictionType.ClaimCount:
+      return `${restriction.type}-${restriction.value.issuer.did}-${restriction.value.claim.type}-${restriction.value.min.toString()}-${restriction.value.max?.toString()}`;
+    case TransferRestrictionType.ClaimPercentage:
+      return `${restriction.type}-${restriction.value.issuer.did}-${restriction.value.claim.type}-${restriction.value.min.toString()}-${restriction.value.max.toString()}`;
+    default:
+      return JSON.stringify(restriction);
+  }
 }
 
 export function ComplianceTab({
@@ -191,20 +221,72 @@ export function ComplianceTab({
             </Alert>
           )}
           {transferRestrictions.restrictions.length > 0 ? (
-            transferRestrictions.restrictions.map((restriction) => (
-              <Typography
-                key={`${restriction.type}-${restriction.value.toString()}`}
-              >
-                {restriction.type === TransferRestrictionType.Count &&
-                  `Maximum number of holders: ${restriction.value.toString()}`}
-                {restriction.type === TransferRestrictionType.Percentage &&
-                  `Maximum holding percentage: ${restriction.value.toString()}%`}
-                {restriction.type === TransferRestrictionType.ClaimCount &&
-                  `Claim count restriction (min: ${restriction.value.min.toString()})`}
-                {restriction.type === TransferRestrictionType.ClaimPercentage &&
-                  `Claim percentage restriction (max: ${restriction.value.max.toString()}%)`}
-              </Typography>
-            ))
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Type</TableCell>
+                    <TableCell>Limit</TableCell>
+                    <TableCell>Claim Issuer</TableCell>
+                    <TableCell>Applies To</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {transferRestrictions.restrictions.map((restriction) => (
+                    <TableRow key={getRestrictionKey(restriction)}>
+                      <TableCell>
+                        {restriction.type === TransferRestrictionType.Count &&
+                          'Max Holders'}
+                        {restriction.type ===
+                          TransferRestrictionType.Percentage &&
+                          'Max Holding Percentage'}
+                        {restriction.type ===
+                          TransferRestrictionType.ClaimCount && 'Claim Count'}
+                        {restriction.type ===
+                          TransferRestrictionType.ClaimPercentage &&
+                          'Claim Percentage'}
+                      </TableCell>
+                      <TableCell>
+                        {restriction.type === TransferRestrictionType.Count &&
+                          restriction.value.toString()}
+                        {restriction.type ===
+                          TransferRestrictionType.Percentage &&
+                          `${restriction.value.toString()}%`}
+                        {restriction.type ===
+                          TransferRestrictionType.ClaimCount &&
+                          `Min: ${restriction.value.min.toString()}${
+                            restriction.value.max
+                              ? `, Max: ${restriction.value.max.toString()}`
+                              : ''
+                          }`}
+                        {restriction.type ===
+                          TransferRestrictionType.ClaimPercentage &&
+                          `Min: ${restriction.value.min.toString()}%, Max: ${restriction.value.max.toString()}%`}
+                      </TableCell>
+                      <TableCell>
+                        {(restriction.type ===
+                          TransferRestrictionType.ClaimCount ||
+                          restriction.type ===
+                            TransferRestrictionType.ClaimPercentage) && (
+                          <AccountOrDidTextField
+                            value={restriction.value.issuer.did}
+                            isIdentity
+                            showIdenticon
+                          />
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {(restriction.type ===
+                          TransferRestrictionType.ClaimCount ||
+                          restriction.type ===
+                            TransferRestrictionType.ClaimPercentage) &&
+                          formatStatClaim(restriction.value.claim)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           ) : (
             <Typography>No transfer restrictions set</Typography>
           )}
