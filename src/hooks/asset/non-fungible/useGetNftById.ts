@@ -17,7 +17,7 @@ async function resolveNftOwner(holder: AssetHolder): Promise<{
 
     return {
       ownerDid: holder.owner.did,
-      ownerPortfolioId: portfolioHuman.id ?? '0',
+      ownerPortfolioId: portfolioHuman.id ?? 'default',
     };
   }
 

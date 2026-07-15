@@ -3,6 +3,7 @@ import { Asset } from '@/domain/entities/Asset';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { CsvColumn, CsvExporterPort } from '@/services/csv/types';
 import { truncateAddress } from '@/services/polymesh/address';
+import { formatPortfolioPartyLabel } from '@/utils/formatPortfolioPartyLabel';
 
 function formatTransactionParty(
   tx: AssetTransaction,
@@ -18,11 +19,7 @@ function formatTransactionParty(
   }
 
   if (identityId) {
-    const portfolioNumber = portfolio?.number ?? portfolioId?.split('/')[1];
-
-    return portfolioNumber !== undefined
-      ? `${identityId}/${portfolioNumber}`
-      : identityId;
+    return formatPortfolioPartyLabel(identityId, portfolio, portfolioId);
   }
 
   return portfolioId ?? '';

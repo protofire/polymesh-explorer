@@ -26,19 +26,8 @@ import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { Portfolio } from '@/domain/entities/Portfolio';
 import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import { truncateAddress } from '@/services/polymesh/address';
+import { formatPortfolioPartyLabel } from '@/utils/formatPortfolioPartyLabel';
 import { AssetTypeSelected } from '../AssetTypeToggleButton';
-
-function formatPortfolioPartyLabel(
-  identityId: string,
-  portfolio?: Portfolio,
-  portfolioId?: string,
-): string {
-  const portfolioNumber = portfolio?.number ?? portfolioId?.split('/')[1];
-
-  return portfolioNumber !== undefined
-    ? `${identityId}/${portfolioNumber}`
-    : identityId;
-}
 
 function renderTransactionParty({
   account,
