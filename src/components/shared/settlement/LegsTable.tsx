@@ -1,20 +1,20 @@
-import React from 'react';
 import {
   Table,
+  TableBody,
+  TableCell,
   TableHead,
   TableRow,
-  TableCell,
-  TableBody,
 } from '@mui/material';
-import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
+import React from 'react';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { GenericLink } from '@/components/shared/common/GenericLink';
 import {
   EInstructionDirection,
   SettlementLegDirectionField,
   SettlementLegDirectionFieldProps,
 } from '@/components/shared/common/SettlementLegDirectionField';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { ROUTES } from '@/config/routes';
 import {
   SettlementInstructionWithAssets,
   SettlementLeg,
@@ -51,6 +51,67 @@ export const getLegDirection = ({
   return EInstructionDirection.NONE;
 };
 
+const resolveLegPartyIdentity = (did?: string, account?: string) =>
+  did ?? account ?? '';
+
+function renderLegSender(leg: SettlementLeg): React.ReactElement {
+  if (leg.fromAccount) {
+    return (
+      <AccountOrDidTextField
+        value={leg.fromAccount}
+        variant="body2"
+        showIdenticon
+      >
+        {leg.fromAccount}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (leg.from) {
+    return (
+      <AccountOrDidTextField
+        value={leg.from}
+        isIdentity
+        variant="body2"
+        showIdenticon
+      >
+        {`${leg.from}/${leg.fromPortfolio}`}
+      </AccountOrDidTextField>
+    );
+  }
+
+  return <EmptyDash />;
+}
+
+function renderLegReceiver(leg: SettlementLeg): React.ReactElement {
+  if (leg.toAccount) {
+    return (
+      <AccountOrDidTextField
+        value={leg.toAccount}
+        variant="body2"
+        showIdenticon
+      >
+        {leg.toAccount}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (leg.to) {
+    return (
+      <AccountOrDidTextField
+        value={leg.to}
+        isIdentity
+        variant="body2"
+        showIdenticon
+      >
+        {`${leg.to}/${leg.toPortfolio}`}
+      </AccountOrDidTextField>
+    );
+  }
+
+  return <EmptyDash />;
+}
+
 export function LegsTable({
   legs,
   assetsMap,
@@ -67,8 +128,8 @@ export function LegsTable({
       <TableHead>
         <TableRow>
           {currentIdentityDid && <TableCell>Direction</TableCell>}
-          <TableCell>Sending Portfolio</TableCell>
-          <TableCell>Receiving Portfolio</TableCell>
+          <TableCell>Sender</TableCell>
+          <TableCell>Receiver</TableCell>
           <TableCell>Asset</TableCell>
           <TableCell>{isFungible ? 'Amount' : 'Nft Id'}</TableCell>
         </TableRow>
@@ -84,8 +145,8 @@ export function LegsTable({
               leg.legType === EInstructionDirection.OFF_CHAIN
                 ? EInstructionDirection.OFF_CHAIN
                 : getLegDirection({
-                    from: leg.from.id,
-                    to: leg.to.id,
+                    from: resolveLegPartyIdentity(leg.from, leg.fromAccount),
+                    to: resolveLegPartyIdentity(leg.to, leg.toAccount),
                     identity: currentIdentityDid,
                   });
           }
@@ -102,26 +163,8 @@ export function LegsTable({
                   )}
                 </TableCell>
               )}
-              <TableCell>
-                <AccountOrDidTextField
-                  value={leg.from.id}
-                  isIdentity
-                  variant="body2"
-                  showIdenticon
-                >
-                  {`${leg.from.id}/${leg.from.number}`}
-                </AccountOrDidTextField>
-              </TableCell>
-              <TableCell>
-                <AccountOrDidTextField
-                  value={leg.to.id}
-                  isIdentity
-                  variant="body2"
-                  showIdenticon
-                >
-                  {`${leg.to.id}/${leg.to.number}`}
-                </AccountOrDidTextField>
-              </TableCell>
+              <TableCell>{renderLegSender(leg)}</TableCell>
+              <TableCell>{renderLegReceiver(leg)}</TableCell>
               <TableCell>
                 <GenericLink href={`${ROUTES.Asset}/${leg.assetId}`}>
                   {asset

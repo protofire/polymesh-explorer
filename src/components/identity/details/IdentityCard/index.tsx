@@ -1,24 +1,21 @@
-import React from 'react';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import {
   Box,
-  Typography,
+  Chip,
+  IconButton,
   Stack,
   Tooltip,
-  IconButton,
-  Chip,
+  Typography,
 } from '@mui/material';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import FamilyRestroomIcon from '@mui/icons-material/FamilyRestroom';
 import Identicon from '@polkadot/ui-identicon';
-import Link from 'next/link';
+import React from 'react';
 import { Identity } from '@/domain/entities/Identity';
-import { SecondaryKeys } from './SecondaryKeys';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
 import CopyButton from '@/components/shared/common/CopyButton';
 import { IdentityCardSkeleton } from './IdentityCardSkeleton';
-import { ROUTES } from '@/config/routes';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
-import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
+import { SecondaryKeys } from './SecondaryKeys';
 
 interface IdentityCardProps {
   identityDid: Identity['did'];
@@ -44,8 +41,6 @@ export function IdentityCard({
     primaryAccount,
     isCustodian,
     custodiedPortfoliosCount,
-    isChildIdentity,
-    parentIdentityDid,
   } = identity;
 
   return (
@@ -89,19 +84,6 @@ export function IdentityCard({
                   label={`Custodian (${custodiedPortfoliosCount})`}
                   color="primary"
                   variant="outlined"
-                />
-              </Tooltip>
-            )}
-            {isChildIdentity && parentIdentityDid && (
-              <Tooltip title="Click to view parent identity">
-                <Chip
-                  icon={<FamilyRestroomIcon />}
-                  label="Child Identity"
-                  color="secondary"
-                  variant="outlined"
-                  component={Link}
-                  href={`${ROUTES.Identity}/${parentIdentityDid}`}
-                  clickable
                 />
               </Tooltip>
             )}

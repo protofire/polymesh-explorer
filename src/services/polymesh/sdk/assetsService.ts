@@ -1,11 +1,11 @@
+import { Portfolio } from '@polymeshassociation/polymesh-sdk/api/entities/Portfolio';
+import { Nft } from '@polymeshassociation/polymesh-sdk/internal';
 import {
   CollectionKey,
   DefaultPortfolio,
   NumberedPortfolio,
   PortfolioCollection,
 } from '@polymeshassociation/polymesh-sdk/types';
-import { Portfolio } from '@polymeshassociation/polymesh-sdk/api/entities/Portfolio';
-import { Nft } from '@polymeshassociation/polymesh-sdk/internal';
 import {
   NftAsset,
   NftAssetWithMetadata,
@@ -194,6 +194,7 @@ export const getNftDetails = async (
   collectionKeys: CollectionKey[],
   ownerDid: string,
   ownerPortfolioId: string,
+  ownerAccount: string,
 ): Promise<NftAssetWithMetadata> => {
   const tokenUri = (await getNftTokenUri(nft)) || '';
 
@@ -202,6 +203,7 @@ export const getNftDetails = async (
     isLocked,
     ownerDid,
     ownerPortfolioId,
+    ownerAccount,
   } as NftAssetWithMetadata;
 
   // get off-chain args

@@ -18,12 +18,17 @@ import { GenericLink } from '@/components/shared/common/GenericLink';
 import { useLocalPagination } from '@/hooks/useLocalPagination';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
 import { truncateAddress } from '@/services/polymesh/address';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 
 interface AssetTabTableProps {
   assets: Asset[];
+  isOwnedAssets?: boolean;
 }
 
-export function AssetTabTable({ assets }: AssetTabTableProps) {
+export function AssetTabTable({
+  assets,
+  isOwnedAssets = false,
+}: AssetTabTableProps) {
   const { paginatedItems: paginatedAssets, ...paginationController } =
     useLocalPagination(assets);
 
@@ -36,6 +41,9 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
               <TableCell>Name</TableCell>
               <TableCell>Ticker or Id</TableCell>
               <TableCell>Type</TableCell>
+              <TableCell>
+                {isOwnedAssets ? 'Total Supply' : 'Balance / Count'}
+              </TableCell>
               <TableCell>Fungible / Non fungible</TableCell>
             </TableRow>
           </TableHead>
@@ -55,6 +63,15 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
                   </TableCell>
                   <TableCell>{asset.type}</TableCell>
                   <TableCell>
+                    <FormattedNumber
+                      value={
+                        isOwnedAssets
+                          ? asset.totalSupply
+                          : asset.heldAmount || asset.heldNftIds?.length || 0
+                      }
+                    />
+                  </TableCell>
+                  <TableCell>
                     <Tooltip
                       title={
                         asset.isNftCollection
@@ -72,7 +89,7 @@ export function AssetTabTable({ assets }: AssetTabTableProps) {
                 </TableRow>
               ))
             ) : (
-              <NoDataAvailableTBody colSpan={4} />
+              <NoDataAvailableTBody colSpan={5} />
             )}
           </TableBody>
         </Table>

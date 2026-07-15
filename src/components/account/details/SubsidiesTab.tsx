@@ -1,31 +1,29 @@
-import React, { useMemo } from 'react';
+import { ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import {
-  Typography,
+  Box,
+  Chip,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Box,
-  Chip,
+  Typography,
 } from '@mui/material';
-import {
-  SubsidyWithAllowance,
-  Account,
-} from '@polymeshassociation/polymesh-sdk/types';
-import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
-import { balanceToBigNumber } from '@polymeshassociation/polymesh-sdk/utils/conversion';
-import { Balance } from '@polkadot/types/interfaces';
-import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
-import { AccountDetails } from '@/domain/entities/Account';
+import {
+  Account,
+  SubsidyWithAllowance,
+} from '@polymeshassociation/polymesh-sdk/types';
+import { useMemo } from 'react';
 import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import { useLocalPagination } from '@/hooks/useLocalPagination';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
+import { ROUTES } from '@/config/routes';
+import { AccountDetails } from '@/domain/entities/Account';
+import { useLocalPagination } from '@/hooks/useLocalPagination';
 
 interface SubsidiesTabProps {
   accountDetails: AccountDetails | null;
@@ -34,7 +32,7 @@ interface SubsidiesTabProps {
 }
 
 function formatAllowance(allowance: BigNumber): string {
-  return balanceToBigNumber(allowance as unknown as Balance).toFormat(6);
+  return allowance.toFormat(6);
 }
 
 export function SubsidiesTab({

@@ -2,10 +2,10 @@ import { Portfolio } from '@/domain/entities/Portfolio';
 
 export interface PortfolioMovement {
   id: string;
-  fromId: string;
-  from: Portfolio;
-  toId: string;
-  to: Portfolio;
+  fromAccount?: string;
+  from?: Portfolio;
+  toAccount?: string;
+  to?: Portfolio;
   assetId: string;
   assetTicker?: string;
   amount?: string;

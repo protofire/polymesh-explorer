@@ -16,7 +16,7 @@ Welcome to the Polymesh Blockchain Explorer! This powerful tool allows you to na
 
 ### Prerequisites
 
-- Node.js (v14 or later)
+- Node.js (v20 or later)
 - pnpm
 
 ### Installation

@@ -1,14 +1,14 @@
+import { Balance } from '@polkadot/types/interfaces';
 import {
   InstructionStatus,
   InstructionStatusEnum,
 } from '@polymeshassociation/polymesh-sdk/types';
-import { Balance } from '@polkadot/types/interfaces';
 import { balanceToBigNumber } from '@polymeshassociation/polymesh-sdk/utils/conversion';
-import { RawInstructionNode, RawLegNode } from '../repositories/types';
 import {
   SettlementInstructionWithEvents,
   SettlementLeg,
 } from '@/domain/entities/SettlementInstruction';
+import { RawInstructionNode, RawLegNode } from '../repositories/types';
 
 export function statusEnumToInstructionStatus(
   instruction: InstructionStatusEnum,
@@ -31,16 +31,12 @@ export function statusEnumToInstructionStatus(
 export function rawLegToSettlementLeg(leg: RawLegNode): SettlementLeg {
   return {
     index: leg.legIndex,
-    from: {
-      id: leg.from,
-      name: leg.fromPortfolio === 0 ? 'Default' : '',
-      number: leg.fromPortfolio.toString(),
-    },
-    to: {
-      id: leg.to,
-      name: leg.toPortfolio === 0 ? 'Default' : '',
-      number: leg.toPortfolio.toString(),
-    },
+    fromPortfolio: leg.fromPortfolio ?? undefined,
+    from: leg.from ?? undefined,
+    fromAccount: leg.fromAccount ?? undefined,
+    toPortfolio: leg.toPortfolio ?? undefined,
+    to: leg.to ?? undefined,
+    toAccount: leg.toAccount ?? undefined,
     assetId: leg.assetId,
     assetTicker: leg.ticker,
     amount: leg.amount
@@ -55,7 +51,11 @@ export function rawInstructiontoSettlementInstruction(
   rawInstruction: RawInstructionNode,
 ): SettlementInstructionWithEvents {
   const uniqueCounterparties = new Set(
-    rawInstruction.legs.nodes.flatMap((leg) => [leg.from, leg.to]),
+    rawInstruction.legs.nodes.flatMap((leg) =>
+      [leg.from, leg.to, leg.fromAccount, leg.toAccount].filter(
+        (party): party is string => Boolean(party),
+      ),
+    ),
   );
 
   return {
