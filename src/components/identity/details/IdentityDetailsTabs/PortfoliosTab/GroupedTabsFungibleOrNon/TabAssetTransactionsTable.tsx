@@ -1,31 +1,75 @@
-import React from 'react';
 import {
+  Chip,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Chip,
 } from '@mui/material';
 import { EventIdEnum } from '@polymeshassociation/polymesh-sdk/types';
-import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
-import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
-import { truncateAddress } from '@/services/polymesh/address';
-import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import React from 'react';
+import { getEventLabel } from '@/components/asset/details/AssetDetailsTabs/getEventLabel';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
 import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
-import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
-import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
-import { AssetTypeSelected } from '../AssetTypeToggleButton';
-import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
-import { getEventLabel } from '@/components/asset/details/AssetDetailsTabs/getEventLabel';
 import NftIdsDisplay from '@/components/shared/NftIdsDisplay';
+import { ROUTES } from '@/config/routes';
+import { AssetTransaction } from '@/domain/entities/AssetTransaction';
+import { Portfolio } from '@/domain/entities/Portfolio';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { truncateAddress } from '@/services/polymesh/address';
+import { formatPortfolioPartyLabel } from '@/utils/formatPortfolioPartyLabel';
+import { AssetTypeSelected } from '../AssetTypeToggleButton';
+
+function renderTransactionParty({
+  account,
+  identityId,
+  portfolio,
+  portfolioId,
+  portfolioName,
+}: {
+  account?: string;
+  identityId?: string;
+  portfolio?: Portfolio;
+  portfolioId?: string;
+  portfolioName?: string;
+}): React.ReactElement {
+  if (account) {
+    return (
+      <AccountOrDidTextField value={account} variant="body2" showIdenticon>
+        {account}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (identityId) {
+    return (
+      <>
+        <AccountOrDidTextField
+          value={identityId}
+          isIdentity
+          variant="body2"
+          showIdenticon
+        >
+          {formatPortfolioPartyLabel(identityId, portfolio, portfolioId)}
+        </AccountOrDidTextField>
+        {portfolioName && (
+          <TruncatedPortfolioNameWithTooltip text={portfolioName} />
+        )}
+      </>
+    );
+  }
+
+  return <EmptyDash />;
+}
 
 interface TabAssetTransactionsTableProps {
   assetTransactions: PaginatedData<AssetTransaction[]> | undefined;
@@ -64,8 +108,10 @@ export function TabAssetTransactionsTable({
           <TableBody>
             {transactions.length > 0 ? (
               transactions.map((transaction) => {
-                const fromDid = transaction.fromId?.split('/')[0] || '';
-                const toDid = transaction.toId?.split('/')[0] || '';
+                const { fromAccount } = transaction;
+                const fromDid = transaction.fromIdentityId;
+                const { toAccount } = transaction;
+                const toDid = transaction.toIdentityId;
                 const eventInfo = getEventLabel(
                   transaction.eventId as EventIdEnum,
                 );
@@ -96,36 +142,22 @@ export function TabAssetTransactionsTable({
                       </GenericLink>
                     </TableCell>
                     <TableCell>
-                      {transaction.fromId && (
-                        <AccountOrDidTextField
-                          value={fromDid}
-                          isIdentity
-                          variant="body2"
-                        >
-                          {transaction.fromId}
-                        </AccountOrDidTextField>
-                      )}
-                      {transaction.from?.name && (
-                        <TruncatedPortfolioNameWithTooltip
-                          text={transaction.from.name}
-                        />
-                      )}
+                      {renderTransactionParty({
+                        account: fromAccount,
+                        identityId: fromDid,
+                        portfolio: transaction.from,
+                        portfolioId: transaction.fromId,
+                        portfolioName: transaction.from?.name,
+                      })}
                     </TableCell>
                     <TableCell>
-                      {transaction.toId && (
-                        <AccountOrDidTextField
-                          value={toDid}
-                          isIdentity
-                          variant="body2"
-                        >
-                          {transaction.toId}
-                        </AccountOrDidTextField>
-                      )}
-                      {transaction.to?.name && (
-                        <TruncatedPortfolioNameWithTooltip
-                          text={transaction.to.name}
-                        />
-                      )}
+                      {renderTransactionParty({
+                        account: toAccount,
+                        identityId: toDid,
+                        portfolio: transaction.to,
+                        portfolioId: transaction.toId,
+                        portfolioName: transaction.to?.name,
+                      })}
                     </TableCell>
                     <TableCell>
                       {isFungible

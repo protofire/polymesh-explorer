@@ -1,29 +1,30 @@
-import React from 'react';
 import {
+  Box,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Paper,
-  Box,
 } from '@mui/material';
-import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { PaginatedData } from '@/domain/ui/PaginationInfo';
-import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
+import React from 'react';
+import { EmptyDash } from '@/components/shared/common/EmptyDash';
 import { FormattedDate } from '@/components/shared/common/FormattedDateText';
-import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
 import { GenericLink } from '@/components/shared/common/GenericLink';
-import { ROUTES } from '@/config/routes';
+import { GenericTableSkeleton } from '@/components/shared/common/GenericTableSkeleton';
+import { NoDataAvailableTBody } from '@/components/shared/common/NoDataAvailableTBody';
 import { PaginationFooter } from '@/components/shared/common/PaginationFooter';
-import { AssetTypeSelected } from '../AssetTypeToggleButton';
-import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
-import { truncateAddress } from '@/services/polymesh/address';
 import { PolymeshExplorerLink } from '@/components/shared/ExplorerLink/PolymeshExplorerLink';
 import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { FormattedNumber } from '@/components/shared/fieldAttributes/FormattedNumber';
 import { TruncatedPortfolioNameWithTooltip } from '@/components/shared/fieldAttributes/TruncatedPortfolioNameWithTooltip';
+import { ROUTES } from '@/config/routes';
+import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { truncateAddress } from '@/services/polymesh/address';
 import { removeLeadingZeros } from '@/utils/formatString';
+import { AssetTypeSelected } from '../AssetTypeToggleButton';
 
 interface TabTokenMovementsTableProps {
   portfolioMovements: PaginatedData<PortfolioMovement[]> | undefined;
@@ -48,6 +49,68 @@ const formatMovementId = (id: string | undefined) => {
 
   return `${unpaddedId.slice(0, 3)}...${unpaddedId.slice(-4)}`;
 };
+
+function renderMovementFromParty(
+  movement: PortfolioMovement,
+): React.ReactElement {
+  if (movement.fromAccount) {
+    return (
+      <AccountOrDidTextField value={movement.fromAccount} variant="body2">
+        {movement.fromAccount}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (movement.from) {
+    return (
+      <>
+        <AccountOrDidTextField
+          value={movement.from.id}
+          isIdentity
+          variant="body2"
+        >
+          {movement.from.id}/{movement.from.number}
+        </AccountOrDidTextField>
+        {movement.from.name && (
+          <TruncatedPortfolioNameWithTooltip text={movement.from.name} />
+        )}
+      </>
+    );
+  }
+
+  return <EmptyDash />;
+}
+
+function renderMovementToParty(
+  movement: PortfolioMovement,
+): React.ReactElement {
+  if (movement.toAccount) {
+    return (
+      <AccountOrDidTextField value={movement.toAccount} variant="body2">
+        {movement.toAccount}
+      </AccountOrDidTextField>
+    );
+  }
+
+  if (movement.to) {
+    return (
+      <>
+        <AccountOrDidTextField
+          value={movement.to.id}
+          isIdentity
+          variant="body2"
+        >
+          {movement.to.id}/{movement.to.number}
+        </AccountOrDidTextField>
+        {movement.to.name && (
+          <TruncatedPortfolioNameWithTooltip text={movement.to.name} />
+        )}
+      </>
+    );
+  }
+
+  return <EmptyDash />;
+}
 
 export function TabTokenMovementsTable({
   portfolioMovements,
@@ -129,34 +192,8 @@ export function TabTokenMovementsTable({
                     <TableCell>
                       <FormattedDate date={movement.createdAt} />
                     </TableCell>
-                    <TableCell>
-                      <AccountOrDidTextField
-                        value={movement.from.id}
-                        isIdentity
-                        variant="body2"
-                      >
-                        {movement.fromId}
-                      </AccountOrDidTextField>
-                      {movement.from.name && (
-                        <TruncatedPortfolioNameWithTooltip
-                          text={movement.from.name}
-                        />
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <AccountOrDidTextField
-                        value={movement.to.id}
-                        isIdentity
-                        variant="body2"
-                      >
-                        {movement.toId}
-                      </AccountOrDidTextField>
-                      {movement.to.name && (
-                        <TruncatedPortfolioNameWithTooltip
-                          text={movement.to.name}
-                        />
-                      )}
-                    </TableCell>
+                    <TableCell>{renderMovementFromParty(movement)}</TableCell>
+                    <TableCell>{renderMovementToParty(movement)}</TableCell>
                     <TableCell>
                       <GenericLink href={`${ROUTES.Asset}/${movement.assetId}`}>
                         {movement.assetTicker ||

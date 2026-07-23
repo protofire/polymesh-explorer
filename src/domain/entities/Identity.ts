@@ -13,7 +13,4 @@ export interface Identity {
   heldAssets: Asset[];
   isCustodian: boolean;
   custodiedPortfoliosCount: number;
-  isChildIdentity: boolean;
-  parentIdentityDid?: string;
-  childIdentities?: string[];
 }

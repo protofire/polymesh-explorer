@@ -1,19 +1,18 @@
-import React from 'react';
 import { Box, Tab, Tabs } from '@mui/material';
+import React from 'react';
+import { CounterBadge } from '@/components/shared/common/CounterBadge';
+import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
+import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
+import { AssetPermissions } from '@/domain/entities/AssetPermissions';
 import { Identity } from '@/domain/entities/Identity';
 import { PortfolioWithAssets } from '@/domain/entities/Portfolio';
+import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
+import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
+import { AssetTabTable } from './AssetTabTable';
+import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';
+import { IdentityAssetPermissionsTab } from './IdentityAssetPermissionsTab';
 import { PortfoliosTab } from './PortfoliosTab';
 import { SettlementInstructionsTab } from './SettlementInstructionsTab';
-import { IdentityAssetPermissionsTab } from './IdentityAssetPermissionsTab';
-import { GenericTabPanel } from '@/components/shared/common/GenericTabPanel';
-import { CounterBadge } from '@/components/shared/common/CounterBadge';
-import { AssetTabTable } from './AssetTabTable';
-import { UseTransactionHistoryAccountsReturn } from '@/hooks/identity/useTransactionHistoryAccounts';
-import { AssetPermissions } from '@/domain/entities/AssetPermissions';
-import { LoadingDot } from '@/components/shared/common/LoadingDotComponent';
-import { HistoryTransactionsTabTable } from './HistoryTransactionsTab';
-import { useGetSettlementInstructionsByDid } from '@/hooks/settlement/useGetSettlementInstructionsByDid';
-import { ChildIdentitiesTab } from './ChildIdentitiesTab';
 
 interface IdentityDetailsTabsProps {
   identity: Identity;
@@ -37,9 +36,8 @@ export function IdentityDetailsTabs({
   isLoadingAssetPermissions,
 }: IdentityDetailsTabsProps): React.ReactElement {
   const [value, setValue] = React.useState(0);
-  const { ownedAssets, heldAssets, childIdentities } = identity;
+  const { ownedAssets, heldAssets } = identity;
   const isAssetIssuer = ownedAssets && ownedAssets.length > 0;
-  const hasChildIdentities = childIdentities && childIdentities.length > 0;
 
   const { activeInstructions, historicalInstuctions } =
     useGetSettlementInstructionsByDid({
@@ -94,25 +92,14 @@ export function IdentityDetailsTabs({
               </Box>
             }
           />
-          {hasChildIdentities && (
-            <Tab
-              label={
-                <Box sx={{ paddingRight: '8px' }}>
-                  <CounterBadge count={childIdentities.length}>
-                    Child Identities
-                  </CounterBadge>
-                </Box>
-              }
-            />
-          )}
         </Tabs>
       </Box>
       <GenericTabPanel value={value} index={0} labelKey="identity-assets">
-        <AssetTabTable assets={heldAssets} />
+        <AssetTabTable assets={heldAssets} isOwnedAssets={false} />
       </GenericTabPanel>
       {isAssetIssuer && (
         <GenericTabPanel value={value} index={1} labelKey="issued-assets">
-          <AssetTabTable assets={ownedAssets} />
+          <AssetTabTable assets={ownedAssets} isOwnedAssets />
         </GenericTabPanel>
       )}
       <GenericTabPanel
@@ -161,15 +148,6 @@ export function IdentityDetailsTabs({
           isLoading={isLoadingAssetPermissions}
         />
       </GenericTabPanel>
-      {hasChildIdentities && (
-        <GenericTabPanel
-          value={value}
-          index={isAssetIssuer ? 6 : 5}
-          labelKey="child-identities"
-        >
-          <ChildIdentitiesTab childIdentities={childIdentities} />
-        </GenericTabPanel>
-      )}
     </Box>
   );
 }

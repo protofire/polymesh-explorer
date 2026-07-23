@@ -35,7 +35,7 @@ export class AssetGraphRepo {
 
     if (assets.length === 0) return null;
 
-    return assetNodeToAsset(assets[0]);
+    return assetNodeToAsset({ asset: assets[0] });
   }
 
   async getAssetList(criteria: AssetCriteria): Promise<{
@@ -101,7 +101,7 @@ export class AssetGraphRepo {
     const { assets } = response;
 
     return {
-      assets: assets.nodes.map(assetNodeToAsset),
+      assets: assets.nodes.map((asset) => assetNodeToAsset({ asset })),
       totalCount: assets.totalCount,
       pageInfo: assets.pageInfo,
     };
@@ -126,7 +126,7 @@ export class AssetGraphRepo {
     return response.assets.nodes.reduce(
       (acc, node) => ({
         ...acc,
-        [node.id]: assetNodeToAsset(node),
+        [node.id]: assetNodeToAsset({ asset: node }),
       }),
       {},
     );

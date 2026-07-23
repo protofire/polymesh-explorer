@@ -1,4 +1,8 @@
 import { GraphQLClient, gql } from 'graphql-request';
+import { DEFAULT_VENUE_ID } from '@/domain/entities/Venue';
+import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
+import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
+import { pageInfoFragment, settlementInstructionFragment } from './fragments';
 import {
   InstructionListResponse,
   InstructionResponse,
@@ -6,9 +10,6 @@ import {
   PageInfo,
   RawInstructionNode,
 } from './types';
-import { rawInstructiontoSettlementInstruction } from '../transformers/instructionsTransformer';
-import { SettlementInstructionWithAssets } from '@/domain/entities/SettlementInstruction';
-import { pageInfoFragment, settlementInstructionFragment } from './fragments';
 
 export class InstructionGraphRepo {
   constructor(private client: GraphQLClient) {}
@@ -169,13 +170,17 @@ export class InstructionGraphRepo {
       pageInfo: PageInfo;
     }
   > {
+    const venueFilter =
+      venueId === DEFAULT_VENUE_ID
+        ? '{ venueId: { isNull: true } }'
+        : '{ venueId: { equalTo: $venueId } }';
     const query = gql`
       ${pageInfoFragment}
       ${settlementInstructionFragment}
       query InstructionByVenueQuery(
         $pageSize: Int!
         $offset: Int!
-        $venueId: String!
+        ${venueId === DEFAULT_VENUE_ID ? '' : '$venueId: String!'}
       ) {
         instructions(
           first: $pageSize
@@ -183,7 +188,7 @@ export class InstructionGraphRepo {
           orderBy: CREATED_EVENT_ID_DESC
           filter: {
             and: [
-              { venueId: { equalTo: $venueId } }
+              ${venueFilter}
               { status: { ${historicalInstructions ? 'distinctFrom' : 'equalTo'}: Created } }
             ]
           }
