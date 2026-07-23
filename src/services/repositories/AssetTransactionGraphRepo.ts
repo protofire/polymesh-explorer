@@ -1,40 +1,74 @@
 import { GraphQLClient, gql } from 'graphql-request';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
-import { AssetTransactionsResponse, PageInfo } from './types';
-import { pageInfoFragment } from './fragments';
 import { assetTransactionNodeToAssetTransaction } from '@/services/repositories/nodeTransformers';
+import { pageInfoFragment } from './fragments';
+import { AssetTransactionsResponse, PageInfo } from './types';
 
 type FilterType = {
   portfolioId?: string;
   assetId?: string;
+  account?: string;
+};
+
+type BuiltFilter = {
+  filterConditions: string;
+  variableDeclarations: string;
+  variables: Record<string, string | boolean>;
 };
 
 export class AssetTransactionGraphRepo {
   constructor(private client: GraphQLClient) {}
 
-  private static buildFilter(filter: FilterType, nonFungible: boolean) {
-    if (filter.portfolioId) {
-      return `
-        or: [
-          {fromPortfolioId: {equalTo: "${filter.portfolioId}"}}
-          {toPortfolioId: {equalTo: "${filter.portfolioId}"}}
-        ]
+  private static buildFilter(
+    filter: FilterType,
+    nonFungible: boolean,
+  ): BuiltFilter {
+    const amountFilter = `
         amount: {
-          isNull: ${nonFungible}
+          isNull: $nonFungible
         }
-      `;
+    `;
+
+    if (filter.portfolioId) {
+      return {
+        filterConditions: `
+        or: [
+          {fromPortfolioId: {equalTo: $filterId}}
+          {toPortfolioId: {equalTo: $filterId}}
+        ]
+        ${amountFilter}
+      `,
+        variableDeclarations: '$filterId: String!',
+        variables: { filterId: filter.portfolioId, nonFungible },
+      };
+    }
+
+    if (filter.account) {
+      return {
+        filterConditions: `
+        or: [
+          {fromAccount: {equalTo: $filterId}}
+          {toAccount: {equalTo: $filterId}}
+        ]
+        ${amountFilter}
+      `,
+        variableDeclarations: '$filterId: String!',
+        variables: { filterId: filter.account, nonFungible },
+      };
     }
 
     if (filter.assetId) {
-      return `
-        assetId: {equalTo: "${filter.assetId}"}
-        amount: {
-          isNull: ${nonFungible}
-        }
-      `;
+      return {
+        filterConditions: `
+        assetId: {equalTo: $filterId}
+        ${amountFilter}
+      `,
+        variableDeclarations: '$filterId: String!',
+        variables: { filterId: filter.assetId, nonFungible },
+      };
     }
 
-    throw new Error('Must provide portfolioId or assetId');
+    throw new Error('Must provide portfolioId, account, or assetId');
   }
 
   async getAssetTransactions(
@@ -47,14 +81,12 @@ export class AssetTransactionGraphRepo {
     totalCount: number;
     pageInfo: PageInfo;
   }> {
-    const filterConditions = AssetTransactionGraphRepo.buildFilter(
-      filter,
-      nonFungible,
-    );
+    const { filterConditions, variableDeclarations, variables } =
+      AssetTransactionGraphRepo.buildFilter(filter, nonFungible);
 
     const query = gql`
       ${pageInfoFragment}
-      query ($pageSize: Int!, $after: Cursor) {
+      query ($pageSize: Int!, $after: Cursor, $nonFungible: Boolean!, ${variableDeclarations}) {
         assetTransactions(
           first: $pageSize
           after: $after
@@ -80,12 +112,16 @@ export class AssetTransactionGraphRepo {
             extrinsicIdx
             eventIdx
             eventId
+            toAccount
+            toIdentityId
             toPortfolioId
             toPortfolio {
               identityId
               number
               name
             }
+            fromAccount
+            fromIdentityId
             fromPortfolioId
             fromPortfolio {
               identityId
@@ -95,22 +131,21 @@ export class AssetTransactionGraphRepo {
             fundingRound
             instructionId
             instructionMemo
-    		instruction {
-				venueId
-			}
+            instruction {
+              venueId
+            }
           }
         }
       }
     `;
 
-    const variables = {
-      pageSize,
-      after,
-    };
-
     const response = await this.client.request<AssetTransactionsResponse>(
       query,
-      variables,
+      {
+        pageSize,
+        after,
+        ...variables,
+      },
     );
     const { assetTransactions } = response;
 

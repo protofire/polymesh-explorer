@@ -1,16 +1,16 @@
-import { useQueries } from '@tanstack/react-query';
 import { FungibleAsset } from '@polymeshassociation/polymesh-sdk/api/entities/Asset/Fungible';
 import {
   DefaultPortfolio,
   NumberedPortfolio,
   Permissions,
 } from '@polymeshassociation/polymesh-sdk/types';
+import { useQueries } from '@tanstack/react-query';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 import { Account, AccountDetails } from '@/domain/entities/Account';
-import { customReportError } from '@/utils/customReportError';
 import { Asset } from '@/domain/entities/Asset';
-import { uuidToHex } from '@/services/polymesh/hexToUuid';
 import { DEFAULT_PORTFOLIO_NAME, Portfolio } from '@/domain/entities/Portfolio';
+import { uuidToHex } from '@/services/polymesh/hexToUuid';
+import { customReportError } from '@/utils/customReportError';
 
 export interface UseGetAccountDetailsReturn {
   accountDetails: AccountDetails | null;

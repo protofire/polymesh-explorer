@@ -4,9 +4,9 @@ import {
   ConditionType,
   ConditionTarget,
   ActiveTransferRestrictions,
-  CountTransferRestriction,
 } from '@polymeshassociation/polymesh-sdk/types';
 import { customReportError } from '@/utils/customReportError';
+import { formatTrustedForList } from '@/utils/formatSdkTypes';
 
 export interface ComplianceCondition {
   target: string;
@@ -44,7 +44,7 @@ export interface ComplianceData {
   }[];
   requirements: ComplianceRule[];
   isPaused: boolean;
-  transferRestrictions: ActiveTransferRestrictions<CountTransferRestriction> | null;
+  transferRestrictions: ActiveTransferRestrictions | null;
 }
 
 export const useGetAssetCompliance = (assetSdk?: AssetSdk) => {
@@ -61,12 +61,11 @@ export const useGetAssetCompliance = (assetSdk?: AssetSdk) => {
           assetSdk.compliance.requirements.arePaused(),
         ]);
 
-        let transferRestrictions: ActiveTransferRestrictions<CountTransferRestriction> | null =
-          null;
+        let transferRestrictions: ActiveTransferRestrictions | null = null;
 
         if ('transferRestrictions' in assetSdk) {
           transferRestrictions =
-            await assetSdk.transferRestrictions.count.get();
+            await assetSdk.transferRestrictions.getRestrictions();
         }
 
         const { defaultTrustedClaimIssuers, requirements } = complianceData;
@@ -75,7 +74,7 @@ export const useGetAssetCompliance = (assetSdk?: AssetSdk) => {
           defaultTrustedClaimIssuers: defaultTrustedClaimIssuers.map(
             ({ identity, trustedFor }) => ({
               did: identity.did,
-              trustedFor: trustedFor || null,
+              trustedFor: formatTrustedForList(trustedFor),
             }),
           ),
           requirements: requirements.map(({ conditions, id }) => ({
@@ -90,7 +89,7 @@ export const useGetAssetCompliance = (assetSdk?: AssetSdk) => {
                 trustedClaimIssuers: condition.trustedClaimIssuers?.map(
                   ({ identity, trustedFor }) => ({
                     did: identity.did,
-                    trustedFor: trustedFor || null,
+                    trustedFor: formatTrustedForList(trustedFor),
                   }),
                 ),
               };

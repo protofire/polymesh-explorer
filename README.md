@@ -16,7 +16,7 @@ Welcome to the Polymesh Blockchain Explorer! This powerful tool allows you to na
 
 ### Prerequisites
 
-- Node.js (v14 or later)
+- Node.js (v20 or later)
 - pnpm
 
 ### Installation
@@ -60,3 +60,4 @@ Open [http://localhost:3005](http://localhost:3005) in your browser to see the e
 ## 📄 License
 
 This project is licensed under the [Apache 2.0 License](LICENSE).
+
