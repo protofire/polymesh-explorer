@@ -1,5 +1,4 @@
 import { InstructionStatus } from '@polymeshassociation/polymesh-sdk/types';
-import { Portfolio } from './Portfolio';
 import {
   LegAssetNode,
   RawAffirmationNode,
@@ -9,8 +8,12 @@ import {
 
 export interface SettlementLeg {
   index: number;
-  from: Portfolio;
-  to: Portfolio;
+  from?: string;
+  fromPortfolio?: number;
+  fromAccount?: string;
+  to?: string;
+  toPortfolio?: number;
+  toAccount?: string;
   assetId: string;
   assetTicker?: string;
   amount: string;

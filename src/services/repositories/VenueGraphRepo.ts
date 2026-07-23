@@ -1,5 +1,9 @@
 import { GraphQLClient, gql } from 'graphql-request';
-import { Venue } from '@/domain/entities/Venue';
+import {
+  DEFAULT_VENUE,
+  DEFAULT_VENUE_ID,
+  Venue,
+} from '@/domain/entities/Venue';
 import { venueNodeToVenue } from '@/services/repositories/nodeTransformers';
 import { pageInfoFragment, venueFragment } from './fragments';
 import { PageInfo, VenueListResponse, VenueResponse } from './types';
@@ -8,6 +12,10 @@ export class VenueGraphRepo {
   constructor(private client: GraphQLClient) {}
 
   async findById(id: string): Promise<Venue | null> {
+    if (id === DEFAULT_VENUE_ID) {
+      return DEFAULT_VENUE;
+    }
+
     const query = gql`
       ${venueFragment}
       query ($filter: VenueFilter!) {

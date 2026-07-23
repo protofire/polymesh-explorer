@@ -1,9 +1,9 @@
-import { GraphQLClient, gql } from 'graphql-request';
 import { PortfolioMovementTypeEnum } from '@polymeshassociation/polymesh-sdk/middleware/types';
+import { GraphQLClient, gql } from 'graphql-request';
 import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
 import { portfolioMovementNodeToPortfolioMovement } from '@/services/repositories/nodeTransformers';
-import { PortfolioMovementsResponse, PageInfo } from './types';
 import { pageInfoFragment } from './fragments';
+import { PageInfo, PortfolioMovementsResponse } from './types';
 
 export type PortfolioMovementType = PortfolioMovementTypeEnum;
 
@@ -43,12 +43,14 @@ export class PortfolioMovementsGraphRepo {
           }
           nodes {
             id
+            fromAccount
             fromId
             from {
               identityId
               number
               name
             }
+            toAccount
             toId
             to {
               identityId

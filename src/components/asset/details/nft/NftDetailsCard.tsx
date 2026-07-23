@@ -1,28 +1,56 @@
-import React from 'react';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import {
-  Typography,
   Box,
+  Chip,
   Skeleton,
   Stack,
-  Chip,
+  Table,
   TableBody,
   TableCell,
   TableContainer,
   TableRow,
-  Table,
   Tooltip,
+  Typography,
 } from '@mui/material';
-import LockIcon from '@mui/icons-material/Lock';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import { NftAssetWithMetadata } from '@/domain/entities/NftData';
-import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
-import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import React from 'react';
 import { CounterBadge } from '@/components/shared/common/CounterBadge';
-import { GenericLink } from '@/components/shared/common/GenericLink';
 import { EmptyDash } from '@/components/shared/common/EmptyDash';
+import { GenericLink } from '@/components/shared/common/GenericLink';
+import { AccountOrDidTextField } from '@/components/shared/fieldAttributes/AccountOrDidTextField';
+import { DocumentationIconButton } from '@/components/shared/fieldAttributes/DocumentationIconButton';
 import { Asset } from '@/domain/entities/Asset';
-import { ImageNftOrPlaceholder } from './ImageNftOrPlaceHolder';
+import { NftAssetWithMetadata } from '@/domain/entities/NftData';
 import { EmptyOrCollectionLink } from './EmptyOrCollectionLink';
+import { ImageNftOrPlaceholder } from './ImageNftOrPlaceHolder';
+
+function renderOwnerPortfolioInfo(
+  nft: NftAssetWithMetadata,
+): React.ReactElement {
+  if (nft.ownerAccount) {
+    return (
+      <>
+        <Typography variant="body2" color="textSecondary" mb={1}>
+          Owner Account
+        </Typography>
+        <Typography variant="body1">{nft.ownerAccount}</Typography>
+      </>
+    );
+  }
+
+  if (nft.ownerPortfolioId) {
+    return (
+      <>
+        <Typography variant="body2" color="textSecondary" mb={1}>
+          Owner Portfolio Id
+        </Typography>
+        <Typography variant="body1">{nft.ownerPortfolioId}</Typography>
+      </>
+    );
+  }
+
+  return <EmptyDash />;
+}
 
 interface NftDetailsCardProps {
   nft?: NftAssetWithMetadata | null;
@@ -122,18 +150,7 @@ export function NftDetailsCard({
                   <EmptyDash />
                 )}
               </Box>
-              <Box flex={1}>
-                <Typography variant="body2" color="textSecondary" mb={1}>
-                  Owner Portfolio Id
-                </Typography>
-                {nft.ownerPortfolioId ? (
-                  <Typography variant="body1">
-                    {nft.ownerPortfolioId}
-                  </Typography>
-                ) : (
-                  <EmptyDash />
-                )}
-              </Box>
+              <Box flex={1}>{renderOwnerPortfolioInfo(nft)}</Box>
             </Stack>
 
             <Stack spacing={2}>

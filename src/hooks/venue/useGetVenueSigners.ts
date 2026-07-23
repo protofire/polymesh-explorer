@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
 import { Account } from '@/domain/entities/Account';
 import { customReportError } from '@/utils/customReportError';
-import { Venue } from '@/domain/entities/Venue';
+import { DEFAULT_VENUE_ID, Venue } from '@/domain/entities/Venue';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
 
 interface AccountWithAddress extends Account {
@@ -40,6 +40,9 @@ export function useGetVenueSigners(
         throw error;
       }
     },
-    enabled: !!venue && !!polymeshService?.polymeshSdk,
+    enabled:
+      !!venue &&
+      venue.id !== DEFAULT_VENUE_ID &&
+      !!polymeshService?.polymeshSdk,
   });
 }

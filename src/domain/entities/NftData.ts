@@ -37,4 +37,5 @@ export interface NftAssetWithMetadata extends NftAsset {
   offChainDetails?: INftArgs[];
   ownerDid?: string;
   ownerPortfolioId?: string;
+  ownerAccount?: string;
 }

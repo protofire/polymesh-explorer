@@ -4,10 +4,14 @@ export interface AssetTransaction {
   id: string;
   assetId: string;
   assetTicker: string;
-  fromId: string;
+  fromId?: string;
   from?: Portfolio;
-  toId: string;
+  fromAccount?: string;
+  fromIdentityId?: string;
+  toId?: string;
   to?: Portfolio;
+  toAccount?: string;
+  toIdentityId?: string;
   amount?: string;
   nftIds?: string[];
   createdBlock: {

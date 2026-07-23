@@ -1,16 +1,16 @@
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { BigNumber } from '@polymeshassociation/polymesh-sdk';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { useCallback, useMemo } from 'react';
 import { usePolymeshSdkService } from '@/context/PolymeshSdkProvider/usePolymeshSdkProvider';
-import { customReportError } from '@/utils/customReportError';
-import { usePaginationControllerGraphQl } from '../usePaginationControllerGraphQl';
 import { Asset } from '@/domain/entities/Asset';
-import { AssetHoldersGraphRepo } from '@/services/repositories/AssetHoldersGraphRepo';
-import { PaginatedData } from '@/domain/ui/PaginationInfo';
 import {
   AssetHolder,
   isAssetNonFungibleHolder,
 } from '@/domain/entities/AssetHolder';
+import { PaginatedData } from '@/domain/ui/PaginationInfo';
+import { AssetHoldersGraphRepo } from '@/services/repositories/AssetHoldersGraphRepo';
+import { customReportError } from '@/utils/customReportError';
+import { usePaginationControllerGraphQl } from '../usePaginationControllerGraphQl';
 
 interface Props {
   asset: Asset;

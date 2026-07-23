@@ -1,46 +1,56 @@
-import { balanceToBigNumber } from '@polymeshassociation/polymesh-sdk/utils/conversion';
 import { Balance } from '@polkadot/types/interfaces';
+import { balanceToBigNumber } from '@polymeshassociation/polymesh-sdk/utils/conversion';
 import { Asset } from '@/domain/entities/Asset';
-import {
-  AssetNode,
-  AssetTransactionNode,
-  IdentityNode,
-  PortfolioMovementNode,
-  VenueNode,
-  ExtrinsicNode,
-  AssetHolderNode,
-  RawPortfolio,
-} from './types';
-import { Identity } from '@/domain/entities/Identity';
-import { Venue } from '@/domain/entities/Venue';
-import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
-import { Portfolio } from '@/domain/entities/Portfolio';
+import { AssetHolder } from '@/domain/entities/AssetHolder';
 import { AssetTransaction } from '@/domain/entities/AssetTransaction';
 import { ExtrinsicTransaction } from '@/domain/entities/ExtrinsicTransaction';
+import { Identity } from '@/domain/entities/Identity';
+import { Portfolio } from '@/domain/entities/Portfolio';
+import { PortfolioMovement } from '@/domain/entities/PortfolioMovement';
+import { Venue } from '@/domain/entities/Venue';
 import { hexToUuid } from '../polymesh/hexToUuid';
-import { AssetHolder } from '@/domain/entities/AssetHolder';
+import {
+  AssetHolderNode,
+  AssetNode,
+  AssetTransactionNode,
+  ExtrinsicNode,
+  IdentityNode,
+  PortfolioMovementNode,
+  RawPortfolio,
+  VenueNode,
+} from './types';
 
-export function assetNodeToAsset(assetNode: AssetNode): Asset {
+export function assetNodeToAsset({
+  asset,
+  heldAmount,
+  heldNftIds,
+}: {
+  asset: AssetNode;
+  heldAmount?: string;
+  heldNftIds?: number[];
+}): Asset {
   return {
-    assetId: assetNode.id,
-    assetUuid: hexToUuid(assetNode.id),
-    ticker: assetNode.ticker,
-    name: assetNode.name,
-    type: assetNode.type,
+    assetId: asset.id,
+    assetUuid: hexToUuid(asset.id),
+    ticker: asset.ticker,
+    name: asset.name,
+    type: asset.type,
     totalSupply:
-      !assetNode.isNftCollection && assetNode.totalSupply
-        ? balanceToBigNumber(
-            assetNode.totalSupply as unknown as Balance,
-          ).toString()
-        : assetNode.totalSupply,
-    ownerDid: assetNode.owner.did,
-    isNftCollection: assetNode.isNftCollection,
-    isDivisible: assetNode.isDivisible,
-    totalHolders: assetNode.isNftCollection
-      ? assetNode.nftHolders.totalCount.toString()
-      : assetNode.holders.totalCount.toString(),
-    createdAt: new Date(`${assetNode.createdBlock.datetime}Z`),
-    totalDocuments: assetNode.documents.totalCount.toString(),
+      !asset.isNftCollection && asset.totalSupply
+        ? balanceToBigNumber(asset.totalSupply as unknown as Balance).toString()
+        : asset.totalSupply,
+    ownerDid: asset.owner.did,
+    isNftCollection: asset.isNftCollection,
+    isDivisible: asset.isDivisible,
+    totalHolders: asset.isNftCollection
+      ? asset.nftHolders.totalCount.toString()
+      : asset.holders.totalCount.toString(),
+    createdAt: new Date(`${asset.createdBlock.datetime}Z`),
+    totalDocuments: asset.documents.totalCount.toString(),
+    heldAmount: heldAmount
+      ? balanceToBigNumber(heldAmount as unknown as Balance).toString()
+      : undefined,
+    heldNftIds,
   };
 }
 
@@ -57,16 +67,22 @@ export function identityNodeToIdentity(node: IdentityNode): Identity {
     venuesCount: node.venuesByOwnerId.totalCount,
     portfoliosCount: node.portfolios.totalCount,
     ownedAssets: node.assetsByOwnerId.nodes.map((asset) =>
-      assetNodeToAsset(asset),
+      assetNodeToAsset({ asset }),
     ),
     heldAssets: node.heldAssets.nodes
-      .map((heldAsset) => assetNodeToAsset(heldAsset.asset))
-      .concat(node.heldNfts.nodes.map((nft) => assetNodeToAsset(nft.asset))),
+      .map((heldAsset) =>
+        assetNodeToAsset({
+          asset: heldAsset.asset,
+          heldAmount: heldAsset.amount,
+        }),
+      )
+      .concat(
+        node.heldNfts.nodes.map((nft) =>
+          assetNodeToAsset({ asset: nft.asset, heldNftIds: nft.nftIds }),
+        ),
+      ),
     isCustodian: node.portfoliosByCustodianId.totalCount > 0,
     custodiedPortfoliosCount: node.portfoliosByCustodianId.totalCount,
-    isChildIdentity: node.parentChildIdentities.totalCount > 0,
-    parentIdentityDid: node.parentChildIdentities.nodes[0]?.parentId,
-    childIdentities: node.children.nodes.map((n) => n.id),
   };
 }
 
@@ -91,10 +107,10 @@ export function portfolioMovementNodeToPortfolioMovement(
 ): PortfolioMovement {
   return {
     id: node.id,
-    fromId: node.fromId,
-    from: getPortfolioParty(node.from),
-    toId: node.toId,
-    to: getPortfolioParty(node.to),
+    from: node.from ? getPortfolioParty(node.from) : undefined,
+    fromAccount: node.fromAccount || undefined,
+    to: node.to ? getPortfolioParty(node.to) : undefined,
+    toAccount: node.toAccount || undefined,
     assetId: node.assetId,
     assetTicker: node.asset?.ticker,
     amount:
@@ -115,17 +131,20 @@ export function assetTransactionNodeToAssetTransaction(
     id: node.id,
     assetId: node.assetId,
     assetTicker: node.asset.ticker,
-    fromId: node.fromPortfolioId,
+    fromAccount: node.fromAccount || undefined,
+    fromIdentityId: node.fromIdentityId || undefined,
+    fromId: node.fromPortfolioId || undefined,
     from: node.fromPortfolio
       ? getPortfolioParty(node.fromPortfolio)
-      : node.fromPortfolio,
-    toId: node.toPortfolioId,
-    to: node.toPortfolio
-      ? getPortfolioParty(node.toPortfolio)
-      : node.toPortfolio,
+      : undefined,
+    toAccount: node.toAccount || undefined,
+    toIdentityId: node.toIdentityId || undefined,
+    toId: node.toPortfolioId || undefined,
+    to: node.toPortfolio ? getPortfolioParty(node.toPortfolio) : undefined,
     amount:
-      node.amount &&
-      balanceToBigNumber(node.amount as unknown as Balance).toString(),
+      (node.amount &&
+        balanceToBigNumber(node.amount as unknown as Balance).toString()) ||
+      undefined,
     nftIds: node.nftIds || undefined,
     createdBlock: {
       blockId: node.createdBlockId,
