@@ -1,9 +1,9 @@
 {
   "name": "polymesh-explorer",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "engines": {
-    "node": ">=20.0.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "next dev -p 3005",
@@ -37,7 +37,7 @@
     "sharp": "^0.33.5"
   },
   "devDependencies": {
-    "@types/node": "^20.17.9",
+    "@types/node": "^24.13.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "eslint": "^8.57.1",
